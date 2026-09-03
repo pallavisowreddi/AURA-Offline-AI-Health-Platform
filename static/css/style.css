@@ -1779,3 +1779,332 @@ body.dark-theme .auth-divider span {
 }
 
 
+
+
+/* ==========================================================================
+   HEALTH TIP OF THE MOMENT (MEDSAVE REFERENCE STYLE)
+   ========================================================================== */
+.health-tip-moment-section {
+    text-align: center;
+    margin: 30px 0 25px 0;
+    position: relative;
+    z-index: 2;
+}
+
+.health-tip-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #d97706;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.health-tip-headline {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+}
+
+.health-tip-card {
+    max-width: 680px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: 24px;
+    padding: 24px 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.08), 0 2px 8px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.health-tip-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 35px rgba(245, 158, 11, 0.14);
+    border-color: rgba(245, 158, 11, 0.6);
+}
+
+.health-tip-icon-wrap {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(254, 243, 199, 0.9), rgba(253, 230, 138, 0.5));
+    border: 1.5px solid rgba(245, 158, 11, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #d97706;
+}
+
+.health-tip-spinner {
+    animation: tipSpin 12s linear infinite;
+}
+
+@keyframes tipSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.health-tip-content {
+    flex: 1;
+    text-align: left;
+}
+
+.health-tip-text {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    line-height: 1.55;
+    font-weight: 500;
+    margin: 0;
+    transition: opacity 0.35s ease;
+}
+
+.health-tip-speak-btn {
+    background: transparent;
+    border: 1px solid var(--border-glass);
+    color: var(--text-secondary);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.health-tip-speak-btn:hover {
+    background: #d97706;
+    color: #fff;
+    border-color: #d97706;
+    transform: scale(1.08);
+}
+
+.health-tip-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.health-tip-arrow {
+    background: transparent;
+    border: none;
+    font-size: 1.4rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 4px;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.health-tip-arrow:hover {
+    color: #d97706;
+    transform: scale(1.2);
+}
+
+.health-tip-dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.health-tip-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.health-tip-dot.active {
+    width: 22px;
+    border-radius: 10px;
+    background: #d97706;
+    box-shadow: 0 0 8px rgba(217, 119, 6, 0.4);
+}
+
+/* ==========================================================================
+   AUTHENTICATION PAGES & PASSWORD TOGGLE (MEDSAVE REFERENCE)
+   ========================================================================== */
+.auth-plus-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #eab308;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px auto;
+    box-shadow: 0 6px 20px rgba(234, 179, 8, 0.35);
+}
+
+.password-input-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.password-input-wrap input {
+    width: 100%;
+    padding-right: 65px !important;
+}
+
+.btn-toggle-pw {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    outline: none;
+    transition: color 0.2s;
+}
+
+.btn-toggle-pw:hover {
+    color: #d97706;
+}
+
+.btn-auth-gold {
+    width: 100%;
+    background: #b45309;
+    color: #ffffff;
+    border: none;
+    padding: 12px;
+    border-radius: 30px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(180, 83, 9, 0.3);
+    margin-top: 10px;
+}
+
+.btn-auth-gold:hover {
+    background: #92400e;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(180, 83, 9, 0.4);
+}
+
+/* ==========================================================================
+   PREMIUM FOOTER (WITH PALLAVI SOWREDDI ATTRIBUTION)
+   ========================================================================== */
+.aura-footer {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-glass);
+    padding: 40px 30px 20px 30px;
+    margin-top: 50px;
+    position: relative;
+    z-index: 10;
+}
+
+.footer-container {
+    max-width: 1140px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.footer-left {
+    flex: 1;
+    min-width: 280px;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.footer-logo-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #eab308;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-brand-name {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #b45309;
+}
+
+.footer-desc {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    max-width: 440px;
+}
+
+.footer-right {
+    text-align: right;
+    min-width: 280px;
+}
+
+.footer-credit-row {
+    margin-bottom: 4px;
+    font-size: 0.86rem;
+}
+
+.footer-credit-label {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.footer-credit-value {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.footer-credit-name {
+    font-weight: 800;
+    color: #b45309;
+    font-size: 0.95rem;
+}
+
+.footer-credit-role {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.footer-divider {
+    max-width: 1140px;
+    margin: 25px auto 18px auto;
+    height: 1px;
+    background: var(--border-glass);
+}
+
+.footer-copyright {
+    text-align: center;
+    font-size: 0.76rem;
+    color: var(--text-muted);
+}

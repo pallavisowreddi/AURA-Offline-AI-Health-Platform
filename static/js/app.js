@@ -18,6 +18,14 @@ const UI_TRANSLATIONS = {
         nav_live: "Live Reading",
         nav_signin: "Sign In / Join",
         nav_logout: "Logout",
+        tip_eyebrow: "DAILY REMINDER",
+        tip_headline: "Health tip of the moment",
+        tip_content_1: "Consult a healthcare professional if symptoms persist beyond a few days.",
+        login_welcome: "Welcome back",
+        signup_welcome: "Create your account",
+        auth_remember_me: "Remember me",
+        auth_forgot_pw: "Forgot Password?",
+        auth_lbl_confirm_pw: "Confirm Password",
         nav_login: "Login",
         nav_signup: "Sign Up",
         login_subtitle: "Access your offline medical history, biometrics telemetry, and medication schedule.",
@@ -172,6 +180,14 @@ const UI_TRANSLATIONS = {
         nav_live: "लाइव रीडिंग",
         nav_signin: "लॉगिन / साइन अप",
         nav_logout: "लॉग आउट",
+        tip_eyebrow: "दैनिक स्वास्थ्य अनुस्मारक",
+        tip_headline: "आज की महत्वपूर्ण स्वास्थ्य सलाह",
+        tip_content_1: "यदि लक्षण कुछ दिनों से अधिक समय तक बने रहें तो किसी स्वास्थ्य विशेषज्ञ से सलाह लें।",
+        login_welcome: "स्वागत है (Welcome back)",
+        signup_welcome: "नया खाता बनाएं",
+        auth_remember_me: "मुझे याद रखें",
+        auth_forgot_pw: "पासवर्ड भूल गए?",
+        auth_lbl_confirm_pw: "पासवर्ड की पुष्टि करें",
         nav_login: "लॉगिन",
         nav_signup: "साइन अप",
         login_subtitle: "अपने ऑफ़लाइन मेडिकल रिकॉर्ड, वाइटल्स और दवा शेड्यूल तक पहुंचें।",
@@ -326,6 +342,14 @@ const UI_TRANSLATIONS = {
         nav_live: "లైవ్ రీడింగ్",
         nav_signin: "లాగిన్ / సైన్ అప్",
         nav_logout: "లాగ్ అవుట్",
+        tip_eyebrow: "రోజువారీ ఆరోగ్య సూచన",
+        tip_headline: "ఈ క్షణపు ఆరోగ్య చిట్కా",
+        tip_content_1: "లక్షణాలు కొన్ని రోజులకు మించి కొనసాగితే వెంటనే వైద్య నిపుణుడిని సంప్రదించండి.",
+        login_welcome: "స్వాగతం (Welcome back)",
+        signup_welcome: "ఖాతా తెరవండి",
+        auth_remember_me: "నన్ను గుర్తుంచుకో",
+        auth_forgot_pw: "పాస్‌వర్డ్ మర్చిపోయారా?",
+        auth_lbl_confirm_pw: "పాస్‌వర్డ్ నిర్ధారించండి",
         nav_login: "లాగిన్",
         nav_signup: "సైన్ అప్",
         login_subtitle: "మీ ఆఫ్‌లైన్ మెడికల్ రికార్డులు, వైటల్స్ మరియు మందుల షెడ్యూల్‌ని యాక్సెస్ చేయండి.",
@@ -2488,6 +2512,150 @@ document.addEventListener("DOMContentLoaded", () => {
     const tabParam = urlParams.get("tab");
     if (tabParam) {
         setTimeout(() => navigateToTab(tabParam), 150);
+    }
+
+
+    // ========================================================================
+    // HEALTH TIP OF THE MOMENT (8 MULTILINGUAL TIPS CAROUSEL)
+    // ========================================================================
+    const HEALTH_TIPS_DATA = {
+        en: [
+            "Consult a healthcare professional if symptoms persist beyond a few days.",
+            "Stay hydrated: Drink at least 8 to 10 glasses of clean water daily to assist renal function.",
+            "Wash your hands with soap for at least 20 seconds before eating and after returning home.",
+            "Prevent mosquito breeding by eliminating stagnant water around your home weekly.",
+            "Maintain a balanced diet rich in leafy greens, proteins, and fresh seasonal fruits.",
+            "Prioritize 7 to 8 hours of uninterrupted sleep every night to rebuild cellular immunity.",
+            "Take short brisk walks daily: 30 minutes of physical movement lowers hypertension risks.",
+            "Keep emergency contact numbers handy and monitor fever using a digital thermometer."
+        ],
+        hi: [
+            "यदि लक्षण कुछ दिनों से अधिक समय तक बने रहें तो किसी स्वास्थ्य विशेषज्ञ से सलाह लें।",
+            "हाइड्रेटेड रहें: गुर्दे के सुचारू कार्य के लिए रोजाना कम से कम 8 से 10 गिलास साफ पानी पिएं।",
+            "खाना खाने से पहले और घर लौटने के बाद कम से कम 20 सेकंड तक साबुन से हाथ धोएं।",
+            "हफ्ते में एक बार घर के आसपास जमा पानी को साफ करके मच्छरों के पनपने को रोकें।",
+            "हरी पत्तेदार सब्जियों, दालों और ताजे मौसमी फलों से भरपूर संतुलित आहार लें।",
+            "रोग प्रतिरोधक क्षमता बढ़ाने के लिए रोजाना 7 से 8 घंटे की गहरी नींद अवश्य लें।",
+            "रोजाना 30 मिनट तेज सैर करें; नियमित शारीरिक गतिविधि उच्च रक्तचाप के खतरे को कम करती है।",
+            "आपातकालीन नंबर हमेशा पास रखें और डिजिटल थर्मामीटर से बुखार की सटीक जांच करें।"
+        ],
+        te: [
+            "లక్షణాలు కొన్ని రోజులకు మించి కొనసాగితే వెంటనే వైద్య నిపుణుడిని సంప్రదించండి.",
+            "శరీరానికి తగినంత నీరు: కిడ్నీల పనితీరు మెరుగ్గా ఉండటానికి రోజూ 8-10 గ్లాసుల స్వచ్ఛమైన నీరు తాగండి.",
+            "భోజనానికి ముందు మరియు బయటి నుండి వచ్చిన తర్వాత చేతులను 20 సెకన్ల పాటు సబ్బుతో శుభ్రం చేసుకోండి.",
+            "ఇంటి చుట్టూ నీరు నిల్వ ఉండకుండా వారానికొకసారి శుభ్రం చేసి దోమల వృద్ధిని అరికట్టండి.",
+            "ఆకుకూరలు, పప్పుధాన్యాలు మరియు తాజా పండ్లతో కూడిన సమతుల్య పోషకాహారాన్ని తీసుకోండి.",
+            "రోగనిరోధక శక్తిని పెంచడానికి ప్రతి రాత్రి 7 నుండి 8 గంటల నిరంతర నిద్ర అవసరం.",
+            "రోజూ 30 నిమిషాల వేగవంతమైన నడక చేయండి; ఇది రక్తపోటు ప్రమాదాన్ని చాలా వరకు తగ్గిస్తుంది.",
+            "అత్యవసర ఫోన్ నంబర్లను సిద్ధంగా ఉంచుకోండి మరియు డిజిటల్ థర్మామీటర్‌తో జ్వరాన్ని కొలవండి."
+        ]
+    };
+
+    let currentTipIndex = 0;
+    let tipAutoInterval = null;
+
+    const tipTextEl = document.getElementById("health-tip-text");
+    const tipDotsContainer = document.getElementById("health-tip-dots");
+    const tipPrevBtn = document.getElementById("tip-prev-btn");
+    const tipNextBtn = document.getElementById("tip-next-btn");
+    const tipSpeakBtn = document.getElementById("health-tip-speak-btn");
+
+    function renderHealthTip(index) {
+        const curLang = languageSelector ? languageSelector.value : (localStorage.getItem("aura_lang") || "en");
+        const tips = HEALTH_TIPS_DATA[curLang] || HEALTH_TIPS_DATA.en;
+        currentTipIndex = (index + tips.length) % tips.length;
+
+        if (tipTextEl) {
+            tipTextEl.style.opacity = "0";
+            setTimeout(() => {
+                tipTextEl.textContent = tips[currentTipIndex];
+                tipTextEl.style.opacity = "1";
+            }, 200);
+        }
+
+        // Render dots
+        if (tipDotsContainer) {
+            tipDotsContainer.innerHTML = "";
+            tips.forEach((_, i) => {
+                const dot = document.createElement("span");
+                dot.className = "health-tip-dot" + (i === currentTipIndex ? " active" : "");
+                dot.title = `Tip ${i + 1}`;
+                dot.addEventListener("click", () => {
+                    renderHealthTip(i);
+                    resetTipTimer();
+                });
+                tipDotsContainer.appendChild(dot);
+            });
+        }
+    }
+
+    function resetTipTimer() {
+        if (tipAutoInterval) clearInterval(tipAutoInterval);
+        tipAutoInterval = setInterval(() => {
+            renderHealthTip(currentTipIndex + 1);
+        }, 6500);
+    }
+
+    if (tipPrevBtn) {
+        tipPrevBtn.addEventListener("click", () => {
+            renderHealthTip(currentTipIndex - 1);
+            resetTipTimer();
+        });
+    }
+    if (tipNextBtn) {
+        tipNextBtn.addEventListener("click", () => {
+            renderHealthTip(currentTipIndex + 1);
+            resetTipTimer();
+        });
+    }
+
+    if (tipSpeakBtn) {
+        tipSpeakBtn.addEventListener("click", () => {
+            if (tipTextEl) {
+                speakAura(tipTextEl.textContent);
+            }
+        });
+    }
+
+    renderHealthTip(0);
+    resetTipTimer();
+
+    // ========================================================================
+    // PASSWORD SHOW/HIDE TOGGLES FOR SPA LOGIN & SIGNUP
+    // ========================================================================
+    function setupPwToggle(btnId, inpId) {
+        const btn = document.getElementById(btnId);
+        const inp = document.getElementById(inpId);
+        if (btn && inp) {
+            btn.addEventListener("click", () => {
+                if (inp.type === "password") {
+                    inp.type = "text";
+                    btn.textContent = "Hide";
+                } else {
+                    inp.type = "password";
+                    btn.textContent = "Show";
+                }
+            });
+        }
+    }
+
+    setupPwToggle("toggle-page-login-pw", "page-login-password");
+    setupPwToggle("toggle-page-signup-pw", "page-signup-password");
+    setupPwToggle("toggle-page-confirm-pw", "page-signup-confirm-pw");
+
+    const pageSignupFormEl = document.getElementById("page-signup-form");
+    if (pageSignupFormEl) {
+        pageSignupFormEl.addEventListener("submit", (e) => {
+            const pw = document.getElementById("page-signup-password").value;
+            const confirm = document.getElementById("page-signup-confirm-pw").value;
+            const mismatch = document.getElementById("page-pw-mismatch");
+            if (pw !== confirm) {
+                e.preventDefault();
+                if (mismatch) mismatch.style.display = "block";
+                return;
+            }
+            if (mismatch) mismatch.style.display = "none";
+        });
     }
 
     // Default calculations on load

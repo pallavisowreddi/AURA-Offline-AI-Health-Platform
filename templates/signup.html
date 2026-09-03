@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-<body style="min-height: 100vh; display: flex; flex-direction: column;">
+<body style="min-height: 100vh; display: flex; flex-direction: column; background: #fffdfa;">
 
     <!-- Animated Moving Medical Particles Background -->
     <div class="medical-bg">
@@ -19,16 +19,18 @@
         <div class="bg-particle-med anim-med-1" style="top: 65%; left: 15%;">💓</div>
         <div class="bg-particle-med anim-med-2" style="top: 72%; left: 80%;">➕</div>
         <div class="bg-particle-med anim-med-3" style="top: 85%; left: 40%;">🔬</div>
-        <div class="bg-orb" style="top: 15%; left: 10%; width: 260px; height: 260px; background: radial-gradient(circle, rgba(2,132,199,0.18) 0%, transparent 70%);"></div>
-        <div class="bg-orb" style="top: 60%; left: 70%; width: 280px; height: 280px; background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%);"></div>
+        <div class="bg-orb" style="top: 15%; left: 10%; width: 260px; height: 260px; background: radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%);"></div>
+        <div class="bg-orb" style="top: 60%; left: 70%; width: 280px; height: 280px; background: radial-gradient(circle, rgba(234,179,8,0.1) 0%, transparent 70%);"></div>
     </div>
 
     <!-- Top Minimal Navbar -->
     <header class="main-navbar" style="padding: 0 24px;">
         <div class="nav-left">
-            <a href="/" class="logo" style="text-decoration: none;">
-                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="pulse-icon"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-                <span data-i18n="nav_brand">AURA Platform</span>
+            <a href="/" class="logo" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                <div class="footer-logo-circle" style="width: 30px; height: 30px;">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+                </div>
+                <span style="font-weight: 800; color: #b45309;">AURA Platform</span>
             </a>
             <div class="badge offline-badge" data-i18n="badge_offline">Local Offline</div>
         </div>
@@ -41,111 +43,135 @@
                 <option value="te">తెలుగు (Telugu)</option>
             </select>
 
-            <a href="/" class="btn btn-secondary" style="font-size: 0.76rem; text-decoration: none; padding: 6px 14px;" data-i18n="nav_home">← Back to Home</a>
-            <a href="/login" class="btn btn-secondary" style="font-size: 0.76rem; text-decoration: none; padding: 6px 14px;" data-i18n="auth_tab_login">Sign In</a>
+            <a href="/" class="btn btn-secondary" style="font-size: 0.76rem; text-decoration: none; padding: 6px 14px;" data-i18n="nav_home">← Home</a>
+            <a href="/login" class="btn btn-secondary" style="font-size: 0.76rem; text-decoration: none; padding: 6px 14px;" data-i18n="auth_btn_login">Log in</a>
         </div>
     </header>
 
-    <!-- Centered Sign Up Card -->
-    <main style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 30px 15px; z-index: 10;">
-        <div class="auth-page-card">
-            <div class="auth-page-header">
-                <div class="auth-icon-badge">📝</div>
-                <h2 data-i18n="auth_tab_signup">Create Patient Profile</h2>
-                <p data-i18n="signup_subtitle">Set up your personal offline digital health profile with clinical baseline records.</p>
+    <!-- Centered Sign Up Card Matching MedSave AI Reference -->
+    <main style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 15px; z-index: 10;">
+        <div class="auth-page-card" style="border-radius: 28px; padding: 40px 36px; max-width: 480px;">
+            <div class="auth-page-header" style="text-align: center; margin-bottom: 24px;">
+                <div class="auth-plus-circle">
+                    <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#fff" stroke-width="2.8"><circle cx="12" cy="12" r="9.5"/><path d="M12 7v10M7 12h10"/></svg>
+                </div>
+                <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--text-primary); margin-bottom: 8px;" data-i18n="signup_welcome">Create your account</h2>
+                <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.45;" data-i18n="signup_subtitle">Join AURA Platform for personalized health awareness and prevention guidance.</p>
             </div>
             
-            <form id="standalone-signup-form" class="auth-form">
+            <form id="standalone-signup-form" class="auth-form" style="gap: 15px;">
                 <div class="form-group">
-                    <label data-i18n="auth_lbl_name">Full Name</label>
-                    <input type="text" id="signup-name-input" placeholder="e.g. S. Pallavi" required>
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);" data-i18n="auth_lbl_name">Full Name</label>
+                    <input type="text" id="signup-name-input" placeholder="Your full name" required style="border-radius: 12px; padding: 11px 14px;">
                 </div>
-                <div style="display: flex; gap: 10px;">
-                    <div class="form-group" style="flex: 1;">
-                        <label data-i18n="auth_lbl_age">Age</label>
-                        <input type="number" id="signup-age-input" placeholder="21" min="1" max="120" required>
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label data-i18n="auth_lbl_blood">Blood Group</label>
-                        <select id="signup-blood-input">
-                            <option value="O+">O+</option>
-                            <option value="A+">A+</option>
-                            <option value="B+">B+</option>
-                            <option value="AB+">AB+</option>
-                            <option value="O-">O-</option>
-                            <option value="A-">A-</option>
-                            <option value="B-">B-</option>
-                            <option value="AB-">AB-</option>
-                        </select>
+
+                <div class="form-group">
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);" data-i18n="auth_lbl_email">Email</label>
+                    <input type="text" id="signup-id-input" placeholder="you@example.com" required style="border-radius: 12px; padding: 11px 14px;">
+                </div>
+
+                <div class="form-group">
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);" data-i18n="auth_lbl_password">Password</label>
+                    <div class="password-input-wrap">
+                        <input type="password" id="signup-pw-input" placeholder="At least 6 characters" required style="border-radius: 12px; padding: 11px 14px;">
+                        <button type="button" class="btn-toggle-pw" id="toggle-signup-pw">Show</button>
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <label data-i18n="auth_lbl_email">Email / Roll Number</label>
-                    <input type="text" id="signup-id-input" placeholder="e.g. 241801370052 or email" required>
+                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);" data-i18n="auth_lbl_confirm_pw">Confirm Password</label>
+                    <div class="password-input-wrap">
+                        <input type="password" id="signup-confirm-pw-input" placeholder="Re-enter your password" required style="border-radius: 12px; padding: 11px 14px;">
+                        <button type="button" class="btn-toggle-pw" id="toggle-confirm-pw">Show</button>
+                    </div>
+                    <span id="pw-mismatch-msg" style="color: #dc2626; font-size: 0.72rem; display: none;">Passwords do not match</span>
                 </div>
-                <div class="form-group">
-                    <label data-i18n="auth_lbl_password">Password</label>
-                    <input type="password" id="signup-pw-input" placeholder="Create a secure password" required>
-                </div>
-                <button type="submit" class="btn btn-primary auth-submit-btn" data-i18n="auth_btn_signup">Create Patient Profile</button>
+
+                <button type="submit" class="btn-auth-gold" data-i18n="auth_btn_signup">Create Account</button>
             </form>
 
-            <div class="auth-footer-links">
+            <div class="auth-footer-links" style="margin-top: 22px; font-size: 0.82rem;">
                 <span data-i18n="auth_have_account">Already have an account?</span> 
-                <a href="/login" class="auth-link" data-i18n="auth_link_login">Sign In here →</a>
+                <a href="/login" style="color: #b45309; font-weight: 700; text-decoration: none; margin-left: 4px;" data-i18n="auth_link_login">Log In</a>
             </div>
         </div>
     </main>
 
+    <!-- Footer with Pallavi Sowreddi Attribution -->
+    <footer class="aura-footer">
+        <div class="footer-container">
+            <div class="footer-left">
+                <div class="footer-brand">
+                    <div class="footer-logo-circle">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+                    </div>
+                    <span class="footer-brand-name">AURA Platform</span>
+                </div>
+                <p class="footer-desc">An AI(offline)-driven public health chatbot spreading disease awareness, prevention tips, and healthy-living guidance for everyone.</p>
+            </div>
+
+            <div class="footer-right">
+                <div class="footer-credit-row">
+                    <span class="footer-credit-label">Project:</span>
+                    <span class="footer-credit-value">AI(offline)-Driven Public Health Chatbot for Disease Awareness</span>
+                </div>
+                <div class="footer-credit-row">
+                    <span class="footer-credit-label">Created by:</span>
+                    <span class="footer-credit-name">Pallavi Sowreddi</span>
+                </div>
+                <div class="footer-credit-role">B.Tech Student</div>
+            </div>
+        </div>
+
+        <div class="footer-divider"></div>
+        <div class="footer-copyright">
+            © 2026 AURA Platform. All Rights Reserved.
+        </div>
+    </footer>
+
     <script>
         const AUTH_LANGS = {
             en: {
-                nav_brand: "AURA Platform",
                 badge_offline: "Local Offline",
-                nav_home: "← Back to Home",
-                auth_tab_login: "Sign In",
-                auth_tab_signup: "Create Patient Profile",
-                signup_subtitle: "Set up your personal offline digital health profile with clinical baseline records.",
+                nav_home: "← Home",
+                auth_btn_login: "Log in",
+                signup_welcome: "Create your account",
+                signup_subtitle: "Join AURA Platform for personalized health awareness and prevention guidance.",
                 auth_lbl_name: "Full Name",
-                auth_lbl_age: "Age",
-                auth_lbl_blood: "Blood Group",
-                auth_lbl_email: "Email / Roll Number",
+                auth_lbl_email: "Email",
                 auth_lbl_password: "Password",
-                auth_btn_signup: "Create Patient Profile",
+                auth_lbl_confirm_pw: "Confirm Password",
+                auth_btn_signup: "Create Account",
                 auth_have_account: "Already have an account?",
-                auth_link_login: "Sign In here →"
+                auth_link_login: "Log In"
             },
             hi: {
-                nav_brand: "ऑरा प्लेटफॉर्म (AURA)",
                 badge_offline: "ऑफ़लाइन मोड",
-                nav_home: "← होम पर वापस जाएं",
-                auth_tab_login: "साइन इन (Login)",
-                auth_tab_signup: "रोगी प्रोफाइल बनाएं",
-                signup_subtitle: "नैदानिक रिकॉर्ड के साथ अपना व्यक्तिगत ऑफ़लाइन डिजिटल स्वास्थ्य कार्ड बनाएं।",
+                nav_home: "← होम",
+                auth_btn_login: "लॉग इन",
+                signup_welcome: "नया खाता बनाएं",
+                signup_subtitle: "व्यक्तिगत स्वास्थ्य जागरूकता और मार्गदर्शन के लिए AURA में शामिल हों।",
                 auth_lbl_name: "पूरा नाम",
-                auth_lbl_age: "उम्र",
-                auth_lbl_blood: "ब्लड ग्रुप",
-                auth_lbl_email: "ईमेल / रोल नंबर",
+                auth_lbl_email: "ईमेल",
                 auth_lbl_password: "पासवर्ड",
-                auth_btn_signup: "रोगी प्रोफाइल बनाएं",
+                auth_lbl_confirm_pw: "पासवर्ड की पुष्टि करें",
+                auth_btn_signup: "खाता बनाएं (Create Account)",
                 auth_have_account: "पहले से खाता है?",
-                auth_link_login: "यहाँ साइन इन करें →"
+                auth_link_login: "लॉग इन करें"
             },
             te: {
-                nav_brand: "AURA ప్లాట్‌ఫామ్",
                 badge_offline: "ఆఫ్‌లైన్ మోడ్",
-                nav_home: "← హోమ్‌కి తిరిగి వెళ్లండి",
-                auth_tab_login: "సైన్ ఇన్ (Login)",
-                auth_tab_signup: "రోగి ప్రొఫైల్ సృష్టించండి",
-                signup_subtitle: "క్లినికల్ రికార్డులతో మీ వ్యక్తిగత ఆఫ్‌లైన్ డిజిటల్ హెల్త్ ప్రొఫైల్‌ని సెటప్ చేయండి.",
+                nav_home: "← హోమ్",
+                auth_btn_login: "లాగిన్",
+                signup_welcome: "ఖాతా తెరవండి",
+                signup_subtitle: "వ్యక్తిగత ఆరోగ్య అవగాహన మరియు మార్గదర్శకత్వం కోసం AURA లో చేరండి.",
                 auth_lbl_name: "పూర్తి పేరు",
-                auth_lbl_age: "వయస్సు",
-                auth_lbl_blood: "బ్లడ్ గ్రూప్",
-                auth_lbl_email: "ఈమెయిల్ / రోల్ నంబర్",
+                auth_lbl_email: "ఈమెయిల్",
                 auth_lbl_password: "పాస్‌వర్డ్",
-                auth_btn_signup: "రోగి ప్రొఫైల్ సృష్టించండి",
+                auth_lbl_confirm_pw: "పాస్‌వర్డ్ నిర్ధారించండి",
+                auth_btn_signup: "ఖాతా సృష్టించండి",
                 auth_have_account: "ఇప్పటికే ఖాతా ఉందా?",
-                auth_link_login: "ఇక్కడ లాగిన్ చేయండి →"
+                auth_link_login: "లాగిన్ చేయండి"
             }
         };
 
@@ -166,19 +192,40 @@
             langSel.addEventListener("change", (e) => setAuthLanguage(e.target.value));
         }
 
+        function setupToggle(btnId, inpId) {
+            const btn = document.getElementById(btnId);
+            const inp = document.getElementById(inpId);
+            if (btn && inp) {
+                btn.addEventListener("click", () => {
+                    if (inp.type === "password") {
+                        inp.type = "text";
+                        btn.textContent = "Hide";
+                    } else {
+                        inp.type = "password";
+                        btn.textContent = "Show";
+                    }
+                });
+            }
+        }
+        setupToggle("toggle-signup-pw", "signup-pw-input");
+        setupToggle("toggle-confirm-pw", "signup-confirm-pw-input");
+
         document.getElementById("standalone-signup-form").addEventListener("submit", (e) => {
             e.preventDefault();
-            const name = document.getElementById("signup-name-input").value.trim();
-            const age = document.getElementById("signup-age-input").value;
-            const blood = document.getElementById("signup-blood-input").value;
-            const id = document.getElementById("signup-id-input").value.trim();
             const pw = document.getElementById("signup-pw-input").value;
+            const confirm = document.getElementById("signup-confirm-pw-input").value;
+            const mismatch = document.getElementById("pw-mismatch-msg");
 
-            const user = { name, age, blood, identifier: id, password: pw };
-            let users = [];
-            try { users = JSON.parse(localStorage.getItem("aura_users_db") || "[]"); } catch (err) {}
-            users.push(user);
-            localStorage.setItem("aura_users_db", JSON.stringify(users));
+            if (pw !== confirm) {
+                if (mismatch) mismatch.style.display = "block";
+                return;
+            }
+            if (mismatch) mismatch.style.display = "none";
+
+            const name = document.getElementById("signup-name-input").value.trim();
+            const id = document.getElementById("signup-id-input").value.trim();
+
+            const user = { name: name, identifier: id };
             localStorage.setItem("aura_active_user", JSON.stringify(user));
             window.location.href = "/";
         });
