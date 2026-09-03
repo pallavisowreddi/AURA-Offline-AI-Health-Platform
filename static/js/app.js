@@ -18,6 +18,15 @@ const UI_TRANSLATIONS = {
         nav_live: "Live Reading",
         nav_signin: "Sign In / Join",
         nav_logout: "Logout",
+        nav_login: "Login",
+        nav_signup: "Sign Up",
+        login_subtitle: "Access your offline medical history, biometrics telemetry, and medication schedule.",
+        signup_subtitle: "Set up your personal offline digital health profile with clinical baseline records.",
+        auth_no_account: "Don't have an account?",
+        auth_link_signup: "Create an Account →",
+        auth_have_account: "Already have an account?",
+        auth_link_login: "Sign In here →",
+        demo_accounts_title: "⚡ 1-Click Hackathon Demo Profiles",
         hero_eyebrow: "Local Intelligent Diagnostics",
         hero_title: "Your Personal Offline Clinical Assistant",
         hero_desc: "Fully offline, 34-disease multilingual clinical intelligence and predictive biometrics. Safeguard your family with reliable information.",
@@ -163,6 +172,15 @@ const UI_TRANSLATIONS = {
         nav_live: "लाइव रीडिंग",
         nav_signin: "लॉगिन / साइन अप",
         nav_logout: "लॉग आउट",
+        nav_login: "लॉगिन",
+        nav_signup: "साइन अप",
+        login_subtitle: "अपने ऑफ़लाइन मेडिकल रिकॉर्ड, वाइटल्स और दवा शेड्यूल तक पहुंचें।",
+        signup_subtitle: "नैदानिक रिकॉर्ड के साथ अपना व्यक्तिगत ऑफ़लाइन डिजिटल स्वास्थ्य कार्ड बनाएं।",
+        auth_no_account: "खाता नहीं है?",
+        auth_link_signup: "नया खाता बनाएं →",
+        auth_have_account: "पहले से खाता है?",
+        auth_link_login: "यहाँ साइन इन करें →",
+        demo_accounts_title: "⚡ 1-क्लिक डेमो प्रोफाइल",
         hero_eyebrow: "स्थानीय कृत्रिम बुद्धिमत्ता निदान",
         hero_title: "आपका व्यक्तिगत ऑफ़लाइन स्वास्थ्य सहायक",
         hero_desc: "पूरी तरह से ऑफ़लाइन, 34 बीमारियों का बहुभाषी चिकित्सकीय ज्ञान और बायोमेट्रिक विश्लेषण। अपने परिवार को सुरक्षित रखें।",
@@ -308,6 +326,15 @@ const UI_TRANSLATIONS = {
         nav_live: "లైవ్ రీడింగ్",
         nav_signin: "లాగిన్ / సైన్ అప్",
         nav_logout: "లాగ్ అవుట్",
+        nav_login: "లాగిన్",
+        nav_signup: "సైన్ అప్",
+        login_subtitle: "మీ ఆఫ్‌లైన్ మెడికల్ రికార్డులు, వైటల్స్ మరియు మందుల షెడ్యూల్‌ని యాక్సెస్ చేయండి.",
+        signup_subtitle: "క్లినికల్ రికార్డులతో మీ వ్యక్తిగత ఆఫ్‌లైన్ డిజిటల్ హెల్త్ ప్రొఫైల్‌ని సెటప్ చేయండి.",
+        auth_no_account: "ఖాతా లేదా?",
+        auth_link_signup: "ఖాతా సృష్టించండి →",
+        auth_have_account: "ఇప్పటికే ఖాతా ఉందా?",
+        auth_link_login: "ఇక్కడ లాగిన్ చేయండి →",
+        demo_accounts_title: "⚡ 1-క్లిక్ డెమో ప్రొఫైల్స్",
         hero_eyebrow: "స్థానిక కృత్రిమ మేధస్సు నిర్ధారణ",
         hero_title: "మీ వ్యక్తిగత ఆఫ్‌లైన్ క్లినికల్ సహాయకుడు",
         hero_desc: "పూర్తిగా ఆఫ్‌లైన్, 34 వ్యాధుల బహుభాషా క్లినికల్ పరిజ్ఞానం మరియు బయోమెట్రిక్స్. మీ కుటుంబాన్ని సురక్షితంగా ఉంచండి.",
@@ -470,6 +497,7 @@ function renderCurrentUserBadge(lang) {
     const displayName = document.getElementById("user-display-name");
     const greetingPill = document.getElementById("user-greeting-pill");
     const openAuthBtn = document.getElementById("open-auth-btn");
+    const authButtonsBar = document.getElementById("auth-buttons-bar");
     
     if (!currentUser) {
         try {
@@ -480,6 +508,7 @@ function renderCurrentUserBadge(lang) {
 
     if (currentUser) {
         if (openAuthBtn) openAuthBtn.classList.add("hidden");
+        if (authButtonsBar) authButtonsBar.classList.add("hidden");
         if (greetingPill) greetingPill.classList.remove("hidden");
         if (displayName) {
             const name = currentUser.name || "Guest";
@@ -489,6 +518,7 @@ function renderCurrentUserBadge(lang) {
         }
     } else {
         if (openAuthBtn) openAuthBtn.classList.remove("hidden");
+        if (authButtonsBar) authButtonsBar.classList.remove("hidden");
         if (greetingPill) greetingPill.classList.add("hidden");
     }
 }
@@ -2388,6 +2418,78 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+
+    // Dedicated Full-Page Login & Signup Handlers
+    const pageLoginForm = document.getElementById("page-login-form");
+    const pageSignupForm = document.getElementById("page-signup-form");
+    const pageGuestBtn = document.getElementById("page-guest-login-btn");
+    const quickLoginBtn = document.getElementById("quick-login-btn");
+    const quickSignupBtn = document.getElementById("quick-signup-btn");
+
+    if (quickLoginBtn) {
+        quickLoginBtn.addEventListener("click", () => navigateToTab("login"));
+    }
+    if (quickSignupBtn) {
+        quickSignupBtn.addEventListener("click", () => navigateToTab("signup"));
+    }
+
+    if (pageLoginForm) {
+        pageLoginForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const id = document.getElementById("page-login-identifier").value.trim();
+            const pw = document.getElementById("page-login-password").value;
+            let users = [];
+            try { users = JSON.parse(localStorage.getItem("aura_users_db") || "[]"); } catch (err) {}
+            const matched = users.find(u => u.identifier.toLowerCase() === id.toLowerCase() && u.password === pw);
+            if (matched) {
+                currentUser = matched;
+            } else {
+                const userName = id.includes("@") ? id.split("@")[0] : id;
+                currentUser = { name: userName, identifier: id };
+            }
+            localStorage.setItem("aura_active_user", JSON.stringify(currentUser));
+            renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
+            navigateToTab("home");
+        });
+    }
+
+    if (pageSignupForm) {
+        pageSignupForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const name = document.getElementById("page-signup-name").value.trim();
+            const age = document.getElementById("page-signup-age").value;
+            const blood = document.getElementById("page-signup-blood").value;
+            const id = document.getElementById("page-signup-identifier").value.trim();
+            const pw = document.getElementById("page-signup-password").value;
+
+            const newUser = { name, age, blood, identifier: id, password: pw };
+            let users = [];
+            try { users = JSON.parse(localStorage.getItem("aura_users_db") || "[]"); } catch (err) {}
+            users.push(newUser);
+            localStorage.setItem("aura_users_db", JSON.stringify(users));
+            currentUser = newUser;
+            localStorage.setItem("aura_active_user", JSON.stringify(currentUser));
+            renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
+            navigateToTab("home");
+        });
+    }
+
+    if (pageGuestBtn) {
+        pageGuestBtn.addEventListener("click", () => {
+            currentUser = { name: "Guest Patient", age: 24, blood: "O+", identifier: "guest" };
+            localStorage.setItem("aura_active_user", JSON.stringify(currentUser));
+            renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
+            navigateToTab("home");
+        });
+    }
+
+    // Check URL parameters for tab navigation (e.g. ?tab=login or ?tab=signup)
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get("tab");
+    if (tabParam) {
+        setTimeout(() => navigateToTab(tabParam), 150);
+    }
+
     // Default calculations on load
     calculateBiometrics(120, 80, 72, 98, 98.6);
 
@@ -2402,5 +2504,20 @@ window.submitQuickQuery = function(text) {
         if (form) {
             form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
         }
+    }
+};
+
+
+// Global Quick Fill Demo Profiles Handler
+window.quickFillDemo = function(name, roll, pass) {
+    const inpId = document.getElementById("page-login-identifier");
+    const inpPw = document.getElementById("page-login-password");
+    if (inpId) inpId.value = roll;
+    if (inpPw) inpPw.value = pass || "demo123";
+    
+    // Auto submit form to log in instantly
+    const form = document.getElementById("page-login-form");
+    if (form) {
+        form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
     }
 };

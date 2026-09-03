@@ -146,19 +146,22 @@ h1, h2, h3, h4, .hero-eyebrow, .predicted-name {
 
 .nav-links {
     display: flex;
-    gap: 8px;
+    gap: 4px;
+    align-items: center;
+    flex-wrap: nowrap;
 }
 
 .nav-item {
     background: transparent;
     border: none;
-    padding: 8px 14px;
-    border-radius: 8px;
+    padding: 6px 9px;
+    border-radius: 6px;
     color: var(--text-secondary);
     font-family: 'Poppins', sans-serif;
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     font-weight: 600;
     cursor: pointer;
+    white-space: nowrap;
     transition: var(--transition-smooth);
 }
 
@@ -167,10 +170,17 @@ h1, h2, h3, h4, .hero-eyebrow, .predicted-name {
     color: var(--accent-teal);
 }
 
+.nav-item.nav-item-highlight {
+    color: var(--accent-teal);
+    border: 1px solid rgba(20, 184, 166, 0.3);
+    background: rgba(20, 184, 166, 0.05);
+}
+
 .nav-right {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    flex-shrink: 0;
 }
 
 .lang-dropdown {
@@ -178,12 +188,12 @@ h1, h2, h3, h4, .hero-eyebrow, .predicted-name {
     border: 1px solid var(--border-glass);
     border-radius: 8px;
     color: var(--text-primary);
-    padding: 6px 10px;
-    font-size: 0.8rem;
+    padding: 5px 8px;
+    font-size: 0.75rem;
     font-family: inherit;
     cursor: pointer;
     outline: none;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .icon-btn {
@@ -1546,4 +1556,226 @@ body.dark-theme .auth-divider span {
     font-size: 0.72rem;
     font-weight: 700;
 }
+
+/* ==========================================================================
+   DEDICATED FULL-PAGE LOGIN & SIGNUP VIEWS
+   ========================================================================== */
+.auth-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 160px);
+    padding: 20px 0;
+}
+
+.auth-page-card {
+    width: 100%;
+    max-width: 490px;
+    background: var(--bg-glass-strong);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--border-glass-glow);
+    border-radius: 20px;
+    padding: 32px 30px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08), 0 0 20px rgba(20, 184, 166, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-page-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-teal), var(--accent-blue));
+}
+
+.auth-page-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.auth-icon-badge {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(2, 132, 199, 0.15));
+    border: 1.5px solid var(--border-glass-glow);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    margin-bottom: 12px;
+}
+
+.auth-page-header h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.auth-page-header p {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.auth-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.auth-form label {
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.auth-form input,
+.auth-form select {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1.5px solid var(--border-glass);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.auth-form input:focus,
+.auth-form select:focus {
+    border-color: var(--accent-teal);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+}
+
+.auth-submit-btn {
+    width: 100%;
+    padding: 11px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    border-radius: 10px;
+    margin-top: 8px;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
+}
+
+.auth-footer-links {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}
+
+.auth-link {
+    color: var(--accent-teal);
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: opacity 0.2s;
+}
+
+.auth-link:hover {
+    opacity: 0.8;
+}
+
+.demo-credentials-box {
+    margin-top: 20px;
+    border-top: 1px dashed var(--border-glass);
+    padding-top: 14px;
+}
+
+.demo-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.demo-chips-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+}
+
+.demo-chip-btn {
+    background: rgba(20, 184, 166, 0.07);
+    border: 1px solid rgba(20, 184, 166, 0.2);
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-size: 0.7rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.demo-chip-btn:hover {
+    background: rgba(20, 184, 166, 0.18);
+    border-color: var(--accent-teal);
+    transform: translateY(-1px);
+}
+
+.demo-chip-btn strong {
+    color: var(--accent-teal);
+    display: block;
+    font-size: 0.72rem;
+}
+
+/* NAVBAR AUTH BUTTONS */
+.auth-buttons-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.login-btn-pill {
+    background: transparent;
+    color: var(--accent-teal);
+    border: 1.5px solid var(--accent-teal);
+    padding: 5px 12px;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.login-btn-pill:hover {
+    background: rgba(20, 184, 166, 0.1);
+    transform: translateY(-1px);
+}
+
+.signup-btn-pill {
+    background: linear-gradient(135deg, var(--accent-teal), #0d9488);
+    color: #ffffff;
+    border: none;
+    padding: 5px 14px;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
+}
+
+.signup-btn-pill:hover {
+    box-shadow: 0 4px 12px rgba(20, 184, 166, 0.45);
+    transform: translateY(-1px);
+}
+
 

@@ -113,6 +113,18 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/login")
+def login_page():
+    """Render the standalone patient and clinician sign-in portal."""
+    return render_template("login.html")
+
+
+@app.route("/signup")
+def signup_page():
+    """Render the standalone patient health card registration portal."""
+    return render_template("signup.html")
+
+
 @app.route("/api/predict/symptoms", methods=["POST"])
 def predict_symptoms():
     """Predict disease based on an explicit array of symptoms and chosen language."""

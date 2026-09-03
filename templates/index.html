@@ -199,20 +199,16 @@
             <button class="nav-item" data-tab="emergency" data-i18n="nav_emergency">Emergency</button>
             <button class="nav-item" data-tab="settings" data-i18n="nav_settings">Settings</button>
             <button class="nav-item" data-tab="about" data-i18n="nav_about">About</button>
+            <button class="nav-item nav-item-highlight" data-tab="login" data-i18n="nav_login">Login</button>
+            <button class="nav-item nav-item-highlight" data-tab="signup" data-i18n="nav_signup">Sign Up</button>
         </nav>
         
         <div class="nav-right">
-            <!-- Language Dropdown -->
-            <select id="language-selector" class="lang-dropdown" title="Select Indian / Regional Language">
+            <!-- Language Dropdown (Strictly English, Hindi, Telugu only) -->
+            <select id="language-selector" class="lang-dropdown" title="Select Indian Language">
                 <option value="en" selected>English</option>
                 <option value="hi">हिन्दी (Hindi)</option>
                 <option value="te">తెలుగు (Telugu)</option>
-                <option value="ta">தமிழ் (Tamil)</option>
-                <option value="bn">বাংলা (Bengali)</option>
-                <option value="or">ଓଡ଼ିଆ (Odia)</option>
-                <option value="ur">اردو (Urdu)</option>
-                <option value="ml">മലയാളം (Malayalam)</option>
-                <option value="ko">한국어 (Korean)</option>
             </select>
 
             <!-- Mindful Pause (थोड़ा आराम करें) Button -->
@@ -225,14 +221,17 @@
                 <span class="pulse-dot-green"></span> <span data-i18n="nav_live">Live Reading</span>
             </button>
             
-            <!-- Auth User Profile Section -->
-            <div class="auth-section" id="auth-section">
-                <button class="btn-auth-pill" id="open-auth-btn" data-i18n="nav_signin">Sign In / Join</button>
-                <div class="user-greeting-pill hidden" id="user-greeting-pill">
-                    <span class="user-avatar-badge">👤</span>
-                    <span class="user-name-text" id="user-display-name">Guest</span>
-                    <button class="btn-logout-pill" id="logout-btn" data-i18n="nav_logout">Logout</button>
-                </div>
+            <!-- Dedicated Login & Signup Action Buttons -->
+            <div class="auth-buttons-bar" id="auth-buttons-bar">
+                <button class="login-btn-pill" id="quick-login-btn" data-tab="login" data-i18n="nav_login">Login</button>
+                <button class="signup-btn-pill" id="quick-signup-btn" data-tab="signup" data-i18n="nav_signup">Sign Up</button>
+            </div>
+
+            <!-- Authenticated User Profile Greeting -->
+            <div class="user-greeting-pill hidden" id="user-greeting-pill">
+                <span class="user-avatar-badge">👤</span>
+                <span class="user-name-text" id="user-display-name">Guest</span>
+                <button class="btn-logout-pill" id="logout-btn" data-i18n="nav_logout">Logout</button>
             </div>
 
             <!-- Guided Tour Launcher Icon Button -->
@@ -858,6 +857,116 @@
                     <div style="margin-top: 20px; border-top: 1px dashed var(--border-glass); padding-top: 15px; font-size: 0.72rem; color: var(--text-muted); line-height: 1.45;">
                         ⚠️ **Clinical Support Disclaimer Notice**:
                         AURA is a diagnostic assistance simulator trained on synthetic data for Smart India Hackathon demonstrations and placements. It does not provide professional medical advice. Always seek professional care for clinical decisions.
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 9: DEDICATED LOGIN PAGE ================= -->
+            <section id="section-login" class="section-view hidden">
+                <div class="auth-page-container">
+                    <div class="auth-page-card">
+                        <div class="auth-page-header">
+                            <div class="auth-icon-badge">🔐</div>
+                            <h2 data-i18n="auth_tab_login">Sign In</h2>
+                            <p data-i18n="login_subtitle">Access your offline medical history, biometrics telemetry, and medication schedule.</p>
+                        </div>
+                        
+                        <form id="page-login-form" class="auth-form">
+                            <div class="form-group">
+                                <label data-i18n="auth_lbl_email">Email / Roll Number</label>
+                                <input type="text" id="page-login-identifier" placeholder="e.g. 241801370052 or email" required autocomplete="username">
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="auth_lbl_password">Password</label>
+                                <input type="password" id="page-login-password" placeholder="Enter password" required autocomplete="current-password">
+                            </div>
+                            <button type="submit" class="btn btn-primary auth-submit-btn" data-i18n="auth_btn_login">Sign In</button>
+                            
+                            <div style="text-align: center; margin: 10px 0; font-size: 0.75rem; color: var(--text-muted);" data-i18n="auth_or">OR</div>
+                            
+                            <button type="button" class="btn btn-secondary" id="page-guest-login-btn" style="width: 100%; padding: 10px; font-size: 0.82rem;" data-i18n="auth_btn_guest">Continue as Guest</button>
+                        </form>
+
+                        <div class="auth-footer-links">
+                            <span data-i18n="auth_no_account">Don't have an account?</span> 
+                            <a class="auth-link" onclick="navigateToTab('signup')" data-i18n="auth_link_signup">Create an Account →</a>
+                        </div>
+
+                        <!-- Hackathon 1-Click Demo Accounts -->
+                        <div class="demo-credentials-box">
+                            <div class="demo-title" data-i18n="demo_accounts_title">⚡ 1-Click Hackathon Demo Profiles</div>
+                            <div class="demo-chips-grid">
+                                <button type="button" class="demo-chip-btn" onclick="quickFillDemo('S. Pallavi', '241801370052', 'demo123')">
+                                    <strong>S. Pallavi</strong>
+                                    <span>Roll: 241801370052</span>
+                                </button>
+                                <button type="button" class="demo-chip-btn" onclick="quickFillDemo('B. Anusha', '241801370055', 'demo123')">
+                                    <strong>B. Anusha</strong>
+                                    <span>Roll: 241801370055</span>
+                                </button>
+                                <button type="button" class="demo-chip-btn" onclick="quickFillDemo('Y. Niharika', '241801370009', 'demo123')">
+                                    <strong>Y. Niharika</strong>
+                                    <span>Roll: 241801370009</span>
+                                </button>
+                                <button type="button" class="demo-chip-btn" onclick="quickFillDemo('G. Parwathi', '241801370061', 'demo123')">
+                                    <strong>G. Parwathi</strong>
+                                    <span>Roll: 241801370061</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 10: DEDICATED SIGN UP PAGE ================= -->
+            <section id="section-signup" class="section-view hidden">
+                <div class="auth-page-container">
+                    <div class="auth-page-card">
+                        <div class="auth-page-header">
+                            <div class="auth-icon-badge">📝</div>
+                            <h2 data-i18n="auth_tab_signup">Create Patient Profile</h2>
+                            <p data-i18n="signup_subtitle">Set up your personal offline digital health profile with clinical baseline records.</p>
+                        </div>
+                        
+                        <form id="page-signup-form" class="auth-form">
+                            <div class="form-group">
+                                <label data-i18n="auth_lbl_name">Full Name</label>
+                                <input type="text" id="page-signup-name" placeholder="e.g. S. Pallavi" required>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label data-i18n="auth_lbl_age">Age</label>
+                                    <input type="number" id="page-signup-age" placeholder="21" min="1" max="120" required>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label data-i18n="auth_lbl_blood">Blood Group</label>
+                                    <select id="page-signup-blood">
+                                        <option value="O+">O+</option>
+                                        <option value="A+">A+</option>
+                                        <option value="B+">B+</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="O-">O-</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB-">AB-</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="auth_lbl_email">Email / Roll Number</label>
+                                <input type="text" id="page-signup-identifier" placeholder="e.g. 241801370052 or email" required>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="auth_lbl_password">Password</label>
+                                <input type="password" id="page-signup-password" placeholder="Create a secure password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary auth-submit-btn" data-i18n="auth_btn_signup">Create Patient Profile</button>
+                        </form>
+
+                        <div class="auth-footer-links">
+                            <span data-i18n="auth_have_account">Already have an account?</span> 
+                            <a class="auth-link" onclick="navigateToTab('login')" data-i18n="auth_link_login">Sign In here →</a>
+                        </div>
                     </div>
                 </div>
             </section>
