@@ -1385,3 +1385,15 @@ document.addEventListener("DOMContentLoaded", () => {
     renderMedications();
     drawVitalsTrendChart();
 });
+
+// Quick prompt chips handler
+window.submitQuickQuery = function(text) {
+    const input = document.getElementById("chat-input");
+    if (input) {
+        input.value = text;
+        const form = document.getElementById("chat-form");
+        if (form) {
+            form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+        }
+    }
+};

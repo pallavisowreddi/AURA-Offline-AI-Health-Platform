@@ -1,4 +1,5 @@
 import os
+import re
 from flask import Flask, request, jsonify, render_template
 import model_helper
 
@@ -67,6 +68,43 @@ INTENT_ANSWERS = {
         "hi": "### 🧠 मानसिक तनाव और कल्याण प्रबंधन\nबीमारी, दबाव या शारीरिक थकान के कारण तनाव या चिंता महसूस होना बहुत आम है। राहत के लिए निम्नलिखित नियमों का पालन करें:\n- **गहरी सांस लें (4-7-8 तकनीक)**: 4 सेकंड के लिए सांस लें, 7 सेकंड के लिए सांस रोकें, और 8 सेकंड तक धीरे-धीरे बाहर छोड़ें। यह तंत्रिका तंत्र को शांत करता है।\n- **शारीरिक गतिविधि**: हल्की सैर करें या योग करें। शारीरिक गतिविधि से एंडोर्फिन निकलता है जो तनाव कम करता है।\n- **पर्याप्त आराम**: रोजाना 7-8 घंटे की गहरी नींद लें। सोने से 30 मिनट पहले मोबाइल/टीवी स्क्रीन बंद कर दें।\n- **बातचीत करें**: अपने दोस्तों, परिवार या किसी विशेषज्ञ से अपनी चिंताओं को साझा करने से मन का बोझ बहुत कम हो जाता है।",
         "te": "### 🧠 ఒత్తిడి నివారణ & మానసిక ఆరోగ్యం\nఅనారోగ్యం, ఒత్తిడి లేదా అలసట వల్ల ఆందోళన చెందడం సహజం. దీని నివారణకు ఈ చిట్కాలు పాటించండి:\n- **శ్వాస వ్యాయామం (4-7-8 పద్ధతి)**: 4 సెకన్లు శ్వాస తీసుకోండి, 7 సెకన్లు శ్వాసను ఆపి ఉంచండి, 8 సెకన్ల పాటు నెమ్మదిగా వదలండి. ఇది మనస్సుకు ప్రశాంతతను ఇస్తుంది.\n- **శారీరక శ్రమ**: రోజువారీ వ్యాయామం లేదా యోగా చేయండి. శారీరక శ్రమ వల్ల హ్యాపీ హార్మోన్లు విడుదలవుతాయి.\n- **సరైన నిద్ర**: రోజుకు కనీసం 7-8 గంటలు నిద్రపోండి. నిద్రపోయే ముందు మొబైల్ ఫోన్లు వాడకండి.\n- **భావాలను పంచుకోండి**: మీ మనసులోని మాటలను కుటుంబ సభ్యులతో లేదా స్నేహితులతో పంచుకోవడం వల్ల ఒత్తిడి తగ్గుతుంది."
     }
+}
+
+DISEASE_ALIASES = {
+    "Diabetes": ["diabetes", "sugar", "मधुमेह", "డయాబెటిస్", "షుగర్"],
+    "Hypertension": ["hypertension", "high bp", "blood pressure", "bp", "उच्च रक्तचाप", "రక్తపోటు", "బీపీ"],
+    "Asthma": ["asthma", "bronchial asthma", "wheezing", "दमा", "అస్తమా", "ఉబ్బసం"],
+    "Arthritis": ["arthritis", "joint inflammation", "गठिया", "కీళ్లవాతం", "ఆర్థరైటిస్"],
+    "Cancer (Early Warning)": ["cancer", "tumor", "malignancy", "कैंसर", "క్యాన్సర్"],
+    "Obesity": ["obesity", "overweight", "excess fat", "मोटापा", "స్థూలకాయం", "ఊబకాయం"],
+    "Dengue Fever": ["dengue", "dengue fever", "डेंगू", "డెంగ్యూ"],
+    "Malaria": ["malaria", "मलेरिया", "మలేరియా"],
+    "Typhoid Fever": ["typhoid", "enteric fever", "टाइफाइड", "టైఫాయిడ్"],
+    "Tuberculosis": ["tuberculosis", "tb", "टीबी", "तपेदिक", "క్షయ", "టిబి"],
+    "Pneumonia": ["pneumonia", "निमोनिया", "న్యుమోనియా"],
+    "COVID-19": ["covid", "covid-19", "coronavirus", "कोविड", "కోవిడ్"],
+    "Influenza": ["influenza", "flu", "फ्लू", "ఫ్లూ"],
+    "Common Cold": ["common cold", "cold", "जुकाम", "सर्दी", "జలుబు"],
+    "Chickenpox": ["chickenpox", "varicella", "चेचक", "छोटी माता", "ఆటలమ్మ", "మశూచి"],
+    "Gastroenteritis": ["gastroenteritis", "stomach flu", "food poison", "पेट संक्रमण"],
+    "Cholera": ["cholera", "हैजा", "కలరా"],
+    "Hepatitis": ["hepatitis", "hep", "हेपेटाइटिस", "హెపటైటిస్"],
+    "Jaundice": ["jaundice", "पीलिया", "కామెర్లు"],
+    "Coronary Artery Disease": ["coronary", "heart attack", "heart disease", "angina", "हार्ट अटैक", "हृदय रोग", "గుండెపోటు", "గుండె జబ్బు"],
+    "Stroke (TIA Warning)": ["stroke", "paralysis", "tia", "स्ट्रोक", "लकवा", "పక్షవాతం"],
+    "Chronic Kidney Disease": ["kidney disease", "renal", "ckd", "kidney failure", "गुर्दे की बीमारी", "కిడ్నీ వ్యాధి"],
+    "Anemia": ["anemia", "anaemia", "low hemoglobin", "खून की कमी", "రక్తహీనత"],
+    "Hypothyroidism": ["hypothyroidism", "thyroid", "थायराइड", "థైరాయిడ్"],
+    "Hyperthyroidism": ["hyperthyroidism", "overactive thyroid"],
+    "Migraine": ["migraine", "माइग्रेन", "आधासीसी", "పార్శ్వపు తలనొప్పి"],
+    "GERD (Acid Reflux)": ["gerd", "acid reflux", "heartburn", "acidity", "एसिडिटी", "గ్యాస్ట్రిక్", "ఎసిడిటీ"],
+    "Peptic Ulcer": ["peptic ulcer", "stomach ulcer", "gastric ulcer", "पेट का अल्सर", "కడుపులో పుండు"],
+    "Urinary Tract Infection": ["urinary tract infection", "uti", "urine infection", "यूटीआई", "మూత్ర ఇన్ఫెక్షన్"],
+    "Allergic Rhinitis": ["allergic rhinitis", "hay fever", "rhinitis", "एलर्जी"],
+    "Food Allergy": ["food allergy", "खाद्य एलर्जी", "ఆహార అలర్జీ"],
+    "Eczema": ["eczema", "atopic dermatitis", "एक्जिमा", "ఎగ్జిమా"],
+    "Psoriasis": ["psoriasis", "सोरायसिस", "సోరియాసిస్"],
+    "Acne Vulgaris": ["acne", "pimples", "मुंहासे", "మొటిమలు"]
 }
 
 @app.route("/")
@@ -259,28 +297,40 @@ def chat():
             response_data["response"] = response_text
             return jsonify(response_data)
             
-    # Step 3: Handle general educational questions (disease glossary)
-    message_lower = message.lower()
-    
-    # Check if asking about specific diseases
-    for disease_name, info_by_lang in model_helper.DISEASE_INFO.items():
-        if disease_name.lower() in message_lower:
-            info = info_by_lang.get(lang, info_by_lang["en"])
-            symptoms_keys = model_helper.disease_symptoms[disease_name]
-            # Get symptom translations
-            display_symptom_names = []
-            for skey in symptoms_keys:
-                vocab_terms = model_helper.SYMPTOM_VOCAB.get(lang, {}).get(skey, [skey])
-                display_symptom_names.append(vocab_terms[0].title())
-                
-            response_data["response"] = (
-                f"### **{info['prediction']}**\\n\\n"
-                f"**What is it?** {info['description']}\\n\\n"
-                f"**Key Symptoms:** {', '.join(display_symptom_names)}\\n\\n"
-                f"**Management Advice:** {info['advice']}\\n\\n"
-                f"**General Urgency Class:** {info['urgency']}"
-            )
-            return jsonify(response_data)
+    # Step 3: Handle direct disease inquiries (comprehensive 34-disease medical glossary)
+    matched_disease = None
+    for disease_name, aliases in DISEASE_ALIASES.items():
+        if any(re.search(r'\b' + re.escape(alias) + r'\b', message_lower) or alias in message_lower for alias in aliases):
+            matched_disease = disease_name
+            break
+            
+    if not matched_disease:
+        for disease_name in model_helper.DISEASE_INFO.keys():
+            if disease_name.lower() in message_lower:
+                matched_disease = disease_name
+                break
+
+    if matched_disease:
+        info = model_helper.DISEASE_INFO.get(matched_disease, {}).get(lang, model_helper.DISEASE_INFO.get(matched_disease, {}).get("en", {}))
+        symptoms_keys = model_helper.disease_symptoms.get(matched_disease, [])
+        display_symptom_names = []
+        for skey in symptoms_keys:
+            vocab_terms = model_helper.SYMPTOM_VOCAB.get(lang, {}).get(skey, [skey])
+            display_symptom_names.append(vocab_terms[0].title())
+            
+        sym_header = {"en": "Key Clinical Symptoms", "hi": "मुख्य लक्षण", "te": "ముఖ్య లక్షణాలు"}
+        adv_header = {"en": "Management and Clinical Advice", "hi": "प्रबंधन और चिकित्सकीय सलाह", "te": "నిర్వహణ మరియు వైద్య సలహా"}
+        urg_header = {"en": "Urgency Classification", "hi": "तात्कालिकता स्तर", "te": "అవసర స్థాయి"}
+        
+        response_data["response"] = (
+            f"### 🩺 **{info.get('prediction', matched_disease)}**\n\n"
+            f"**Overview:** {info.get('description', '')}\n\n"
+            f"**{sym_header.get(lang, sym_header['en'])}:** {', '.join(display_symptom_names)}\n\n"
+            f"**{adv_header.get(lang, adv_header['en'])}:**\n{info.get('advice', '')}\n\n"
+            f"**{urg_header.get(lang, urg_header['en'])}:** {info.get('urgency', 'Medium')}\n\n"
+            f"---\n*AURA Offline Health Intelligence System*"
+        )
+        return jsonify(response_data)
             
     # Step 4: Handle specific rule-based INTENT matching (Diet, Prevention, Muscle Pain, Clinics, Wellness)
     # Prevention check
