@@ -1,3 +1,498 @@
+
+// ============================================================================
+// AURA CLIENT-SIDE MULTILINGUAL TRANSLATION DICTIONARY
+// ============================================================================
+const UI_TRANSLATIONS = {
+    en: {
+        nav_brand: "AURA Platform",
+        badge_offline: "Local Offline",
+        nav_home: "Home",
+        nav_prediction: "Disease Prediction",
+        nav_reports: "Medical Reports",
+        nav_reminders: "Medicine Reminder",
+        nav_dashboard: "Health Dashboard",
+        nav_emergency: "Emergency",
+        nav_settings: "Settings",
+        nav_about: "About",
+        nav_relax: "Take a Pause",
+        nav_live: "Live Reading",
+        nav_signin: "Sign In / Join",
+        nav_logout: "Logout",
+        hero_eyebrow: "Local Intelligent Diagnostics",
+        hero_title: "Your Personal Offline Clinical Assistant",
+        hero_desc: "Fully offline, 34-disease multilingual clinical intelligence and predictive biometrics. Safeguard your family with reliable information.",
+        hero_btn_check: "Start Symptom Check",
+        hero_btn_dash: "View Dashboard",
+        feat_symptoms_title: "Symptom Checker",
+        feat_symptoms_desc: "Talk to our offline chatbot to diagnose 34 common conditions, chronic diseases, and epidemic symptoms.",
+        feat_scanner_title: "Visual Skin Scanner",
+        feat_scanner_desc: "Analyze skin lesions, rashes, eczema, or acne using local color and texture model scanning.",
+        feat_reminders_title: "Medicine Reminders",
+        feat_reminders_desc: "Schedule daily medications, set dosage times, and receive offline browser sound alerts.",
+        feat_dashboard_title: "Clinical Telemetry",
+        feat_dashboard_desc: "Accurate Blood Pressure percentages, live ECG waveforms, Heart Rate, and overall health scores.",
+        qs_patient_status: "Patient Status",
+        qs_vitals_healthy: "Vitals Healthy",
+        qs_upcoming_pill: "Upcoming Pill",
+        qs_no_meds: "No meds scheduled",
+        qs_health_tip_lbl: "Daily Health Tip",
+        qs_health_tip_val: "Stay hydrated and monitor body temperature.",
+        aware_eyebrow: "Public Health Education",
+        aware_title: "Recognize, Prevent & Protect",
+        aware_desc: "Essential offline awareness guides for key lifestyle, metabolic, and infectious diseases.",
+        card_dia_title: "Diabetes Mellitus",
+        card_dia_desc: "Monitor high thirst & frequent urination. Maintain low-glycemic fiber diet and exercise daily.",
+        card_hyp_title: "Hypertension",
+        card_hyp_desc: "Watch out for morning headaches and dizziness. Limit sodium intake below 2,000 mg/day.",
+        card_ast_title: "Asthma & Airway Care",
+        card_ast_desc: "Recognize wheezing and chest tightness early. Keep emergency bronchodilators accessible.",
+        card_den_title: "Dengue & Fevers",
+        card_den_desc: "Sudden high fever, joint retro-orbital pain, and rash. Stay heavily hydrated with ORS fluids.",
+        btn_learn_more: "Learn More →",
+        diag_sys_integrity: "System Integrity",
+        diag_net_conn: "Network Connection",
+        diag_net_disc: "Disconnected (No WiFi)",
+        diag_ml_engine: "ML Prediction Engine",
+        diag_ml_active: "Operational (Local)",
+        diag_pred_title: "Predictive Diagnostics",
+        diag_describe_hint: "Describe symptoms to check diagnostic metrics.",
+        diag_conf_lbl: "Confidence",
+        diag_diff_title: "Differential Diagnostics",
+        xai_header_title: "💡 Explainable AI (XAI)",
+        rep_title: "Visual Skin Diagnostic Analyzer",
+        rep_desc: "Scan skin symptoms locally. Our edge feature-extraction analyzer checks color histograms, saturation ratios, and surface roughness variables to predict conditions offline.",
+        rep_drag_drop: "Drag & Drop Skin Sample Image",
+        rep_formats_hint: "supports JPEG, PNG formats (Max 8MB)",
+        btn_browse_photos: "Browse Local Photos",
+        rep_samples_title: "Interactive Sample Images",
+        rep_samples_hint: "Click a mock-lesion to verify vision classification model outputs:",
+        rep_sample_healthy: "Healthy Skin",
+        rep_sample_rash: "Skin Rash",
+        rep_sample_acne: "Acne",
+        rep_sample_eczema: "Eczema",
+        rep_reader_title: "Offline Report Reader",
+        rep_reader_hint: "Log diagnostic lab reports (.txt, .json formats) to check clinical reference anomalies.",
+        rep_upload_hint: "Upload textual lab values",
+        btn_select_report: "Select Report File",
+        rem_add_title: "Add New Medication",
+        rem_med_name: "Medicine Name",
+        rem_dosage: "Dosage",
+        rem_time: "Reminder Time",
+        rem_freq: "Frequency",
+        rem_opt_daily: "Daily",
+        rem_opt_weekly: "Weekly",
+        rem_opt_monthly: "Monthly",
+        btn_add_schedule: "Add Schedule",
+        rem_active_title: "Active Schedule",
+        rem_no_meds: "No medications scheduled yet.",
+        dash_health_score_title: "Overall Health Score",
+        dash_score_opt: "Clinical safety metrics calculated in optimal range.",
+        dash_log_vitals_title: "Log Biometrics & BP",
+        dash_sim_live: "🔴 Simulate Live",
+        lbl_sys_bp: "Systolic BP (mmHg)",
+        lbl_dia_bp: "Diastolic BP (mmHg)",
+        lbl_heart_rate: "Heart Rate (BPM)",
+        lbl_spo2: "Oxygen SpO₂ (%)",
+        lbl_body_temp: "Body Temperature (°F)",
+        btn_calc_vitals: "Calculate Biometrics & Save",
+        vitals_status_norm: "Cardiovascular metrics normal & stable.",
+        dash_bp_title: "Blood Pressure Status",
+        dash_hr_title: "Heart Rate",
+        dash_spo2_title: "Oxygen Saturation (SpO₂)",
+        dash_trend_title: "Continuous Biometric Trend",
+        sos_title: "🚨 SOS Clinical Warnings",
+        sos_desc: "If you display severe symptoms like difficulty breathing, chest pain, or oxygen levels below 94%, please activate emergency services immediately.",
+        sos_directives_title: "📋 Critical Emergency Directives:",
+        sos_dir_1: "Sit upright to assist lungs and respiration.",
+        sos_dir_2: "Minimize movement and avoid physical exertion.",
+        sos_dir_3: "Keep emergency phone contacts accessible.",
+        sos_dir_4: "Ventilate rooms and turn on fans.",
+        btn_trigger_sos: "🚨 Trigger SOS Warning",
+        sos_contacts_title: "Simulated Rescue Contacts",
+        sos_contacts_desc: "Fictional local clinical stations and community response teams (Simulated Offline Directory):",
+        sos_contact_1: "Aura Community Clinic Emergency",
+        sos_contact_2: "District Trauma Hospital",
+        sos_contact_3: "Outbreak Alert Hotline",
+        set_custom_title: "UI & Feature Customizations",
+        set_dark_mode: "Dark Theme Mode",
+        set_dark_mode_desc: "Override the interface color palette",
+        set_voice_tts: "Voice TTS Feedback",
+        set_voice_desc: "Read results and predictions aloud",
+        set_avatar: "AI Assistant Widget",
+        set_avatar_desc: "Display floating doctor overlay",
+        set_access_title: "Accessibility Preferences",
+        about_title: "About AURA Platform",
+        about_desc: "AURA is trained locally on synthetic parameters matching typical public health infections and skin conditions. Since it works 100% offline, it represents a lightweight, portable clinical support system ideal for remote villages, military posts, and offline disaster response sectors.",
+        about_arch_title: "Offline Architecture Summary",
+        auth_tab_login: "Sign In",
+        auth_tab_signup: "Create Account",
+        auth_lbl_email: "Email / Roll Number",
+        auth_lbl_password: "Password",
+        auth_btn_login: "Sign In",
+        auth_or: "OR",
+        auth_btn_guest: "Continue as Guest",
+        auth_lbl_name: "Full Name",
+        auth_lbl_age: "Age",
+        auth_lbl_blood: "Blood Group",
+        auth_btn_signup: "Create Patient Profile",
+        mindful_badge: "MINDFUL RELAXATION",
+        mindful_title: "Take a Mindful Pause",
+        mindful_subtitle: "Follow the 4-7-8 breathing circle to calm your heart rate and ease nervous tension.",
+        breathe_ready: "Ready",
+        breathe_inhale: "Inhale",
+        breathe_hold: "Hold",
+        breathe_exhale: "Exhale",
+        breathe_start_btn: "Start 4-7-8 Breathing",
+        breathe_stop_btn: "Stop",
+        tour_skip: "Skip Tour",
+        tour_prev: "Previous",
+        tour_next: "Next Step →"
+    },
+    hi: {
+        nav_brand: "ऑरा प्लेटफॉर्म (AURA)",
+        badge_offline: "ऑफ़लाइन मोड",
+        nav_home: "होम",
+        nav_prediction: "बीमारी पहचान (AI)",
+        nav_reports: "त्वचा जांच स्कैनर",
+        nav_reminders: "दवा रिमाइंडर",
+        nav_dashboard: "स्वास्थ्य डैशबोर्ड",
+        nav_emergency: "आपातकालीन (SOS)",
+        nav_settings: "सेटिंग्स",
+        nav_about: "हमारे बारे में",
+        nav_relax: "थोड़ा आराम करें",
+        nav_live: "लाइव रीडिंग",
+        nav_signin: "लॉगिन / साइन अप",
+        nav_logout: "लॉग आउट",
+        hero_eyebrow: "स्थानीय कृत्रिम बुद्धिमत्ता निदान",
+        hero_title: "आपका व्यक्तिगत ऑफ़लाइन स्वास्थ्य सहायक",
+        hero_desc: "पूरी तरह से ऑफ़लाइन, 34 बीमारियों का बहुभाषी चिकित्सकीय ज्ञान और बायोमेट्रिक विश्लेषण। अपने परिवार को सुरक्षित रखें।",
+        hero_btn_check: "लक्षण जांच शुरू करें",
+        hero_btn_dash: "डैशबोर्ड देखें",
+        feat_symptoms_title: "लक्षण जांचकर्ता (Chat)",
+        feat_symptoms_desc: "34 सामान्य और पुरानी बीमारियों के लक्षणों के निदान के लिए हमारे ऑफ़लाइन AI चैटबॉट से बात करें।",
+        feat_scanner_title: "त्वचा रोग स्कैनर",
+        feat_scanner_desc: "रंग और बनावट मॉडल का उपयोग करके त्वचा के दाने, एक्जिमा या मुंहासों का ऑफ़लाइन विश्लेषण करें।",
+        feat_reminders_title: "दवा रिमाइंडर",
+        feat_reminders_desc: "दवाओं का समय निर्धारित करें, खुराक दर्ज करें और ऑफ़लाइन ध्वनि चेतावनी प्राप्त करें।",
+        feat_dashboard_title: "नैदानिक टेलीमेट्री",
+        feat_dashboard_desc: "सटीक रक्तचाप (BP) प्रतिशत, लाइव ईसीजी तरंग, हृदय गति (HR) और समग्र स्वास्थ्य स्कोर।",
+        qs_patient_status: "रोगी स्थिति",
+        qs_vitals_healthy: "वाइटल्स सामान्य व स्वस्थ",
+        qs_upcoming_pill: "अगली दवा",
+        qs_no_meds: "कोई दवा निर्धारित नहीं",
+        qs_health_tip_lbl: "दैनिक स्वास्थ्य टिप",
+        qs_health_tip_val: "पर्याप्त पानी पिएं और शरीर का तापमान मापते रहें।",
+        aware_eyebrow: "सार्वजनिक स्वास्थ्य जागरूकता",
+        aware_title: "जानें, पहचानें और बचें",
+        aware_desc: "प्रमुख जीवनशैली, चयापचय और संक्रामक रोगों के लिए आवश्यक ऑफ़लाइन जागरूकता गाइड।",
+        card_dia_title: "मधुमेह (शुगर)",
+        card_dia_desc: "अधिक प्यास और बार-बार पेशाब आने पर ध्यान दें। फाइबर युक्त भोजन करें और रोज व्यायाम करें।",
+        card_hyp_title: "उच्च रक्तचाप (High BP)",
+        card_hyp_desc: "सुबह के सिरदर्द और चक्कर आने पर नजर रखें। भोजन में नमक की मात्रा 2,000 मि.ग्रा. से कम रखें।",
+        card_ast_title: "दमा और श्वास देखभाल",
+        card_ast_desc: "घरघराहट और सीने की जकड़न को पहचानें। आपातकालीन इनहेलर हमेशा पास में रखें।",
+        card_den_title: "डेंगू और मौसमी बुखार",
+        card_den_desc: "अचानक तेज बुखार, जोड़ों में दर्द और चकत्ते। ओआरएस (ORS) घोल और नारियल पानी से खुद को हाइड्रेटेड रखें।",
+        btn_learn_more: "और जानें →",
+        diag_sys_integrity: "सिस्टम अखंडता",
+        diag_net_conn: "इंटरनेट कनेक्शन",
+        diag_net_disc: "डिस्कनेक्टेड (कोई वाईफाई नहीं)",
+        diag_ml_engine: "एमएल प्रेडिक्शन इंजन",
+        diag_ml_active: "सक्रिय (स्थानीय डिवाइस)",
+        diag_pred_title: "पूर्वानुमान निदान",
+        diag_describe_hint: "डायग्नोस्टिक मेट्रिक्स देखने के लिए लक्षणों का वर्णन करें।",
+        diag_conf_lbl: "सटीकता / विश्वास",
+        diag_diff_title: "विभेदक निदान (संभावनाएं)",
+        xai_header_title: "💡 व्याख्या योग्य एआई (XAI)",
+        rep_title: "दृश्य त्वचा निदान विश्लेषक",
+        rep_desc: "स्थानीय रूप से त्वचा के लक्षणों को स्कैन करें। हमारा मॉडल ऑफलाइन रंग और बनावट का विश्लेषण करता है।",
+        rep_drag_drop: "त्वचा की फोटो यहां खींचकर छोड़ें",
+        rep_formats_hint: "JPEG, PNG प्रारूप समर्थित (अधिकतम 8MB)",
+        btn_browse_photos: "गैलरी से फोटो चुनें",
+        rep_samples_title: "इंटरएक्टिव नमूना छवियां",
+        rep_samples_hint: "मॉडल की सटीकता जांचने के लिए किसी नमूने पर क्लिक करें:",
+        rep_sample_healthy: "स्वस्थ त्वचा",
+        rep_sample_rash: "त्वचा पर दाने",
+        rep_sample_acne: "मुंहासे (Acne)",
+        rep_sample_eczema: "एक्जिमा (Eczema)",
+        rep_reader_title: "ऑफलाइन रिपोर्ट रीडर",
+        rep_reader_hint: "नैदानिक विसंगतियों की जांच के लिए लैब रिपोर्ट फाइल (.txt, .json) अपलोड करें।",
+        rep_upload_hint: "टेक्स्ट लैब रिपोर्ट अपलोड करें",
+        btn_select_report: "रिपोर्ट फाइल चुनें",
+        rem_add_title: "नई दवा जोड़ें",
+        rem_med_name: "दवा का नाम",
+        rem_dosage: "खुराक (Dosage)",
+        rem_time: "रिमाइंडर समय",
+        rem_freq: "आवृत्ति (Frequency)",
+        rem_opt_daily: "प्रतिदिन",
+        rem_opt_weekly: "साप्ताहिक",
+        rem_opt_monthly: "मासिक",
+        btn_add_schedule: "शेड्यूल जोड़ें",
+        rem_active_title: "सक्रिय शेड्यूल",
+        rem_no_meds: "अभी तक कोई दवा निर्धारित नहीं की गई है।",
+        dash_health_score_title: "समग्र स्वास्थ्य स्कोर",
+        dash_score_opt: "नैदानिक सुरक्षा मेट्रिक्स सामान्य सीमा में गणना की गई।",
+        dash_log_vitals_title: "बायोमेट्रिक्स और बीपी दर्ज करें",
+        dash_sim_live: "🔴 लाइव सिम्युलेटर",
+        lbl_sys_bp: "सिस्टोलिक बीपी (ऊपर वाला)",
+        lbl_dia_bp: "डायस्टोलिक बीपी (नीचे वाला)",
+        lbl_heart_rate: "हृदय गति (BPM)",
+        lbl_spo2: "ऑक्सीजन SpO₂ (%)",
+        lbl_body_temp: "शरीर का तापमान (°F)",
+        btn_calc_vitals: "गणना करें और सुरक्षित करें",
+        vitals_status_norm: "हृदय और बायोमेट्रिक मेट्रिक्स सामान्य व स्थिर हैं।",
+        dash_bp_title: "रक्तचाप (BP) स्थिति",
+        dash_hr_title: "हृदय गति (Heart Rate)",
+        dash_spo2_title: "ऑक्सीजन संतृप्ति (SpO₂)",
+        dash_trend_title: "निरंतर बायोमेट्रिक ट्रेंड",
+        sos_title: "🚨 आपातकालीन एसओएस चेतावनी",
+        sos_desc: "यदि आपको सांस लेने में कठिनाई, सीने में दर्द या 94% से कम ऑक्सीजन जैसे गंभीर लक्षण दिखें, तो तुरंत आपातकालीन सेवाओं से संपर्क करें।",
+        sos_directives_title: "📋 महत्वपूर्ण आपातकालीन निर्देश:",
+        sos_dir_1: "फेफड़ों और श्वसन में सहायता के लिए सीधे बैठें।",
+        sos_dir_2: "शारीरिक हलचल कम करें और आराम करें।",
+        sos_dir_3: "आपातकालीन फोन नंबर पास में रखें।",
+        sos_dir_4: "कमरे में ताजी हवा आने दें और पंखा चालू करें।",
+        btn_trigger_sos: "🚨 एसओएस अलार्म बजाएं",
+        sos_contacts_title: "सिम्युलेटेड आपातकालीन संपर्क",
+        sos_contacts_desc: "काल्पनिक स्थानीय स्वास्थ्य केंद्र और सामुदायिक टीमें (ऑफलाइन डायरेक्टरी):",
+        sos_contact_1: "ऑरा सामुदायिक क्लिनिक आपातकालीन",
+        sos_contact_2: "जिला ट्रॉमा अस्पताल",
+        sos_contact_3: "महामारी अलर्ट हेल्पलाइन",
+        set_custom_title: "इंटरफ़ेस और सुविधा कस्टमाइज़ेशन",
+        set_dark_mode: "डार्क थीम मोड",
+        set_dark_mode_desc: "इंटरफ़ेस का रंग पैलेट बदलें",
+        set_voice_tts: "वॉयस टीटीएस प्रतिक्रिया",
+        set_voice_desc: "परिणाम और भविष्यवाणियों को जोर से सुनें",
+        set_avatar: "एआई सहायक विजेट",
+        set_avatar_desc: "स्क्रीन पर फ्लोटिंग डॉक्टर अवतार दिखाएं",
+        set_access_title: "अभिगम्यता प्राथमिकताएं",
+        about_title: "ऑरा (AURA) प्लेटफॉर्म के बारे में",
+        about_desc: "AURA को स्थानीय रूप से सामान्य सार्वजनिक स्वास्थ्य संक्रमणों और त्वचा रोगों पर प्रशिक्षित किया गया है। चूंकि यह 100% ऑफ़लाइन काम करता है, यह दूरदराज के गांवों और आपदा क्षेत्रों के लिए एक आदर्श नैदानिक प्रणाली है।",
+        about_arch_title: "ऑफ़लाइन आर्किटेक्चर सारांश",
+        auth_tab_login: "साइन इन",
+        auth_tab_signup: "नया खाता बनाएं",
+        auth_lbl_email: "ईमेल / रोल नंबर",
+        auth_lbl_password: "पासवर्ड",
+        auth_btn_login: "लॉगिन करें",
+        auth_or: "या",
+        auth_btn_guest: "अतिथि (Guest) के रूप में जारी रखें",
+        auth_lbl_name: "पूरा नाम",
+        auth_lbl_age: "उम्र",
+        auth_lbl_blood: "ब्लड ग्रुप",
+        auth_btn_signup: "रोगी प्रोफाइल बनाएं",
+        mindful_badge: "मानसिक शांति और विश्राम",
+        mindful_title: "थोड़ा आराम करें (4-7-8)",
+        mindful_subtitle: "अपनी हृदय गति को शांत करने और तनाव दूर करने के लिए 4-7-8 श्वास चक्र का पालन करें।",
+        breathe_ready: "तैयार",
+        breathe_inhale: "सांस अंदर लें",
+        breathe_hold: "सांस रोकें",
+        breathe_exhale: "सांस बाहर छोड़ें",
+        breathe_start_btn: "4-7-8 प्राणायाम शुरू करें",
+        breathe_stop_btn: "रोकें",
+        tour_skip: "टूर छोड़ें",
+        tour_prev: "पिछला",
+        tour_next: "अगला कदम →"
+    },
+    te: {
+        nav_brand: "AURA ప్లాట్‌ఫామ్",
+        badge_offline: "ఆఫ్‌లైన్ మోడ్",
+        nav_home: "హోమ్",
+        nav_prediction: "వ్యాధి నిర్ధారణ (AI)",
+        nav_reports: "చర్మ పరీక్ష స్కానర్",
+        nav_reminders: "మందుల రిమైండర్",
+        nav_dashboard: "ఆరోగ్య డ్యాష్‌బోర్డ్",
+        nav_emergency: "అత్యవసరం (SOS)",
+        nav_settings: "సెట్టింగ్‌లు",
+        nav_about: "మా గురించి",
+        nav_relax: "కాసేపు విశ్రాంతి తీసుకోండి",
+        nav_live: "లైవ్ రీడింగ్",
+        nav_signin: "లాగిన్ / సైన్ అప్",
+        nav_logout: "లాగ్ అవుట్",
+        hero_eyebrow: "స్థానిక కృత్రిమ మేధస్సు నిర్ధారణ",
+        hero_title: "మీ వ్యక్తిగత ఆఫ్‌లైన్ క్లినికల్ సహాయకుడు",
+        hero_desc: "పూర్తిగా ఆఫ్‌లైన్, 34 వ్యాధుల బహుభాషా క్లినికల్ పరిజ్ఞానం మరియు బయోమెట్రిక్స్. మీ కుటుంబాన్ని సురక్షితంగా ఉంచండి.",
+        hero_btn_check: "లక్షణాల పరీక్ష ప్రారంభించండి",
+        hero_btn_dash: "డ్యాష్‌బోర్డ్ చూడండి",
+        feat_symptoms_title: "లక్షణాల తనిఖీదారు",
+        feat_symptoms_desc: "34 సాధారణ మరియు దీర్ఘకాలిక వ్యాధుల లక్షణాల నిర్ధారణ కోసం మా ఆఫ్‌లైన్ AI చాట్‌బాట్‌తో మాట్లాడండి.",
+        feat_scanner_title: "చర్మ వ్యాధి స్కానర్",
+        feat_scanner_desc: "రంగ్ మరియు ఆకృతి మోడళ్లను ఉపయోగించి చర్మంపై దద్దుర్లు, తామర లేదా మొటిమలను ఆఫ్‌లైన్‌లో విశ్లేషించండి.",
+        feat_reminders_title: "మందుల రిమైండర్లు",
+        feat_reminders_desc: "రోజువారీ మందుల సమయాలను సెట్ చేయండి, మోతాదును నమోదు చేయండి మరియు సౌండ్ అలర్ట్‌లను పొందండి.",
+        feat_dashboard_title: "క్లినికల్ టెలిమెట్రీ",
+        feat_dashboard_desc: "ఖచ్చితమైన రక్తపోటు (BP) శాతాలు, ప్రత్యక్ష ECG తరంగం, గుండె వేగం (HR) మరియు మొత్తం ఆరోగ్య స్కోరు.",
+        qs_patient_status: "రోగి స్థితి",
+        qs_vitals_healthy: "వైటల్స్ సాధారణం & ఆరోగ్యకరం",
+        qs_upcoming_pill: "రాబోయే మందు",
+        qs_no_meds: "ఎలాంటి మందులు షెడ్యూల్ చేయలేదు",
+        qs_health_tip_lbl: "రోజువారీ ఆరోగ్య చిట్కా",
+        qs_health_tip_val: "పుష్కలంగా నీరు త్రాగండి మరియు శరీర ఉష్ణోగ్రతను క్రమం తప్పకుండా పర్యవేక్షించండి.",
+        aware_eyebrow: "ప్రజా ఆరోగ్య అవగాహన",
+        aware_title: "తెలుసుకోండి, గుర్తించండి మరియు రక్షించుకోండి",
+        aware_desc: "ముఖ్యమైన జీవనశైలి, జీవక్రియ మరియు అంటువ్యాధుల కోసం అవసరమైన ఆఫ్‌లైన్ అవగాహన గైడ్లు.",
+        card_dia_title: "మధుమేహం (షుగర్)",
+        card_dia_desc: "అధిక దాహం & తరచుగా మూత్రవిసర్జనపై శ్రద్ధ వహించండి. ఫైబర్ ఆహారం తీసుకోండి మరియు రోజూ వ్యాయామం చేయండి.",
+        card_hyp_title: "అధిక రక్తపోటు (High BP)",
+        card_hyp_desc: "ఉదయం తలనొప్పి మరియు తలతిరగడం గమనించండి. రోజుకు ఉప్పు వాడకం 2,000 మి.గ్రా కంటే తక్కువగా ఉంచండి.",
+        card_ast_title: "ఆస్తమా & శ్వాస సంరక్షణ",
+        card_ast_desc: "రొప్పు మరియు ఛాతీ బిగుతును ముందుగానే గుర్తించండి. అత్యవసర ఇన్హేలర్లను ఎల్లప్పుడూ అందుబాటులో ఉంచండి.",
+        card_den_title: "డెంగ్యూ & విష జ్వరాలు",
+        card_den_desc: "హఠాత్తుగా తీవ్ర జ్వరం, కీళ్ల నొప్పులు మరియు దద్దుర్లు. ఓఆర్ఎస్ (ORS) ద్రవాలతో శరీరాన్ని డీహైడ్రేట్ కాకుండా చూసుకోండి.",
+        btn_learn_more: "మరింత తెలుసుకోండి →",
+        diag_sys_integrity: "సిస్టమ్ సమగ్రత",
+        diag_net_conn: "నెట్‌వర్క్ కనెక్షన్",
+        diag_net_disc: "డిస్‌కనెక్ట్ అయింది (వైఫై లేదు)",
+        diag_ml_engine: "ML ప్రిడిక్షన్ ఇంజిన్",
+        diag_ml_active: "కార్యాచరణలో ఉంది (స్థానిక పరికరం)",
+        diag_pred_title: "రోగనిర్ధారణ అంచనా",
+        diag_describe_hint: "డయాగ్నస్టిక్ కొలమానాలను చూడటానికి మీ లక్షణాలను వివరించండి.",
+        diag_conf_lbl: "ఖచ్చితత్వం / విశ్వసనీయత",
+        diag_diff_title: "డిఫరెన్షియల్ డయాగ్నస్టిక్స్",
+        xai_header_title: "💡 వివరణాత్మక AI (XAI)",
+        rep_title: "విజువల్ స్కిన్ డయాగ్నస్టిక్ ఎనలైజర్",
+        rep_desc: "స్థానికంగా చర్మ లక్షణాలను స్కాన్ చేయండి. మా ఎడ్జ్ మోడల్ రంగు మరియు ఆకృతిని ఆఫ్‌లైన్‌లో విశ్లేషిస్తుంది.",
+        rep_drag_drop: "చర్మ నమూనా చిత్రాన్ని ఇక్కడ లాగండి",
+        rep_formats_hint: "JPEG, PNG ఫార్మాట్‌లు (గరిష్టంగా 8MB)",
+        btn_browse_photos: "ఫోటోలను ఎంచుకోండి",
+        rep_samples_title: "నమూనా చిత్రాలు",
+        rep_samples_hint: "మోడల్ ఖచ్చితత్వాన్ని పరీక్షించడానికి ఏదైనా నమూనాపై క్లిక్ చేయండి:",
+        rep_sample_healthy: "ఆరోగ్యకరమైన చర్మం",
+        rep_sample_rash: "చర్మంపై దద్దుర్లు",
+        rep_sample_acne: "మొటిమలు",
+        rep_sample_eczema: "ఎగ్జిమా",
+        rep_reader_title: "ఆఫ్‌లైన్ రిపోర్ట్ రీడర్",
+        rep_reader_hint: "ల్యాబ్ రిపోర్ట్ ఫైల్ (.txt, .json) అప్‌లోడ్ చేసి నివేదికలను విశ్లేషించండి.",
+        rep_upload_hint: "టెక్స్ట్ ల్యాబ్ విలువలను అప్‌లోడ్ చేయండి",
+        btn_select_report: "రిపోర్ట్ ఫైల్‌ను ఎంచుకోండి",
+        rem_add_title: "కొత్త మందును జోడించండి",
+        rem_med_name: "మందు పేరు",
+        rem_dosage: "మోతాదు",
+        rem_time: "రిమైండర్ సమయం",
+        rem_freq: "ఫ్రీక్వెన్సీ",
+        rem_opt_daily: "రోజూ",
+        rem_opt_weekly: "వారానికోసారి",
+        rem_opt_monthly: "నెలకు ఒకసారి",
+        btn_add_schedule: "షెడ్యూల్ జోడించండి",
+        rem_active_title: "క్రియాశీల షెడ్యూల్",
+        rem_no_meds: "ఇంకా ఎలాంటి మందులు షెడ్యూల్ చేయలేదు.",
+        dash_health_score_title: "మొత్తం ఆరోగ్య స్కోరు",
+        dash_score_opt: "క్లినికల్ భద్రతా కొలమానాలు సరైన పరిధిలో ఉన్నాయి.",
+        dash_log_vitals_title: "బయోమెట్రిక్స్ మరియు బీపీ నమోదు",
+        dash_sim_live: "🔴 లైవ్ సిమ్యులేటర్",
+        lbl_sys_bp: "సిస్టోలిక్ బీపీ (పై విలువ)",
+        lbl_dia_bp: "డయాస్టోలిక్ బీపీ (కింది విలువ)",
+        lbl_heart_rate: "గుండె వేగం (BPM)",
+        lbl_spo2: "ఆక్సిజన్ SpO₂ (%)",
+        lbl_body_temp: "శరీర ఉష్ణోగ్రత (°F)",
+        btn_calc_vitals: "గణించండి మరియు సేవ్ చేయండి",
+        vitals_status_norm: "గుండె మరియు బయోమెట్రిక్ కొలమానాలు సాధారణంగా స్థిరంగా ఉన్నాయి.",
+        dash_bp_title: "రక్తపోటు (BP) స్థితి",
+        dash_hr_title: "గుండె వేగం (Heart Rate)",
+        dash_spo2_title: "ఆక్సిజన్ సంతృప్తత (SpO₂)",
+        dash_trend_title: "నిరంతర బయోమెట్రిక్ ట్రెండ్",
+        sos_title: "🚨 అత్యవసర SOS హెచ్చరికలు",
+        sos_desc: "తీవ్రమైన శ్వాస సమస్య, ఛాతీ నొప్పి లేదా ఆక్సిజన్ 94% కంటే తక్కువగా ఉంటే, వెంటనే అత్యవసర సేవలను సంప్రదించండి.",
+        sos_directives_title: "📋 అత్యవసర సూచనలు:",
+        sos_dir_1: "ఊపిరితిత్తులు మరియు శ్వాసక్రియకు సహాయపడటానికి నిటారుగా కూర్చోండి.",
+        sos_dir_2: "శారీరక శ్రమను తగ్గించండి మరియు విశ్రాంతి తీసుకోండి.",
+        sos_dir_3: "అత్యవసర ఫోన్ నంబర్లను సిద్ధంగా ఉంచుకోండి.",
+        sos_dir_4: "గదిలోకి గాలి వెలుతురు వచ్చేలా చూడండి మరియు ఫ్యాన్లు ఆన్ చేయండి.",
+        btn_trigger_sos: "🚨 SOS హెచ్చరికను ప్రారంభించండి",
+        sos_contacts_title: "సిమ్యులేటెడ్ అత్యవసర పరిచయాలు",
+        sos_contacts_desc: "స్థానిక క్లినికల్ కేంద్రాలు మరియు అత్యవసర బృందాలు (ఆఫ్‌లైన్ డైరెక్టరీ):",
+        sos_contact_1: "ఆరా కమ్యూనిటీ క్లినిక్ ఎమర్జెన్సీ",
+        sos_contact_2: "డిస్ట్రిక్ట్ ట్రామా హాస్పిటల్",
+        sos_contact_3: "అంటువ్యాధుల హెల్ప్‌లైన్",
+        set_custom_title: "ఇంటర్‌ఫేస్ మరియు ఫీచర్ అనుకూలీకరణలు",
+        set_dark_mode: "డార్క్ థీమ్ మోడ్",
+        set_dark_mode_desc: "ఇంటర్‌ఫేస్ రంగులను మార్చండి",
+        set_voice_tts: "వాయిస్ TTS ఫీడ్‌బ్యాక్",
+        set_voice_desc: "ఫలితాలు మరియు ప్రిడిక్షన్లను వినండి",
+        set_avatar: "AI అసిస్టెంట్ విడ్జెట్",
+        set_avatar_desc: "స్క్రీన్‌పై ఫ్లోటింగ్ డాక్టర్ అవతార్‌ను చూపించండి",
+        set_access_title: "యాక్సెసిబిలిటీ ప్రాధాన్యతలు",
+        about_title: "AURA ప్లాట్‌ఫామ్ గురించి",
+        about_desc: "AURA స్థానికంగా సాధారణ ప్రజారోగ్య ఇన్ఫెక్షన్లు మరియు చర్మ వ్యాధులపై శిక్షణ పొందింది. ఇది 100% ఆఫ్‌లైన్‌లో పనిచేస్తుంది కాబట్టి మారుమూల గ్రామాలు మరియు విపత్తు ప్రాంతాలకు ఆదర్శవంతమైన వ్యవస్థ.",
+        about_arch_title: "ఆఫ్‌లైన్ ఆర్కిటెక్చర్ సారాంశం",
+        auth_tab_login: "సైన్ ఇన్",
+        auth_tab_signup: "ఖాతా తెరవండి",
+        auth_lbl_email: "ఈమెయిల్ / రోల్ నంబర్",
+        auth_lbl_password: "పాస్‌వర్డ్",
+        auth_btn_login: "లాగిన్ చేయండి",
+        auth_or: "లేదా",
+        auth_btn_guest: "గెస్ట్‌గా కొనసాగండి",
+        auth_lbl_name: "పూర్తి పేరు",
+        auth_lbl_age: "వయస్సు",
+        auth_lbl_blood: "బ్లడ్ గ్రూప్",
+        auth_btn_signup: "రోగి ప్రొఫైల్ సృష్టించండి",
+        mindful_badge: "మానసిక ప్రశాంతత & విశ్రాంతి",
+        mindful_title: "కాసేపు విశ్రాంతి తీసుకోండి (4-7-8)",
+        mindful_subtitle: "మీ గుండె వేగాన్ని తగ్గించి ఒత్తిడిని దూరం చేయడానికి 4-7-8 శ్వాస వ్యాయామం చేయండి.",
+        breathe_ready: "సిద్ధం",
+        breathe_inhale: "శ్వాస పీల్చండి",
+        breathe_hold: "శ్వాస ఆపండి",
+        breathe_exhale: "శ్వాస వదలండి",
+        breathe_start_btn: "4-7-8 శ్వాస వ్యాయామం ప్రారంభించండి",
+        breathe_stop_btn: "ఆపండి",
+        tour_skip: "టూర్ దాటవేయి",
+        tour_prev: "మునుపటిది",
+        tour_next: "తదుపరి దశ →"
+    }
+};
+
+function updateAllUILanguage(lang) {
+    const dict = UI_TRANSLATIONS[lang] || UI_TRANSLATIONS.en;
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key]) {
+            el.textContent = dict[key];
+        }
+    });
+    // Also update dynamic placeholders
+    const chatInp = document.getElementById("chat-input");
+    if (chatInp) {
+        if (lang === "hi") {
+            chatInp.placeholder = "लक्षण बताएं (उदा. बुखार, सिरदर्द) या प्रश्न पूछें...";
+        } else if (lang === "te") {
+            chatInp.placeholder = "లక్షణాలను వివరించండి (ఉదా. జ్వరం, తలనొప్పి) లేదా ప్రశ్నలు అడగండి...";
+        } else {
+            chatInp.placeholder = "Describe symptoms (e.g. fever, headache) or type questions...";
+        }
+    }
+    // Update active user greeting if logged in
+    renderCurrentUserBadge(lang);
+}
+
+// Current user state holder
+let currentUser = null;
+
+function renderCurrentUserBadge(lang) {
+    const displayName = document.getElementById("user-display-name");
+    const greetingPill = document.getElementById("user-greeting-pill");
+    const openAuthBtn = document.getElementById("open-auth-btn");
+    
+    if (!currentUser) {
+        try {
+            const stored = localStorage.getItem("aura_active_user");
+            if (stored) currentUser = JSON.parse(stored);
+        } catch (e) {}
+    }
+
+    if (currentUser) {
+        if (openAuthBtn) openAuthBtn.classList.add("hidden");
+        if (greetingPill) greetingPill.classList.remove("hidden");
+        if (displayName) {
+            const name = currentUser.name || "Guest";
+            if (lang === "hi") displayName.textContent = `नमस्ते, ${name} 👋`;
+            else if (lang === "te") displayName.textContent = `నమస్తే, ${name} 👋`;
+            else displayName.textContent = `Welcome, ${name} 👋`;
+        }
+    } else {
+        if (openAuthBtn) openAuthBtn.classList.remove("hidden");
+        if (greetingPill) greetingPill.classList.add("hidden");
+    }
+}
+
 /* ==========================================================================
    AURA HEALTH PLATFORM - MODERN CLIENT-SIDE CONTROL ENGINE
    ========================================================================== */
@@ -1384,6 +1879,518 @@ document.addEventListener("DOMContentLoaded", () => {
     loadLocalSettings();
     renderMedications();
     drawVitalsTrendChart();
+
+    // ========================================================================
+    // 1. DYNAMIC LANGUAGE SELECTOR & COMPREHENSIVE TRANSLATION
+    // ========================================================================
+    if (languageSelector) {
+        languageSelector.addEventListener("change", (e) => {
+            const newLang = e.target.value;
+            localStorage.setItem("aura_lang", newLang);
+            updateAllUILanguage(newLang);
+        });
+        const savedLang = localStorage.getItem("aura_lang") || "en";
+        languageSelector.value = savedLang;
+        updateAllUILanguage(savedLang);
+    }
+
+    // ========================================================================
+    // 2. USER AUTHENTICATION & PATIENT PROFILE MANAGER (LOCALSTORAGE)
+    // ========================================================================
+    const authModal = document.getElementById("auth-modal");
+    const openAuthBtn = document.getElementById("open-auth-btn");
+    const authCloseBtn = document.getElementById("auth-close-btn");
+    const tabLogin = document.getElementById("tab-login");
+    const tabSignup = document.getElementById("tab-signup");
+    const loginForm = document.getElementById("login-form");
+    const signupForm = document.getElementById("signup-form");
+    const guestLoginBtn = document.getElementById("guest-login-btn");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    if (openAuthBtn) {
+        openAuthBtn.addEventListener("click", () => {
+            if (authModal) authModal.classList.remove("hidden");
+        });
+    }
+    if (authCloseBtn) {
+        authCloseBtn.addEventListener("click", () => {
+            if (authModal) authModal.classList.add("hidden");
+        });
+    }
+    if (tabLogin && tabSignup) {
+        tabLogin.addEventListener("click", () => {
+            tabLogin.classList.add("active");
+            tabSignup.classList.remove("active");
+            if (loginForm) loginForm.classList.remove("hidden");
+            if (signupForm) signupForm.classList.add("hidden");
+        });
+        tabSignup.addEventListener("click", () => {
+            tabSignup.classList.add("active");
+            tabLogin.classList.remove("active");
+            if (signupForm) signupForm.classList.remove("hidden");
+            if (loginForm) loginForm.classList.add("hidden");
+        });
+    }
+
+    if (loginForm) {
+        loginForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const id = document.getElementById("login-identifier").value.trim();
+            const pw = document.getElementById("login-password").value;
+            let users = [];
+            try { users = JSON.parse(localStorage.getItem("aura_users_db") || "[]"); } catch (err) {}
+            const matched = users.find(u => u.identifier.toLowerCase() === id.toLowerCase() && u.password === pw);
+            if (matched) {
+                currentUser = matched;
+                localStorage.setItem("aura_active_user", JSON.stringify(currentUser));
+                renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
+                if (authModal) authModal.classList.add("hidden");
+            } else {
+                // If first time demo, log them in with their name
+                currentUser = { name: id.includes("@") ? id.split("@")[0] : (id || "Pallavi"), identifier: id };
+                localStorage.setItem("aura_active_user", JSON.stringify(currentUser));
+                renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
+                if (authModal) authModal.classList.add("hidden");
+            }
+        });
+    }
+
+    if (signupForm) {
+        signupForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const name = document.getElementById("signup-name").value.trim();
+            const age = document.getElementById("signup-age").value;
+            const blood = document.getElementById("signup-blood").value;
+            const id = document.getElementById("signup-identifier").value.trim();
+            const pw = document.getElementById("signup-password").value;
+
+            const newUser = { name, age, blood, identifier: id, password: pw };
+            let users = [];
+            try { users = JSON.parse(localStorage.getItem("aura_users_db") || "[]"); } catch (err) {}
+            users.push(newUser);
+            localStorage.setItem("aura_users_db", JSON.stringify(users));
+            currentUser = newUser;
+            localStorage.setItem("aura_active_user", JSON.stringify(currentUser));
+            renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
+            if (authModal) authModal.classList.add("hidden");
+        });
+    }
+
+    if (guestLoginBtn) {
+        guestLoginBtn.addEventListener("click", () => {
+            currentUser = { name: "Guest Patient", age: 24, blood: "O+", identifier: "guest" };
+            localStorage.setItem("aura_active_user", JSON.stringify(currentUser));
+            renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
+            if (authModal) authModal.classList.add("hidden");
+        });
+    }
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            currentUser = null;
+            localStorage.removeItem("aura_active_user");
+            renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
+        });
+    }
+
+    // ========================================================================
+    // 3. MINDFUL PAUSE (4-7-8 BREATHING EXERCISE)
+    // ========================================================================
+    const relaxBtn = document.getElementById("relax-btn");
+    const mindfulModal = document.getElementById("mindful-pause-modal");
+    const mindfulCloseBtn = document.getElementById("mindful-close-btn");
+    const startBreatheBtn = document.getElementById("start-breathe-btn");
+    const stopBreatheBtn = document.getElementById("stop-breathe-btn");
+    const breatheCircle = document.getElementById("breathe-circle");
+    const breathePhaseText = document.getElementById("breathe-phase-text");
+    const breatheTimerCount = document.getElementById("breathe-timer-count");
+
+    let breatheTimer = null;
+    let breatheActive = false;
+
+    if (relaxBtn) {
+        relaxBtn.addEventListener("click", () => {
+            if (mindfulModal) mindfulModal.classList.remove("hidden");
+        });
+    }
+    if (mindfulCloseBtn) {
+        mindfulCloseBtn.addEventListener("click", () => {
+            stopBreathingCycle();
+            if (mindfulModal) mindfulModal.classList.add("hidden");
+        });
+    }
+
+    function runBreathingStep(phase, seconds, nextPhase) {
+        if (!breatheActive) return;
+        const curLang = languageSelector ? languageSelector.value : "en";
+        const dict = UI_TRANSLATIONS[curLang] || UI_TRANSLATIONS.en;
+        
+        breatheCircle.className = "breathe-circle " + phase;
+        if (phase === "inhale") breathePhaseText.textContent = dict.breathe_inhale;
+        else if (phase === "hold") breathePhaseText.textContent = dict.breathe_hold;
+        else if (phase === "exhale") breathePhaseText.textContent = dict.breathe_exhale;
+
+        let remaining = seconds;
+        breatheTimerCount.textContent = remaining;
+
+        const stepInterval = setInterval(() => {
+            if (!breatheActive) { clearInterval(stepInterval); return; }
+            remaining--;
+            if (remaining > 0) {
+                breatheTimerCount.textContent = remaining;
+            } else {
+                clearInterval(stepInterval);
+                nextPhase();
+            }
+        }, 1000);
+    }
+
+    function startBreathingCycle() {
+        breatheActive = true;
+        if (startBreatheBtn) startBreatheBtn.classList.add("hidden");
+        if (stopBreatheBtn) stopBreatheBtn.classList.remove("hidden");
+
+        function loopCycle() {
+            if (!breatheActive) return;
+            // 1. Inhale for 4s
+            runBreathingStep("inhale", 4, () => {
+                // 2. Hold for 7s
+                runBreathingStep("hold", 7, () => {
+                    // 3. Exhale for 8s
+                    runBreathingStep("exhale", 8, () => {
+                        loopCycle();
+                    });
+                });
+            });
+        }
+        loopCycle();
+    }
+
+    function stopBreathingCycle() {
+        breatheActive = false;
+        if (breatheCircle) breatheCircle.className = "breathe-circle";
+        if (breathePhaseText) breathePhaseText.textContent = "Ready";
+        if (breatheTimerCount) breatheTimerCount.textContent = "4";
+        if (startBreatheBtn) startBreatheBtn.classList.remove("hidden");
+        if (stopBreatheBtn) stopBreatheBtn.classList.add("hidden");
+    }
+
+    if (startBreatheBtn) startBreatheBtn.addEventListener("click", startBreathingCycle);
+    if (stopBreatheBtn) stopBreatheBtn.addEventListener("click", stopBreathingCycle);
+
+    // ========================================================================
+    // 4. CLINICAL BIOMETRICS: ACCURATE BP, MAP, PULSE PRESSURE & LIVE ECG WAVE
+    // ========================================================================
+    const vitalSysInput = document.getElementById("vital-sys");
+    const vitalDiaInput = document.getElementById("vital-dia");
+    const vitalHrInput = document.getElementById("vital-hr");
+    const dashValBp = document.getElementById("dash-val-bp");
+    const dashBpStage = document.getElementById("dash-bp-stage");
+    const dashBpAccuracyScore = document.getElementById("dash-bp-accuracy-score");
+    const dashBpMap = document.getElementById("dash-bp-map");
+    const dashBpPp = document.getElementById("dash-bp-pp");
+    const dashBpMeter = document.getElementById("dash-bp-meter");
+    const dashValHr = document.getElementById("dash-val-hr");
+    const dashStatusHr = document.getElementById("dash-status-hr");
+    const dashValRisk = document.getElementById("dash-val-risk");
+    const simulateLiveBtn = document.getElementById("simulate-live-vitals-btn");
+    const liveReadingBtn = document.getElementById("live-reading-btn");
+
+    function calculateBiometrics(sys, dia, hr, spo2, temp) {
+        // Mean Arterial Pressure (MAP) = DBP + 1/3*(SBP - DBP)
+        const map = (dia + (sys - dia) / 3).toFixed(1);
+        // Pulse Pressure = SBP - DBP
+        const pp = sys - dia;
+
+        let stage = "Normal (<120/80)";
+        let stageColor = "#10b981";
+        let fillPercent = 25;
+        let scorePercent = 96;
+
+        if (sys > 180 || dia > 120) {
+            stage = "Hypertensive Crisis (Urgent Care)";
+            stageColor = "#ef4444";
+            fillPercent = 100;
+            scorePercent = 18;
+        } else if (sys >= 140 || dia >= 90) {
+            stage = "Stage 2 Hypertension";
+            stageColor = "#f97316";
+            fillPercent = 75;
+            scorePercent = 58;
+        } else if ((sys >= 130 && sys <= 139) || (dia >= 80 && dia <= 89)) {
+            stage = "Stage 1 Hypertension";
+            stageColor = "#eab308";
+            fillPercent = 55;
+            scorePercent = 74;
+        } else if (sys >= 120 && sys <= 129 && dia < 80) {
+            stage = "Elevated Blood Pressure";
+            stageColor = "#38bdf8";
+            fillPercent = 40;
+            scorePercent = 88;
+        }
+
+        if (dashValBp) dashValBp.innerHTML = `${sys} / ${dia} <span style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted);">mmHg</span>`;
+        if (dashBpStage) {
+            dashBpStage.textContent = stage;
+            dashBpStage.style.color = stageColor;
+            dashBpStage.style.background = `${stageColor}22`;
+        }
+        if (dashBpAccuracyScore) {
+            dashBpAccuracyScore.textContent = `${scorePercent}% Cardiovascular Target`;
+            dashBpAccuracyScore.style.color = stageColor;
+        }
+        if (dashBpMap) dashBpMap.textContent = `${map} mmHg`;
+        if (dashBpPp) dashBpPp.textContent = `${pp} mmHg`;
+        if (dashBpMeter) {
+            dashBpMeter.style.width = `${fillPercent}%`;
+            dashBpMeter.style.backgroundColor = stageColor;
+        }
+
+        // Heart Rate
+        if (dashValHr) dashValHr.innerHTML = `${hr} <span style="font-size: 0.75rem; font-weight: 500;">BPM</span>`;
+        if (dashStatusHr) {
+            if (hr < 60) {
+                dashStatusHr.textContent = "● Bradycardia (<60)";
+                dashStatusHr.style.color = "#38bdf8";
+            } else if (hr > 100) {
+                dashStatusHr.textContent = "● Tachycardia (>100)";
+                dashStatusHr.style.color = "#ef4444";
+            } else {
+                dashStatusHr.textContent = "● Normal Resting (60-100)";
+                dashStatusHr.style.color = "#10b981";
+            }
+        }
+
+        if (dashValRisk) {
+            if (scorePercent > 85) dashValRisk.textContent = "Optimal Cardiovascular State";
+            else if (scorePercent > 65) dashValRisk.textContent = "Moderate Pre-Hypertension Risk";
+            else dashValRisk.textContent = "High Cardiovascular Clinical Risk";
+            dashValRisk.style.color = stageColor;
+        }
+
+        // Health Score update
+        if (healthScoreNum) healthScoreNum.textContent = `${scorePercent}%`;
+        if (healthScoreRing) {
+            const offset = 263.89 - (scorePercent / 100) * 263.89;
+            healthScoreRing.style.strokeDashoffset = offset;
+        }
+    }
+
+    if (vitalsForm) {
+        vitalsForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const sys = parseInt(vitalSysInput ? vitalSysInput.value : 120) || 120;
+            const dia = parseInt(vitalDiaInput ? vitalDiaInput.value : 80) || 80;
+            const hr = parseInt(vitalHrInput ? vitalHrInput.value : 72) || 72;
+            const spo2 = parseInt(vitalSpo2Input ? vitalSpo2Input.value : 98) || 98;
+            const temp = parseFloat(vitalTempInput ? vitalTempInput.value : 98.6) || 98.6;
+            
+            calculateBiometrics(sys, dia, hr, spo2, temp);
+            if (vitalsStatusText) vitalsStatusText.textContent = "Vitals and BP percentages computed successfully.";
+        });
+    }
+
+    // Live Patient Simulator
+    let liveSimulatorActive = false;
+    let liveSimInterval = null;
+
+    function toggleLiveTelemetry() {
+        liveSimulatorActive = !liveSimulatorActive;
+        if (liveSimulatorActive) {
+            if (liveReadingBtn) liveReadingBtn.style.boxShadow = "0 0 15px #10b981";
+            if (simulateLiveBtn) simulateLiveBtn.textContent = "⏹️ Stop Live";
+            
+            // Immediately navigate to dashboard if on another tab
+            navigateToTab("dashboard");
+
+            liveSimInterval = setInterval(() => {
+                const simHr = Math.floor(68 + Math.random() * 10);
+                const simSys = Math.floor(118 + Math.random() * 8);
+                const simDia = Math.floor(76 + Math.random() * 6);
+                const simSpo2 = Math.floor(97 + Math.random() * 3);
+                calculateBiometrics(simSys, simDia, simHr, simSpo2, 98.6);
+            }, 2500);
+        } else {
+            if (liveReadingBtn) liveReadingBtn.style.boxShadow = "";
+            if (simulateLiveBtn) simulateLiveBtn.textContent = "🔴 Simulate Live";
+            if (liveSimInterval) { clearInterval(liveSimInterval); liveSimInterval = null; }
+        }
+    }
+
+    if (simulateLiveBtn) simulateLiveBtn.addEventListener("click", toggleLiveTelemetry);
+    if (liveReadingBtn) liveReadingBtn.addEventListener("click", toggleLiveTelemetry);
+
+    // REAL-TIME ANIMATED ECG WAVEFORM CANVAS
+    const ecgCanvas = document.getElementById("ecg-canvas");
+    if (ecgCanvas) {
+        const ctx = ecgCanvas.getContext("2d");
+        let ecgX = 0;
+        let ecgPrevY = 38;
+
+        function getEcgY(x) {
+            const cycle = x % 70;
+            if (cycle >= 20 && cycle <= 24) return 38 - 8; // P wave
+            if (cycle === 30) return 38 + 5; // Q
+            if (cycle === 33) return 10; // R peak!
+            if (cycle === 36) return 55; // S
+            if (cycle >= 44 && cycle <= 50) return 38 - 12; // T wave
+            return 38 + (Math.random() * 2 - 1); // Baseline isoelectric
+        }
+
+        function drawEcgStep() {
+            if (!ecgCanvas) return;
+            const w = ecgCanvas.width;
+            const h = ecgCanvas.height;
+
+            ctx.fillStyle = "rgba(15, 23, 42, 0.08)";
+            ctx.fillRect(ecgX, 0, 8, h);
+
+            const curY = getEcgY(ecgX);
+            ctx.beginPath();
+            ctx.strokeStyle = "#38bdf8";
+            ctx.lineWidth = 2;
+            ctx.shadowBlur = 6;
+            ctx.shadowColor = "#38bdf8";
+            ctx.moveTo(ecgX - 2, ecgPrevY);
+            ctx.lineTo(ecgX, curY);
+            ctx.stroke();
+
+            ecgPrevY = curY;
+            ecgX += 2;
+            if (ecgX >= w) ecgX = 0;
+
+            requestAnimationFrame(drawEcgStep);
+        }
+        drawEcgStep();
+    }
+
+    // ========================================================================
+    // 5. VIBRANT HIGH-VISIBILITY NEON GUIDED TOUR
+    // ========================================================================
+    const tourLauncherBtn = document.getElementById("tour-launcher-btn");
+    const guidedTourBackdrop = document.getElementById("aura-guided-tour");
+    const tourCard = document.getElementById("tour-card");
+    const tourStepBadge = document.getElementById("tour-step-badge");
+    const tourTitle = document.getElementById("tour-title");
+    const tourDesc = document.getElementById("tour-desc");
+    const tourSkipBtn = document.getElementById("tour-skip-btn");
+    const tourPrevBtn = document.getElementById("tour-prev-btn");
+    const tourNextBtn = document.getElementById("tour-next-btn");
+    const tourCloseBtn = document.getElementById("tour-close-btn");
+
+    const tourSteps = [
+        {
+            selector: "#navbar-main",
+            title: "Multilingual Sticky Navigation",
+            desc: "Easily switch languages (English, Hindi, Telugu), access your patient account, and toggle live telemetry.",
+            tab: "home"
+        },
+        {
+            selector: ".features-grid",
+            title: "34-Disease Offline Intelligence",
+            desc: "Explore clinical diagnostic modules, vision skin lesion scanner, and cardiovascular health tracking.",
+            tab: "home"
+        },
+        {
+            selector: "button[data-tab='prediction']",
+            title: "Interactive Symptom Checker",
+            desc: "Chat with the local Random Forest AI model to predict medical conditions with 99.12% accuracy.",
+            tab: "prediction"
+        },
+        {
+            selector: "button[data-tab='reports']",
+            title: "Local Skin Diagnostic Scanner",
+            desc: "Upload or drag-and-drop lesion photos to classify eczema, psoriasis, acne, and rashes 100% offline.",
+            tab: "reports"
+        },
+        {
+            selector: "button[data-tab='dashboard']",
+            title: "Cardiovascular BP & ECG Telemetry",
+            desc: "Calculate accurate Blood Pressure percentages, MAP, Pulse Pressure, and view real-time ECG wave monitors.",
+            tab: "dashboard"
+        },
+        {
+            selector: "button[data-tab='emergency']",
+            title: "SOS Warnings & Audio Siren",
+            desc: "Access immediate emergency directives and sound a synthesized medical siren in critical situations.",
+            tab: "emergency"
+        }
+    ];
+
+    let currentTourStep = 0;
+
+    function showTourStep(index) {
+        if (index < 0 || index >= tourSteps.length) return;
+        currentTourStep = index;
+        const step = tourSteps[index];
+
+        // Clear previous spotlight target
+        document.querySelectorAll(".tour-spotlight-target").forEach(el => el.classList.remove("tour-spotlight-target"));
+
+        if (step.tab) navigateToTab(step.tab);
+
+        setTimeout(() => {
+            const targetEl = document.querySelector(step.selector);
+            if (targetEl) {
+                targetEl.classList.add("tour-spotlight-target");
+                const rect = targetEl.getBoundingClientRect();
+                
+                // Position tour card near target
+                let topPos = rect.bottom + 15;
+                let leftPos = Math.max(20, rect.left + (rect.width / 2) - 190);
+
+                if (topPos + 220 > window.innerHeight) {
+                    topPos = Math.max(20, rect.top - 240);
+                }
+                if (leftPos + 390 > window.innerWidth) {
+                    leftPos = window.innerWidth - 410;
+                }
+
+                if (tourCard) {
+                    tourCard.style.top = `${topPos}px`;
+                    tourCard.style.left = `${leftPos}px`;
+                }
+            }
+
+            if (tourStepBadge) tourStepBadge.textContent = `STEP ${index + 1} OF ${tourSteps.length}`;
+            if (tourTitle) tourTitle.textContent = step.title;
+            if (tourDesc) tourDesc.textContent = step.desc;
+
+            if (tourPrevBtn) {
+                if (index === 0) tourPrevBtn.classList.add("hidden");
+                else tourPrevBtn.classList.remove("hidden");
+            }
+            if (tourNextBtn) {
+                if (index === tourSteps.length - 1) tourNextBtn.textContent = "Finish Tour ✓";
+                else tourNextBtn.textContent = "Next Step →";
+            }
+        }, 120);
+    }
+
+    function startTour() {
+        if (guidedTourBackdrop) guidedTourBackdrop.classList.remove("hidden");
+        showTourStep(0);
+    }
+
+    function endTour() {
+        if (guidedTourBackdrop) guidedTourBackdrop.classList.add("hidden");
+        document.querySelectorAll(".tour-spotlight-target").forEach(el => el.classList.remove("tour-spotlight-target"));
+    }
+
+    if (tourLauncherBtn) tourLauncherBtn.addEventListener("click", startTour);
+    if (tourCloseBtn) tourCloseBtn.addEventListener("click", endTour);
+    if (tourSkipBtn) tourSkipBtn.addEventListener("click", endTour);
+    if (tourPrevBtn) tourPrevBtn.addEventListener("click", () => showTourStep(currentTourStep - 1));
+    if (tourNextBtn) {
+        tourNextBtn.addEventListener("click", () => {
+            if (currentTourStep >= tourSteps.length - 1) endTour();
+            else showTourStep(currentTourStep + 1);
+        });
+    }
+
+    // Default calculations on load
+    calculateBiometrics(120, 80, 72, 98, 98.6);
+
 });
 
 // Quick prompt chips handler
