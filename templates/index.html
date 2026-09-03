@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA - Premium Offline AI Healthcare Platform</title>
+    <!-- Google Fonts: Poppins (headings), Inter (body), IBM Plex Mono (data tags) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* SOS Flashing Animation */
+        @keyframes pulseRed {
+            0% { box-shadow: 0 0 0 0 rgba(232, 89, 47, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(232, 89, 47, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(232, 89, 47, 0); }
+        }
+        
+        /* Print Styles for PDF Exporter */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                font-family: 'Inter', sans-serif;
+            }
+            .main-navbar, .aura-fixed-assistant, .onboarding-overlay, .settings-actions, .input-form, .sample-grid {
+                display: none !important;
+            }
+            .app-container {
+                display: block !important;
+            }
+            .section-view {
+                display: block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body style="position: relative;">
+
+    <!-- PREMIUM ECG HEARTBEAT LOADING SCREEN -->
+    <div id="loader-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #251818; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s ease, visibility 0.6s;">
+        <div style="position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+            <!-- Outer spinning glow ring -->
+            <div style="position: absolute; width: 90px; height: 90px; border-radius: 50%; border: 3px solid transparent; border-top-color: #14b8a6; border-bottom-color: #10b981; animation: spin 1.5s linear infinite;"></div>
+            <!-- ECG Pulse SVG -->
+            <svg viewBox="0 0 100 40" width="75" height="30" fill="none" stroke="#14b8a6" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 8px #14b8a6);">
+                <path d="M0,20 L30,20 L38,5 L46,35 L52,15 L58,25 L64,20 L100,20" class="ecg-path" style="stroke-dasharray: 200; stroke-dashoffset: 200; animation: drawEcg 2s ease-in-out infinite;"></path>
+            </svg>
+        </div>
+        <h2 style="font-family: 'Poppins', sans-serif; font-size: 1.35rem; color: #f8fafc; font-weight: 700; letter-spacing: 1px; margin-bottom: 5px;">AURA AI PLATFORM</h2>
+        <p style="font-family: 'Inter', sans-serif; font-size: 0.78rem; color: #94a3b8; font-weight: 500; letter-spacing: 0.5px;">Initializing Local Clinical Diagnostic Engines...</p>
+    </div>
+
+    <!-- FIRST-TIME USER ONBOARDING OVERLAY -->
+    <div id="onboarding-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 8, 8, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease;">
+        <div style="background: rgba(45, 30, 30, 0.85); border: 1.5px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 30px; max-width: 500px; width: 90%; box-shadow: var(--shadow-premium); text-align: center; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--accent-teal); font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">Interactive Guide</div>
+            <h2 style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; color: var(--text-primary); margin-bottom: 12px; font-weight: 700;">Welcome to AURA AI</h2>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px;">
+                Let's set up your focus to make navigating the dashboard simple and intuitive. Select your goal to start:
+            </p>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; text-align: left;">
+                <!-- Onboarding Option 1 -->
+                <div class="onboard-card" id="onboard-opt-chat" style="border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px; cursor: pointer; transition: all 0.2s; background: rgba(255,255,255,0.02); display: flex; align-items: center; gap: 12px;">
+                    <div style="font-size: 1.6rem; color: var(--accent-teal);">💬</div>
+                    <div>
+                        <strong style="font-size: 0.82rem; color: var(--text-primary); display: block; font-family: 'Poppins', sans-serif;">Symptom Assistant</strong>
+                        <span style="font-size: 0.72rem; color: var(--text-secondary);">Describe symptoms to get predictive disease analytics.</span>
+                    </div>
+                </div>
+                <!-- Onboarding Option 2 -->
+                <div class="onboard-card" id="onboard-opt-vitals" style="border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px; cursor: pointer; transition: all 0.2s; background: rgba(255,255,255,0.02); display: flex; align-items: center; gap: 12px;">
+                    <div style="font-size: 1.6rem; color: var(--accent-teal);">🩺</div>
+                    <div>
+                        <strong style="font-size: 0.82rem; color: var(--text-primary); display: block; font-family: 'Poppins', sans-serif;">Health Score & Dashboard</strong>
+                        <span style="font-size: 0.72rem; color: var(--text-secondary);">Log Temperature & SpO₂ to compute clinical safety scores.</span>
+                    </div>
+                </div>
+                <!-- Onboarding Option 3 -->
+                <div class="onboard-card" id="onboard-opt-scanner" style="border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px; cursor: pointer; transition: all 0.2s; background: rgba(255,255,255,0.02); display: flex; align-items: center; gap: 12px;">
+                    <div style="font-size: 1.6rem; color: var(--accent-orange);">📷</div>
+                    <div>
+                        <strong style="font-size: 0.82rem; color: var(--text-primary); display: block; font-family: 'Poppins', sans-serif;">Visual Skin Scanner</strong>
+                        <span style="font-size: 0.72rem; color: var(--text-secondary);">Drag and drop skin rash photos for visual model classification.</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button id="skip-onboard-btn" style="background: transparent; border: 1px solid rgba(255, 255, 255, 0.12); color: var(--text-secondary); padding: 8px 16px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif;">Skip Guide</button>
+                <button id="start-onboard-btn" style="background: var(--accent-teal); color: white; border: none; padding: 8px 20px; border-radius: 8px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif;">Start Guided Tour</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Animated Background Vector Container -->
+    <div class="medical-bg">
+        <div class="bg-particle" style="top: 15%; left: 8%; animation-delay: 0s;">✚</div>
+        <div class="bg-particle" style="top: 40%; left: 85%; animation-delay: 5s;">✚</div>
+        <div class="bg-particle" style="top: 70%; left: 15%; animation-delay: 10s;">✚</div>
+        <div class="bg-particle" style="top: 25%; left: 60%; animation-delay: 15s;">✚</div>
+        <div class="bg-orb" style="top: 15%; left: 5%; width: 220px; height: 220px; background: radial-gradient(circle, rgba(20,184,166,0.12) 0%, transparent 70%);"></div>
+        <div class="bg-orb" style="top: 55%; left: 75%; width: 260px; height: 260px; background: radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%);"></div>
+    </div>
+
+    <!-- STICKY PREMIUM HEADER NAVIGATION -->
+    <header class="main-navbar">
+        <div class="nav-left">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="pulse-icon"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                <span>AURA Platform</span>
+            </div>
+            <div class="badge offline-badge">Local Offline</div>
+        </div>
+        
+        <nav class="nav-links">
+            <button class="nav-item active" data-tab="home">Home</button>
+            <button class="nav-item" data-tab="prediction">Disease Prediction</button>
+            <button class="nav-item" data-tab="reports">Medical Reports</button>
+            <button class="nav-item" data-tab="reminders">Medicine Reminder</button>
+            <button class="nav-item" data-tab="dashboard">Health Dashboard</button>
+            <button class="nav-item" data-tab="emergency">Emergency</button>
+            <button class="nav-item" data-tab="settings">Settings</button>
+            <button class="nav-item" data-tab="about">About</button>
+        </nav>
+        
+        <div class="nav-right">
+            <!-- Language Dropdown -->
+            <select id="language-selector" class="lang-dropdown">
+                <option value="en" selected>English</option>
+                <option value="hi">हिन्दी (Hindi)</option>
+                <option value="te">తెలుగు (Telugu)</option>
+                <option value="ta">தமிழ் (Tamil)</option>
+                <option value="bn">বাংলা (Bengali)</option>
+                <option value="or">ଓଡ଼ିଆ (Odia)</option>
+                <option value="ur">اردو (Urdu)</option>
+                <option value="ml">മലയാളം (Malayalam)</option>
+                <option value="ko">한국어 (Korean)</option>
+            </select>
+            
+            <button class="icon-btn" id="notif-btn" title="Notifications" style="position: relative;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                <span class="badge-dot" id="notif-dot" style="display: none;"></span>
+            </button>
+            
+            <div class="user-profile" title="Patient Profile">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="app-container">
+        <div class="app-content-wrapper">
+            
+            <!-- ================= VIEW 1: HOME ================= -->
+            <section id="section-home" class="section-view">
+                <div class="hero-banner">
+                    <div class="hero-text">
+                        <div class="hero-eyebrow">Local Intelligent Diagnostics</div>
+                        <h1>Your Personal Offline Clinical Assistant</h1>
+                        <p>Fully offline, rule-based multilingual diagnosis and predictive image analysis mapping. Safeguard your family with reliable information.</p>
+                        <div style="display: flex; gap: 12px; margin-top: 15px;">
+                            <button class="btn btn-primary" onclick="navigateToTab('prediction')">Start Symptom Check</button>
+                            <button class="btn btn-secondary" onclick="navigateToTab('dashboard')">View Dashboard</button>
+                        </div>
+                    </div>
+                    <div class="hero-illustration">
+                        <!-- Clinical Heart/Globe SVG representation -->
+                        <svg viewBox="0 0 200 200" width="180" height="180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="100" cy="100" r="80" stroke="var(--accent-teal)" stroke-width="2" stroke-dasharray="8 8" opacity="0.3"/>
+                            <path d="M50 100 C50 60, 150 60, 150 100 C150 140, 100 170, 100 170 C100 170, 50 140, 50 100 Z" fill="rgba(20, 184, 166, 0.08)" stroke="var(--accent-teal)" stroke-width="3"/>
+                            <path d="M70 100 L90 100 L95 80 L105 120 L110 95 L115 105 L120 100 L130 100" stroke="var(--accent-emerald)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="100" cy="100" r="10" fill="rgba(20, 184, 166, 0.2)" stroke="var(--accent-teal)"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card" onclick="navigateToTab('prediction')">
+                        <div class="icon-wrap" style="color: var(--accent-teal);">💬</div>
+                        <h3>Symptom Checker</h3>
+                        <p>Talk to our offline chatbot to diagnose common viral diseases and bacterial symptoms.</p>
+                    </div>
+                    <div class="feature-card" onclick="navigateToTab('reports')">
+                        <div class="icon-wrap" style="color: var(--accent-orange);">📷</div>
+                        <h3>Visual Skin Scanner</h3>
+                        <p>Analyze skin lesions, rashes, eczema, or acne using color and texture models.</p>
+                    </div>
+                    <div class="feature-card" onclick="navigateToTab('reminders')">
+                        <div class="icon-wrap" style="color: #a855f7;">⏰</div>
+                        <h3>Medicine Reminders</h3>
+                        <p>Schedule your medications, set dosage times, and receive offline alerts.</p>
+                    </div>
+                    <div class="feature-card" onclick="navigateToTab('dashboard')">
+                        <div class="icon-wrap" style="color: var(--accent-emerald);">📈</div>
+                        <h3>Clinical Dashboard</h3>
+                        <p>Calculate your daily clinical health score, log temperature, and review history charts.</p>
+                    </div>
+                </div>
+
+                <div class="quick-status-bar">
+                    <div class="qs-item">
+                        <div class="qs-label">Patient Status</div>
+                        <div class="qs-val" id="qs-vitals-status">Vitals Healthy</div>
+                    </div>
+                    <div class="qs-item">
+                        <div class="qs-label">Upcoming Pill</div>
+                        <div class="qs-val" id="qs-upcoming-pill">No meds scheduled</div>
+                    </div>
+                    <div class="qs-item">
+                        <div class="qs-label">Daily Health Tip</div>
+                        <div class="qs-val" id="qs-health-tip" style="font-style: italic;">Stay hydrated and monitor body temperature.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 2: DISEASE PREDICTION ================= -->
+            <section id="section-prediction" class="section-view hidden" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px;">
+                <div class="chat-layout-panel" style="display: flex; flex-direction: column; height: calc(100vh - 120px);">
+                    <div class="messages-container" id="chat-messages" style="flex-grow: 1; overflow-y: auto; padding-right: 10px;">
+                        <!-- Messages dynamically added by app.js -->
+                    </div>
+                    
+                    <!-- Voice waveforms listening overlay -->
+                    <div id="voice-recording-overlay" class="voice-overlay hidden">
+                        <div class="sound-wave">
+                            <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <p>Listening to your voice... Speak now</p>
+                        <button class="btn btn-secondary" id="cancel-voice-btn">Stop Listening</button>
+                    </div>
+                    
+                    <div class="chat-input-panel">
+                        <div class="input-actions-bar">
+                            <div id="image-preview-container" class="image-preview-box hidden">
+                                <img id="image-preview" src="" alt="Symptom preview">
+                                <button class="remove-image-btn" id="remove-image-btn">&times;</button>
+                            </div>
+                            <div class="voice-readback-row" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="voice-readback-toggle" checked>
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="voice-control-label" style="font-size: 0.72rem; color: var(--text-secondary);">Voice Assistance (TTS)</span>
+                            </div>
+                        </div>
+                        
+                        <form class="input-form" id="chat-form">
+                            <input type="file" id="image-upload" accept="image/*" class="hidden">
+                            <button type="button" class="action-btn file-btn" id="upload-trigger" title="Upload symptom image">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                            </button>
+                            
+                            <button type="button" class="action-btn mic-btn" id="mic-trigger" title="Speak to assistant">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v1a7 7 0 0 1-14 0v-1"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                            </button>
+                            
+                            <input type="text" id="chat-input" placeholder="Describe symptoms (e.g. fever, headache) or type questions..." autocomplete="off">
+                            
+                            <button type="submit" class="send-btn" id="send-btn">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- DIAGNOSTIC TELEMETRY SIDEBAR -->
+                <div class="sidebar-diagnostics" style="display: flex; flex-direction: column; gap: 15px;">
+                    <div class="widget-card">
+                        <h3>System Integrity</h3>
+                        <div class="status-grid">
+                            <div class="status-item">
+                                <span class="status-label">Network Connection</span>
+                                <span class="status-val disconnected">Disconnected (No WiFi)</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">ML Prediction Engine</span>
+                                <span class="status-val active">Operational (Local)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget-card">
+                        <h3>Predictive Diagnostics</h3>
+                        <div id="analytics-empty-state" class="analytics-empty">
+                            <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                            <p style="font-size: 0.72rem; margin-top: 5px;">Describe symptoms to check diagnostic metrics.</p>
+                        </div>
+                        <div id="analytics-content-state" class="analytics-content hidden">
+                            <div class="gauge-container" style="display: flex; flex-direction: column; align-items: center;">
+                                <div class="gauge-title" style="font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase;">Confidence</div>
+                                <div class="gauge-circle" style="position: relative; width: 100px; height: 100px; margin: 8px 0;">
+                                    <svg class="progress-ring" width="100" height="100">
+                                        <circle class="progress-ring__circle-bg" stroke="rgba(0,0,0,0.05)" stroke-width="7" fill="transparent" r="42" cx="50" cy="50"/>
+                                        <circle id="confidence-ring" class="progress-ring__circle" stroke="var(--accent-teal)" stroke-width="7" stroke-dasharray="263.89" stroke-dashoffset="263.89" fill="transparent" r="42" cx="50" cy="50"/>
+                                    </svg>
+                                    <div class="gauge-percentage" id="confidence-percentage" style="position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:1.15rem; font-weight:700;">0%</div>
+                                </div>
+                                <div class="predicted-name" id="predicted-condition" style="font-size: 0.95rem; font-weight: 700; color: var(--accent-teal); text-align: center;">-</div>
+                                <div class="urgency-badge" id="predicted-urgency" style="margin-top: 5px; font-size: 0.62rem;">-</div>
+                            </div>
+                            
+                            <div style="margin-top: 15px;">
+                                <h4 style="font-size: 0.72rem; color: var(--text-primary); text-transform: uppercase; margin-bottom: 5px;">Differential Diagnostics</h4>
+                                <div style="height: 100px; position: relative;">
+                                    <canvas id="disease-distribution-chart" style="width:100%; height:100px;"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="xai-glass-card" style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 8px;">
+                                <div class="xai-header" style="display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 600; margin-bottom: 5px;">
+                                    <span>💡 Explainable AI (XAI)</span>
+                                    <span class="risk-badge" id="xai-risk-level">Normal</span>
+                                </div>
+                                <div id="xai-symptoms-mapped" style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 4px;"></div>
+                                <div id="xai-features-importance" style="display: flex; flex-direction: column; gap: 3px; margin: 5px 0;"></div>
+                                <p id="xai-reasoning" style="font-size: 0.65rem; font-style: italic; color: var(--text-muted); line-height: 1.3;"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 3: MEDICAL REPORTS / SCANNER ================= -->
+            <section id="section-reports" class="section-view hidden" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px;">
+                <div class="widget-card">
+                    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 10px;">Visual Skin Diagnostic Analyzer</h2>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 15px;">Scan skin symptoms locally. Our edge feature-extraction analyzer checks color histograms, saturation ratios, and surface roughness variables to predict conditions offline.</p>
+                    
+                    <!-- Drag & Drop Zone -->
+                    <div id="drop-zone" style="border: 2.5px dashed var(--accent-teal); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 180px; background: rgba(255, 255, 255, 0.015);">
+                        <div id="scanner-laser" style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, var(--accent-teal), transparent); box-shadow: 0 0 10px var(--accent-teal); display: none; animation: scanLaser 2s linear infinite; z-index: 10;"></div>
+                        <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="var(--accent-teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);">Drag & Drop Skin Sample Image</span>
+                        <span style="font-size: 0.72rem; color: var(--text-muted);">supports JPEG, PNG formats (Max 8MB)</span>
+                        <div id="scan-progress-container" style="width: 100%; background: rgba(255,255,255,0.06); height: 5px; border-radius: 3px; display: none; overflow: hidden; margin-top: 10px;">
+                            <div id="scan-progress-fill" style="width: 0%; height: 100%; background: var(--accent-teal); transition: width 0.1s linear;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Custom upload file button -->
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button class="btn btn-primary" onclick="document.getElementById('image-upload').click()">Browse Local Photos</button>
+                    </div>
+
+                    <!-- Visual Scan Results Container -->
+                    <div id="reports-results-card" class="widget-card hidden" style="margin-top: 20px; border-top: 2px solid var(--accent-teal); padding-top: 15px;">
+                        <h3 style="font-size: 1rem; color: var(--accent-teal); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">🔬 Skin Scan Diagnostics</h3>
+                        <div style="display: flex; gap: 15px; align-items: flex-start; margin-bottom: 12px;">
+                            <div style="width: 100px; height: 100px; border-radius: 8px; overflow: hidden; border: 1.5px solid var(--accent-teal); flex-shrink: 0; background: rgba(0,0,0,0.03);">
+                                <img id="reports-preview-img" src="" alt="Scan preview" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <div style="flex-grow: 1;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <h4 id="reports-result-name" style="font-size: 1.05rem; color: var(--text-primary); margin: 0; font-weight: 700;">Condition</h4>
+                                    <span id="reports-result-confidence" class="badge" style="background: var(--accent-teal-glow); color: var(--accent-teal); font-weight: 700; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px;">-- Match</span>
+                                </div>
+                                <p id="reports-result-desc" style="font-size: 0.76rem; color: var(--text-secondary); line-height: 1.4; margin: 0;"></p>
+                            </div>
+                        </div>
+                        
+                        <div style="background: var(--accent-teal-glow); border: 1px solid var(--border-glass-glow); border-radius: 8px; padding: 10px; margin-bottom: 15px;">
+                            <strong style="font-size: 0.72rem; color: var(--accent-teal); display: block; margin-bottom: 2px;">🛡️ Clinical Care Recommendation:</strong>
+                            <p id="reports-result-guidance" style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.35; margin: 0;"></p>
+                        </div>
+                        
+                        <!-- Visual metrics parameter bars -->
+                        <div id="reports-result-metrics" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; border-top: 1px dashed var(--border-glass); padding-top: 12px;">
+                            <!-- Filled dynamically by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reports-samples-panel" style="display: flex; flex-direction: column; gap: 15px;">
+                    <div class="widget-card">
+                        <h3>Interactive Sample Images</h3>
+                        <p class="section-desc" style="font-size: 0.72rem;">Click a mock-lesion to verify vision classification model outputs:</p>
+                        <div class="sample-image-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                            <div class="sample-img-card" data-img="healthy_skin.png">
+                                <img src="{{ url_for('static', filename='assets/sample_images/healthy_skin.png') }}" alt="Healthy Skin" style="width: 100%; height: 75px; object-fit: cover; border-radius: 6px;">
+                                <span style="font-size: 0.7rem; font-weight: 600; display: block; text-align: center; margin-top: 5px;">Healthy Skin</span>
+                            </div>
+                            <div class="sample-img-card" data-img="skin_rash.png">
+                                <img src="{{ url_for('static', filename='assets/sample_images/skin_rash.png') }}" alt="Skin Rash" style="width: 100%; height: 75px; object-fit: cover; border-radius: 6px;">
+                                <span style="font-size: 0.7rem; font-weight: 600; display: block; text-align: center; margin-top: 5px;">Skin Rash</span>
+                            </div>
+                            <div class="sample-img-card" data-img="acne.png">
+                                <img src="{{ url_for('static', filename='assets/sample_images/acne.png') }}" alt="Acne" style="width: 100%; height: 75px; object-fit: cover; border-radius: 6px;">
+                                <span style="font-size: 0.7rem; font-weight: 600; display: block; text-align: center; margin-top: 5px;">Acne</span>
+                            </div>
+                            <div class="sample-img-card" data-img="eczema.png">
+                                <img src="{{ url_for('static', filename='assets/sample_images/eczema.png') }}" alt="Eczema" style="width: 100%; height: 75px; object-fit: cover; border-radius: 6px;">
+                                <span style="font-size: 0.7rem; font-weight: 600; display: block; text-align: center; margin-top: 5px;">Eczema</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="widget-card">
+                        <h3>Offline Report Reader</h3>
+                        <p class="section-desc" style="font-size: 0.72rem;">Log diagnostic lab reports (.txt, .json formats) to check clinical reference anomalies.</p>
+                        <div style="border: 1px dashed var(--border-glass); border-radius: 8px; padding: 15px; text-align: center; background: rgba(0,0,0,0.05);">
+                            <span style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 8px;">Upload textual lab values</span>
+                            <input type="file" id="report-file-upload" accept=".txt,.json" class="hidden">
+                            <button class="btn btn-secondary" onclick="document.getElementById('report-file-upload').click()" style="font-size: 0.7rem; padding: 5px 10px;">Select Report File</button>
+                        </div>
+                        <div id="report-analysis-results" style="margin-top: 10px; font-size: 0.7rem; color: var(--text-secondary);"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 4: MEDICINE REMINDER ================= -->
+            <section id="section-reminders" class="section-view hidden" style="display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 20px;">
+                <div class="widget-card">
+                    <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 10px;">Add New Medication</h3>
+                    <form id="med-form" style="display: flex; flex-direction: column; gap: 10px;">
+                        <div>
+                            <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;">Medicine Name</label>
+                            <input type="text" id="med-name" placeholder="Pill Name (e.g. Paracetamol)" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <div style="flex: 1;">
+                                <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;">Dosage</label>
+                                <input type="text" id="med-dosage" placeholder="Dose (e.g. 500mg)" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
+                            </div>
+                            <div style="flex: 1;">
+                                <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;">Reminder Time</label>
+                                <input type="text" id="med-time" placeholder="Time (e.g. 8:00 AM)" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
+                            </div>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;">Frequency</label>
+                            <select id="med-frequency" style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none; cursor: pointer;">
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Add Schedule</button>
+                    </form>
+                </div>
+
+                <div class="widget-card" style="display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="font-size: 1.15rem; font-weight: 700; margin: 0;">Active Schedule</h3>
+                        <span class="badge" style="background: var(--accent-teal-glow); color: var(--accent-teal); font-size: 0.65rem;" id="reminders-count-badge">0 Scheduled</span>
+                    </div>
+                    
+                    <div class="meds-list-box" style="flex-grow: 1; min-height: 200px; max-height: 380px; overflow-y: auto;">
+                        <div id="meds-log-list" style="display: flex; flex-direction: column; gap: 10px;">
+                            <span style="font-style: italic; font-size: 0.8rem; color: var(--text-muted);">No medications scheduled yet.</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 5: HEALTH DASHBOARD ================= -->
+            <section id="section-dashboard" class="section-view hidden" style="display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 20px;">
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Health Score Circular Gauge -->
+                    <div class="widget-card" style="text-align: center; position: relative;">
+                        <h3 style="margin-bottom: 10px;">Overall Health Score</h3>
+                        <div style="position: relative; width: 110px; height: 110px; margin: 0 auto 10px auto;">
+                            <svg width="110" height="110" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,0.03)" stroke-width="7" fill="transparent"/>
+                                <circle id="health-score-ring" cx="50" cy="50" r="42" stroke="url(#health-glow-grad)" stroke-width="7" fill="transparent" stroke-dasharray="263.89" stroke-dashoffset="263.89" stroke-linecap="round" style="transition: stroke-dashoffset 0.6s ease-out; transform: rotate(-90deg); transform-origin: 50% 50%;"/>
+                                <defs>
+                                    <linearGradient id="health-glow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#14b8a6" />
+                                        <stop offset="100%" stop-color="#10b981" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div id="health-score-num" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.6rem; font-weight: 800; color: var(--text-primary);">--</div>
+                        </div>
+                        <div style="font-size: 0.72rem; color: var(--text-muted);" id="health-score-status">Log temperature & oxygen to compute score.</div>
+                    </div>
+
+                    <!-- Vitals Input Form -->
+                    <div class="widget-card">
+                        <h3>Log Daily Vitals</h3>
+                        <form id="vitals-form" style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; gap: 10px;">
+                                <div style="flex: 1;">
+                                    <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;">Body Temp (°F)</label>
+                                    <input type="number" step="0.1" id="vital-temp" placeholder="98.6" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
+                                </div>
+                                <div style="flex: 1;">
+                                    <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;">Oxygen SpO₂ (%)</label>
+                                    <input type="number" id="vital-spo2" placeholder="98" min="70" max="100" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Logs</button>
+                        </form>
+                        <div style="margin-top: 10px; font-size: 0.72rem; color: var(--text-secondary); text-align: center;" id="vitals-status">Vitals normal.</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Telemetry Dashboard grid -->
+                    <div class="dashboard-vitals-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                        <!-- Temp Telemetry -->
+                        <div class="vital-card">
+                            <div class="vital-title">Temperature</div>
+                            <div class="vital-value" id="dash-val-temp">-- °F</div>
+                            <div class="vital-badge" id="dash-status-temp">● Offline</div>
+                        </div>
+                        <!-- SpO2 Telemetry -->
+                        <div class="vital-card">
+                            <div class="vital-title">Oxygen SpO₂</div>
+                            <div class="vital-value" id="dash-val-spo2">-- %</div>
+                            <div class="vital-badge" id="dash-status-spo2">● Optimal</div>
+                        </div>
+                        <!-- Pulse rate -->
+                        <div class="vital-card">
+                            <div class="vital-title" style="display: flex; align-items: center; justify-content: space-between;">
+                                Heart Rate <span class="heartbeat-pulse" style="width: 5px; height: 5px; background: #ef4444; border-radius: 50%; display: inline-block;"></span>
+                            </div>
+                            <div class="vital-value" id="dash-val-hr">72 bpm</div>
+                            <div class="vital-badge" style="color: #10b981;">● Resting</div>
+                        </div>
+                        <!-- BP -->
+                        <div class="vital-card">
+                            <div class="vital-title">Blood Pressure</div>
+                            <div class="vital-value" id="dash-val-bp">120/80</div>
+                            <div class="vital-badge" style="color: #10b981;">● Normal</div>
+                        </div>
+                    </div>
+
+                    <!-- Vitals trend line -->
+                    <div class="widget-card" style="flex-grow: 1;">
+                        <h3>Vitals Chart Trend (Offline)</h3>
+                        <div style="height: 120px; position: relative; margin-top: 10px;">
+                            <canvas id="vitals-chart" style="width: 100%; height: 120px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 6: EMERGENCY ================= -->
+            <section id="section-emergency" class="section-view hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="widget-card" style="border-left: 5px solid var(--accent-red); background: rgba(239, 68, 68, 0.02);">
+                    <h2 style="font-size: 1.3rem; color: #ef4444; font-weight: 800; margin-bottom: 10px;">🚨 SOS Clinical Warnings</h2>
+                    <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 15px;">If you display severe symptoms like difficulty breathing, chest pain, or oxygen levels below 94%, please activate emergency services immediately.</p>
+                    
+                    <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 8px; padding: 15px; text-align: left; font-size: 0.78rem; line-height: 1.5; margin-bottom: 20px;">
+                        <strong style="color: #f87171; display: block; margin-bottom: 5px;">📋 Critical Emergency Directives:</strong>
+                        <ul style="margin-left: 15px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 5px;">
+                            <li>Sit upright to assist lungs and respiration.</li>
+                            <li>Minimize movement and avoid physical exertion.</li>
+                            <li>Keep emergency phone contacts accessible.</li>
+                            <li>Ventilate rooms and turn on fans.</li>
+                        </ul>
+                    </div>
+
+                    <button class="btn btn-primary" id="sos-trigger-btn" style="background: #ef4444; width: 100%; font-size: 0.85rem; padding: 10px;">🚨 Trigger SOS Warning</button>
+                </div>
+
+                <div class="widget-card">
+                    <h3>Simulated Rescue Contacts</h3>
+                    <p class="section-desc">Fictional local clinical stations and community response teams (Simulated Offline Directory):</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                        <div style="border: 1px solid var(--border-glass); border-radius: 8px; padding: 12px; background: rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="font-size: 0.85rem; color: var(--text-primary); display: block;">Aura Community Clinic Emergency</strong>
+                                <span style="font-size: 0.72rem; color: var(--text-muted);">Tel: +91 98765-43210</span>
+                            </div>
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">Active</span>
+                        </div>
+                        <div style="border: 1px solid var(--border-glass); border-radius: 8px; padding: 12px; background: rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="font-size: 0.85rem; color: var(--text-primary); display: block;">District Trauma Hospital</strong>
+                                <span style="font-size: 0.72rem; color: var(--text-muted);">Tel: +91 99999-11111</span>
+                            </div>
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">24/7 Active</span>
+                        </div>
+                        <div style="border: 1px solid var(--border-glass); border-radius: 8px; padding: 12px; background: rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="font-size: 0.85rem; color: var(--text-primary); display: block;">Outbreak Alert Hotline</strong>
+                                <span style="font-size: 0.72rem; color: var(--text-muted);">Tel: 1800-456-9999</span>
+                            </div>
+                            <span class="badge" style="background: rgba(245, 158, 11, 0.12); color: #f59e0b;">Busy</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 7: SETTINGS ================= -->
+            <section id="section-settings" class="section-view hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="widget-card">
+                    <h3>UI & Feature Customizations</h3>
+                    <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                        <!-- Mode toggle -->
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="font-size: 0.85rem; display: block; color: var(--text-primary);">Dark Theme Mode</strong>
+                                <span style="font-size: 0.7rem; color: var(--text-muted);">Override the interface color palette</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="settings-darkmode-toggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <!-- Voice Assistance -->
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="font-size: 0.85rem; display: block; color: var(--text-primary);">Voice TTS Feedback</strong>
+                                <span style="font-size: 0.7rem; color: var(--text-muted);">Read results and predictions aloud</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="settings-voice-toggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <!-- Onboarding Tour -->
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="font-size: 0.85rem; display: block; color: var(--text-primary);">AI Assistant Widget</strong>
+                                <span style="font-size: 0.7rem; color: var(--text-muted);">Display floating doctor overlay</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="settings-avatar-toggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget-card">
+                    <h3>Accessibility Preferences</h3>
+                    <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                        <!-- Font Size -->
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="font-size: 0.85rem; display: block; color: var(--text-primary);">Large Text Layout</strong>
+                                <span style="font-size: 0.7rem; color: var(--text-muted);">Enlarge typography scaling</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="settings-fontsize-toggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <!-- Database clear -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-glass); padding-top: 15px;">
+                            <div>
+                                <strong style="font-size: 0.85rem; display: block; color: var(--text-primary);">Local Storage Flush</strong>
+                                <span style="font-size: 0.7rem; color: var(--text-muted);">Clear medications log and vitals history</span>
+                            </div>
+                            <button class="btn btn-secondary" id="clear-db-btn" style="background: rgba(239,68,68,0.1); border:1px solid #ef4444; color:#f87171; font-size:0.72rem; padding: 6px 12px;">Reset Database</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 8: ABOUT ================= -->
+            <section id="section-about" class="section-view hidden">
+                <div class="widget-card">
+                    <h2 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;">About AURA Platform</h2>
+                    <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px;">AURA is trained locally on synthetic parameters matching typical public health infections and skin conditions. Since it works 100% offline, it represents a lightweight, portable clinical support system ideal for remote villages, military posts, and offline disaster response sectors.</p>
+                    
+                    <h3 style="font-size: 1.05rem; font-weight: 700; margin-top: 15px; margin-bottom: 5px;">Offline Architecture Summary</h3>
+                    <ul style="margin-left: 18px; font-size: 0.78rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
+                        <li>**Natural Language Engine**: Tokenized dictionary structures mapping multi-word symptom variations in 9 languages client-side.</li>
+                        <li>**Classifier Model**: Binary symptom vectors are classified via locally serialised scikit-learn Random Forests.</li>
+                        <li>**Image Feature Extractor**: RGB color indices, HSV saturation parameters, and image spatial gradient texture maps.</li>
+                        <li>**Speech Synthesis**: Offline Web Speech Synthesizers executing localized voices.</li>
+                    </ul>
+
+                    <div style="margin-top: 20px; border-top: 1px dashed var(--border-glass); padding-top: 15px; font-size: 0.72rem; color: var(--text-muted); line-height: 1.45;">
+                        ⚠️ **Clinical Support Disclaimer Notice**:
+                        AURA is a diagnostic assistance simulator trained on synthetic data for Smart India Hackathon demonstrations and placements. It does not provide professional medical advice. Always seek professional care for clinical decisions.
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- FIXED HOLOGRAPHIC AURA AI ASSISTANT OVERLAY -->
+    <div class="aura-fixed-assistant" id="aura-fixed-assistant">
+        <!-- Floating Speech Guidance Bubble -->
+        <div class="aura-guidance-bubble" id="aura-guidance-bubble">
+            <div class="bubble-header">AURA Guide</div>
+            <div class="bubble-body" id="aura-guidance-text">Welcome! Click "Start Guided Tour" or select an option to begin.</div>
+            <button class="bubble-close" onclick="document.getElementById('aura-guidance-bubble').classList.add('hidden')">✕</button>
+        </div>
+
+        <!-- Pulse Ring Outer -->
+        <div class="aura-avatar-circle" id="aura-avatar-widget" title="Ask AURA or hear page guidance">
+            <svg viewBox="0 0 24 24" width="46" height="46" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="rgba(20, 184, 166, 0.2)" stroke-width="0.5" />
+                <path d="M6 18C6 15 8 13.5 12 13.5C16 13.5 18 15 18 18" stroke="#14b8a6" stroke-width="1.2" stroke-linecap="round"/>
+                <path d="M5 20C5 20 6.5 17.5 12 17.5C17.5 17.5 19 20 19 20" stroke="#14b8a6" stroke-width="1" stroke-linecap="round" stroke-dasharray="1 1"/>
+                <path d="M11 13.5V15.5H13V13.5" stroke="#14b8a6" stroke-width="1"/>
+                <circle cx="12" cy="9.5" r="3.2" stroke="#14b8a6" stroke-width="1.5" fill="#080c14"/>
+                <path d="M9 14.5C9 14.5 9 17 12 17C15 17 15 14.5 15 14.5" stroke="#10b981" stroke-width="1" stroke-linecap="round"/>
+                <circle cx="12" cy="18.5" r="1" fill="#10b981"/>
+                <path d="M9.5 7H14.5L14 6H10L9.5 7Z" fill="#14b8a6"/>
+                <path d="M12 5.2V6.8M11.2 6H12.8" stroke="#080c14" stroke-width="0.6"/>
+                <path d="M8.8 8.5C8.8 8.5 10 7.5 12 8C14 7.5 15.2 8.5 15.2 8.5" stroke="#14b8a6" stroke-width="1" stroke-linecap="round"/>
+                <g class="aura-eye">
+                    <circle cx="10.7" cy="9.5" r="0.4" fill="#f8fafc"/>
+                    <circle cx="13.3" cy="9.5" r="0.4" fill="#f8fafc"/>
+                </g>
+                <g class="aura-mouth-wrapper" style="transform-origin: 12px 11px;">
+                    <path class="aura-mouth" d="M11.2 11C11.2 11 12 11.5 12.8 11" stroke="#14b8a6" stroke-width="0.8" stroke-linecap="round" fill="none"/>
+                </g>
+            </svg>
+        </div>
+        <div class="aura-widget-badge">
+            <span id="aura-widget-status">Idle</span>
+        </div>
+    </div>
+
+    <!-- SOS EMERGENCY OVERLAY MODAL -->
+    <div class="sos-overlay" id="sos-overlay">
+        <div class="sos-card">
+            <button id="sos-close-btn" style="float: right; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 4px; outline: none;">✕</button>
+            <div style="color: #ef4444; font-size: 2.6rem; margin-bottom: 8px; animation: pulseRed 1s infinite;">🚨</div>
+            <h2 style="color: #ef4444; font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; letter-spacing: 0.5px;">⚠️ SOS CRITICAL WARNING</h2>
+            <p id="sos-overlay-reason" style="font-size: 0.78rem; line-height: 1.4; color: var(--text-primary); margin-bottom: 12px;">Urgent clinical threshold crossed.</p>
+            
+            <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 8px; padding: 10px; text-align: left; font-size: 0.7rem; line-height: 1.4; margin-bottom: 15px;">
+                <strong style="color: #f87171; display: block; margin-bottom: 3px;">📋 Emergency Directives:</strong>
+                <ul style="margin-left: 14px; color: var(--text-secondary);">
+                    <li>Place patient in a comfortable, ventilated space.</li>
+                    <li>If blood oxygen (SpO2) is low, minimize moving.</li>
+                    <li>Keep emergency contacts ready.</li>
+                </ul>
+            </div>
+
+            <button class="sos-siren-btn" id="sos-siren-btn">🔊</button>
+            <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px;">Click to test emergency siren alert</div>
+            
+            <button class="btn" id="sos-dispatch-btn" style="background: #ef4444; color: #fff; width: 100%; border: none; font-weight: 700; padding: 10px; border-radius: 6px; margin-top: 15px; cursor: pointer; transition: background 0.2s; font-size: 0.8rem; letter-spacing: 0.5px;">SIMULATE RESCUE CALL</button>
+        </div>
+    </div>
+
+    <!-- Chart.js and application scripts -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
