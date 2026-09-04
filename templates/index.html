@@ -237,8 +237,81 @@
             <button class="icon-btn" id="tour-launcher-btn" title="Launch Interactive Guided Tour">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
             </button>
+
+            <!-- Mobile Hamburger Menu Button -->
+            <button class="mobile-menu-btn" id="mobile-menu-btn" title="Open Navigation Menu" aria-label="Open Navigation Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
+
+    <!-- SLIDING FROSTED GLASS MOBILE NAVIGATION DRAWER -->
+    <div class="mobile-drawer-overlay hidden" id="mobile-drawer-overlay"></div>
+    <aside class="mobile-nav-drawer" id="mobile-nav-drawer" aria-label="Mobile Navigation">
+        <div class="drawer-header">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                <span>AURA Platform</span>
+            </div>
+            <button class="drawer-close-btn" id="drawer-close-btn" aria-label="Close menu">&times;</button>
+        </div>
+        
+        <div class="drawer-body">
+            <div class="drawer-section-label">CLINICAL NAVIGATION</div>
+            <div class="drawer-nav-list">
+                <button class="mobile-nav-item active" data-tab="home">
+                    <span class="m-icon">🏠</span> <span>Home</span>
+                </button>
+                <button class="mobile-nav-item" data-tab="prediction">
+                    <span class="m-icon">💬</span> <span>Disease Prediction</span>
+                </button>
+                <button class="mobile-nav-item" data-tab="reports">
+                    <span class="m-icon">📷</span> <span>Medical Reports &amp; Lab</span>
+                </button>
+                <button class="mobile-nav-item" data-tab="vaccines">
+                    <span class="m-icon">💉</span> <span>Vaccination Schedules</span>
+                </button>
+                <button class="mobile-nav-item" data-tab="dashboard">
+                    <span class="m-icon">📈</span> <span>Health Dashboard</span>
+                </button>
+                <button class="mobile-nav-item" data-tab="emergency">
+                    <span class="m-icon">🚨</span> <span>Emergency Triage</span>
+                </button>
+                <button class="mobile-nav-item" data-tab="settings">
+                    <span class="m-icon">⚙️</span> <span>Settings</span>
+                </button>
+                <button class="mobile-nav-item" data-tab="about">
+                    <span class="m-icon">ℹ️</span> <span>About AURA</span>
+                </button>
+            </div>
+
+            <div class="drawer-section-label">INTERACTIVE CLINICAL TOOLS</div>
+            <div class="drawer-tools-grid">
+                <button class="drawer-tool-btn" id="mobile-drawer-relax-btn">
+                    <span>🎮</span> <span>Mindful Pause</span>
+                </button>
+                <button class="drawer-tool-btn" id="mobile-drawer-live-btn">
+                    <span class="pulse-dot-green"></span> <span>Live Telemetry</span>
+                </button>
+                <button class="drawer-tool-btn" id="mobile-drawer-tour-btn">
+                    <span>🚀</span> <span>Guided Tour</span>
+                </button>
+            </div>
+
+            <div class="drawer-section-label">ACCOUNT &amp; ACCESS</div>
+            <div class="drawer-auth-actions">
+                <button class="btn btn-primary drawer-btn" onclick="navigateToTab('signup'); closeMobileDrawer();">
+                    ✨ Create Patient Account
+                </button>
+                <button class="btn btn-secondary drawer-btn" onclick="navigateToTab('login'); closeMobileDrawer();">
+                    👤 Sign In
+                </button>
+            </div>
+        </div>
+    </aside>
+
 
     <!-- MAIN APP CONTAINER -->
     <div class="app-container">
@@ -546,7 +619,59 @@
                             </div>
 
                             <!-- Visual Scan Results Container -->
-                            <div id="reports-results-card" class="widget-card hidden" style="margin-top: 20px; border-top: 2px solid var(--accent-teal); padding-top: 15px;">
+                            <div id="reports-results-card" class="widget-card hidden" style="margin-top: 20px; border-top: 2px solid var(--accent-teal); padding-top: 18px;">
+                            
+                            <!-- VIEW A: CLINICAL DOCUMENT & MEDICAL REPORT ANALYSIS -->
+                            <div id="doc-scan-results-view" class="hidden">
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border-glass); padding-bottom: 10px;">
+                                    <h3 style="font-size: 1.1rem; color: #0284c7; margin: 0; display: flex; align-items: center; gap: 8px;">
+                                        📄 <span id="doc-title-text">General Clinical Check-up Report</span>
+                                    </h3>
+                                    <span class="badge" style="background: rgba(2, 132, 199, 0.1); color: #0284c7; font-weight: 700; font-size: 0.74rem; padding: 4px 10px; border-radius: 6px;" id="doc-confidence-badge">98% OCR Match</span>
+                                </div>
+
+                                <!-- Patient Profile Strip -->
+                                <div class="doc-patient-strip" id="doc-patient-strip" style="display: flex; gap: 12px; flex-wrap: wrap; background: rgba(0,0,0,0.02); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-glass); margin-bottom: 15px; font-size: 0.78rem;">
+                                    <div><strong>Patient:</strong> <span id="doc-patient-name">Jane Doe</span></div>
+                                    <div><strong>Age/DOB:</strong> <span id="doc-patient-age">50 Yrs (1975-04-30)</span></div>
+                                    <div><strong>Gender:</strong> <span id="doc-patient-gender">Female</span></div>
+                                    <div><strong>Attending Physician:</strong> <span id="doc-doctor-name">Dr. A. Smith</span></div>
+                                    <div><strong>Date:</strong> <span id="doc-report-date">2025-06-22</span></div>
+                                </div>
+
+                                <!-- Vitals Grid -->
+                                <h4 style="font-size: 0.85rem; color: var(--text-primary); margin-bottom: 8px; font-weight: 700;">📊 Extracted Clinical Vitals</h4>
+                                <div class="doc-vitals-grid" id="doc-vitals-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 16px;">
+                                    <!-- Populated dynamically -->
+                                </div>
+
+                                <!-- Conditions & Medications -->
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+                                    <div style="background: rgba(239, 68, 68, 0.04); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 8px; padding: 10px;">
+                                        <strong style="font-size: 0.74rem; color: #ef4444; display: block; margin-bottom: 4px;">🩺 Diagnosed Conditions / History:</strong>
+                                        <div id="doc-conditions-list" style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.4;">None flagged.</div>
+                                    </div>
+                                    <div style="background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 8px; padding: 10px;">
+                                        <strong style="font-size: 0.74rem; color: #10b981; display: block; margin-bottom: 4px;">💊 Active Medications:</strong>
+                                        <div id="doc-medications-list" style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.4;">None recorded.</div>
+                                    </div>
+                                </div>
+
+                                <!-- AI Clinical Care Recommendation Box -->
+                                <div style="background: rgba(2, 132, 199, 0.06); border: 1.5px solid rgba(2, 132, 199, 0.2); border-radius: 8px; padding: 12px; margin-bottom: 14px;">
+                                    <strong style="font-size: 0.78rem; color: #0284c7; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                                        🛡️ AI Clinical Care Guidance &amp; Doctor's Directives:
+                                    </strong>
+                                    <p id="doc-guidance-text" style="font-size: 0.76rem; color: var(--text-primary); line-height: 1.45; margin: 0;"></p>
+                                </div>
+
+                                <div style="display: flex; gap: 10px;">
+                                    <button class="btn btn-secondary" onclick="window.print()" style="font-size: 0.75rem; padding: 6px 14px;">🖨️ Print Clinical Summary</button>
+                                </div>
+                            </div>
+
+                            <!-- VIEW B: VISUAL SKIN LESION SCANNER -->
+                            <div id="skin-scan-results-view">
                                 <h3 style="font-size: 1rem; color: var(--accent-teal); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">🔬 Skin Scan Diagnostics</h3>
                                 <div style="display: flex; gap: 15px; align-items: flex-start; margin-bottom: 12px;">
                                     <div style="width: 100px; height: 100px; border-radius: 8px; overflow: hidden; border: 1.5px solid var(--accent-teal); flex-shrink: 0; background: rgba(0,0,0,0.03);">
@@ -571,6 +696,8 @@
                                     <!-- Filled dynamically by JS -->
                                 </div>
                             </div>
+
+                        </div>
                         </div>
 
                         <div class="reports-samples-panel" style="display: flex; flex-direction: column; gap: 15px;">

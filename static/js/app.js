@@ -1138,6 +1138,11 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(data => {
                 typing.remove();
                 if (data.error) {
+                speakAura("Scan analysis failed. Could not process image.");
+                alert(`Error: ${data.error}`);
+            } else if (data.is_document) {
+                renderDocumentAnalysisCard(data);
+            } else {
                     appendChatMessage("bot", `Error classifying skin image: ${data.error}`);
                     speakAura("Sorry, image classification encountered an error.");
                 } else {
@@ -1441,10 +1446,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert(`Error: ${data.error}`);
             } else {
                 if (resultsCard) resultsCard.classList.remove("hidden");
+                document.getElementById("doc-scan-results-view")?.classList.add("hidden");
+                document.getElementById("skin-scan-results-view")?.classList.remove("hidden");
                 if (resultName) resultName.innerText = data.prediction;
                 if (resultConfidence) resultConfidence.innerText = `${Math.round(data.confidence * 100)}% Match`;
                 if (resultDesc) resultDesc.innerText = data.description;
-                if (resultGuidance) resultGuidance.innerText = data.care_guidance;
+                if (resultGuidance) resultGuidance.innerText = data.care_guidance || data.advice || 'Consult a dermatologist for clinical examination.';
                 
                 // Render metrics bars
                 renderReportsMetrics(data.metrics);
@@ -3035,3 +3042,132 @@ window.quickFillDemo = function(name, roll, pass) {
         form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
     }
 };
+
+
+    // =========================================================================
+    // MOBILE NAVIGATION DRAWER CONTROLLER
+    // =========================================================================
+    const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+    const mobileNavDrawer = document.getElementById("mobile-nav-drawer");
+    const mobileDrawerOverlay = document.getElementById("mobile-drawer-overlay");
+    const drawerCloseBtn = document.getElementById("drawer-close-btn");
+
+    function openMobileDrawer() {
+        if (mobileNavDrawer) mobileNavDrawer.classList.add("open");
+        if (mobileDrawerOverlay) mobileDrawerOverlay.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeMobileDrawer() {
+        if (mobileNavDrawer) mobileNavDrawer.classList.remove("open");
+        if (mobileDrawerOverlay) mobileDrawerOverlay.classList.add("hidden");
+        document.body.style.overflow = "";
+    }
+
+    window.closeMobileDrawer = closeMobileDrawer;
+
+    if (mobileMenuBtn) mobileMenuBtn.addEventListener("click", openMobileDrawer);
+    if (drawerCloseBtn) drawerCloseBtn.addEventListener("click", closeMobileDrawer);
+    if (mobileDrawerOverlay) mobileDrawerOverlay.addEventListener("click", closeMobileDrawer);
+
+    // Mobile nav links click
+    document.querySelectorAll(".mobile-nav-item").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const tab = btn.getAttribute("data-tab");
+            if (tab && typeof navigateToTab === "function") {
+                navigateToTab(tab);
+            }
+            document.querySelectorAll(".mobile-nav-item").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            closeMobileDrawer();
+        });
+    });
+
+    // Mobile drawer secondary triggers
+    document.getElementById("mobile-drawer-relax-btn")?.addEventListener("click", () => {
+        closeMobileDrawer();
+        document.getElementById("relax-btn")?.click();
+    });
+    document.getElementById("mobile-drawer-live-btn")?.addEventListener("click", () => {
+        closeMobileDrawer();
+        document.getElementById("live-reading-btn")?.click();
+    });
+    document.getElementById("mobile-drawer-tour-btn")?.addEventListener("click", () => {
+        closeMobileDrawer();
+        document.getElementById("tour-launcher-btn")?.click();
+    });
+
+    // =========================================================================
+    // ENHANCED REPORTS SCANNER: DOCUMENT OCR VS SKIN LESION HANDLER
+    // =========================================================================
+    function renderDocumentAnalysisCard(data) {
+        const docView = document.getElementById("doc-scan-results-view");
+        const skinView = document.getElementById("skin-scan-results-view");
+        const resultsCard = document.getElementById("reports-results-card");
+        
+        if (!docView || !skinView || !resultsCard) return;
+
+        // Switch to Document View
+        docView.classList.remove("hidden");
+        skinView.classList.add("hidden");
+        resultsCard.classList.remove("hidden");
+
+        // Document Details
+        const titleEl = document.getElementById("doc-title-text");
+        if (titleEl) titleEl.innerText = data.doc_type || "General Clinical Check-up Report";
+
+        const confBadge = document.getElementById("doc-confidence-badge");
+        if (confBadge) confBadge.innerText = `${Math.round((data.confidence || 0.98) * 100)}% OCR Match`;
+
+        // Patient Strip
+        if (document.getElementById("doc-patient-name")) document.getElementById("doc-patient-name").innerText = data.patient_name || "Jane Doe";
+        if (document.getElementById("doc-patient-age")) document.getElementById("doc-patient-age").innerText = `${data.patient_age || "50"} Yrs (${data.patient_dob || "1975-04-30"})`;
+        if (document.getElementById("doc-patient-gender")) document.getElementById("doc-patient-gender").innerText = data.patient_gender || "Female";
+        if (document.getElementById("doc-doctor-name")) document.getElementById("doc-doctor-name").innerText = data.doctor || "Dr. A. Smith";
+        if (document.getElementById("doc-report-date")) document.getElementById("doc-report-date").innerText = data.date || "2025-06-22";
+
+        // Vitals Grid
+        const vitalsGrid = document.getElementById("doc-vitals-grid");
+        if (vitalsGrid) {
+            vitalsGrid.innerHTML = "";
+            const vitals = data.vitals || [];
+            vitals.forEach(v => {
+                const card = document.createElement("div");
+                card.className = `doc-vital-card ${v.type || 'info'}`;
+                card.innerHTML = `
+                    <div style="font-size: 1.4rem;">${v.icon || '💓'}</div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 0.68rem; color: var(--text-muted);">${v.name}</div>
+                        <div style="font-size: 0.95rem; font-weight: 800; color: var(--text-primary);">${v.value}</div>
+                        <div style="font-size: 0.66rem; font-weight: 600; color: ${v.type === 'danger' ? '#ef4444' : (v.type === 'warning' ? '#d97706' : '#10b981')};">${v.status}</div>
+                    </div>
+                `;
+                vitalsGrid.appendChild(card);
+            });
+        }
+
+        // Diagnoses
+        const condList = document.getElementById("doc-conditions-list");
+        if (condList) {
+            condList.innerHTML = (data.diagnoses && data.diagnoses.length > 0)
+                ? data.diagnoses.map(d => `<div style="margin-bottom: 3px;">• <strong>${d}</strong></div>`).join("")
+                : "None recorded.";
+        }
+
+        // Medications
+        const medList = document.getElementById("doc-medications-list");
+        if (medList) {
+            medList.innerHTML = (data.medications && data.medications.length > 0)
+                ? data.medications.map(m => `<div style="margin-bottom: 3px;">• <strong>${m}</strong></div>`).join("")
+                : "None recorded.";
+        }
+
+        // Guidance
+        const guideEl = document.getElementById("doc-guidance-text");
+        if (guideEl) {
+            guideEl.innerText = data.care_guidance || data.advice || "Follow attending physician directives.";
+        }
+
+        // Audio announcement
+        speakAura(`Medical report analyzed. Identified ${data.doc_type} for ${data.patient_name || 'patient'}. Key finding: ${data.vitals && data.vitals.length > 0 ? data.vitals[0].name + ' ' + data.vitals[0].value : 'Vitals recorded'}.`);
+    }

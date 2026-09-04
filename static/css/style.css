@@ -2774,3 +2774,359 @@ body.dark-theme .auth-divider span {
 .section-footer-stamp strong {
     color: var(--accent-teal);
 }
+
+
+/* =========================================================================
+   RESPONSIVE NAVBAR & MOBILE NAVIGATION DRAWER
+   Guarantees Login, Sign Up, and all 8 tabs are visible across all screens
+   ========================================================================= */
+
+.main-navbar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 64px;
+    background: var(--bg-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-glass);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 18px;
+    z-index: 1000;
+    box-shadow: var(--shadow-premium);
+    gap: 10px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    flex: 1 1 auto;
+    justify-content: center;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar {
+    display: none;
+}
+
+.nav-item {
+    background: transparent;
+    border: none;
+    padding: 5px 8px;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition-smooth);
+    flex-shrink: 0;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0; /* CRITICAL: Never get squeezed or pushed off */
+}
+
+.auth-buttons-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.login-btn-pill {
+    background: transparent;
+    color: var(--accent-teal);
+    border: 1.5px solid var(--accent-teal);
+    padding: 5px 12px;
+    border-radius: 16px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition-smooth);
+}
+.login-btn-pill:hover {
+    background: rgba(20, 184, 166, 0.1);
+    transform: translateY(-1px);
+}
+
+.signup-btn-pill {
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    color: #ffffff !important;
+    border: none;
+    padding: 5px 14px;
+    border-radius: 16px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+    transition: var(--transition-smooth);
+}
+.signup-btn-pill:hover {
+    background: linear-gradient(135deg, #0369a1, #075985);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+    transform: translateY(-1px);
+}
+
+/* Mobile Hamburger Menu Toggle */
+.mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--border-glass);
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    padding: 8px 7px;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    transition: var(--transition-smooth);
+}
+.mobile-menu-btn:hover {
+    background: var(--bg-glass-active);
+}
+.mobile-menu-btn span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--text-primary);
+    border-radius: 2px;
+    transition: all 0.25s ease;
+}
+
+/* Mobile Sliding Drawer & Backdrop */
+.mobile-drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    z-index: 99999;
+    transition: opacity 0.3s ease;
+}
+.mobile-drawer-overlay.hidden {
+    display: none;
+    opacity: 0;
+}
+
+.mobile-nav-drawer {
+    position: fixed;
+    top: 0;
+    right: -320px;
+    width: 300px;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-left: 1px solid var(--border-glass);
+    box-shadow: -6px 0 24px rgba(0, 0, 0, 0.15);
+    z-index: 100000;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.mobile-nav-drawer.open {
+    right: 0 !important;
+}
+
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-glass);
+}
+.drawer-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.6rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 6px;
+}
+.drawer-body {
+    padding: 16px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.drawer-section-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 0.8px;
+    margin-bottom: 6px;
+}
+.drawer-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.mobile-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+.mobile-nav-item:hover, .mobile-nav-item.active {
+    background: var(--accent-teal-glow);
+    color: var(--accent-teal);
+    border-color: rgba(2, 132, 199, 0.2);
+}
+.mobile-nav-item .m-icon {
+    font-size: 1.1rem;
+    width: 24px;
+    text-align: center;
+}
+
+.drawer-tools-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+.drawer-tool-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-glass);
+    background: rgba(0, 0, 0, 0.03);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+.drawer-auth-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 5px;
+}
+.drawer-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.82rem;
+    border-radius: 8px;
+}
+
+/* Responsive Rules for Laptops (1025px - 1440px) */
+@media (max-width: 1440px) {
+    .nav-extra-btn span:last-child {
+        display: none; /* Hide label, keep emoji icon 🎮 and 🟢 */
+    }
+    .nav-extra-btn {
+        padding: 5px 9px;
+        gap: 0;
+    }
+    .nav-item {
+        padding: 4px 6px;
+        font-size: 0.74rem;
+    }
+}
+
+@media (max-width: 1200px) {
+    .nav-extra-btn {
+        display: none; /* Move secondary tools to drawer on narrower laptop screens */
+    }
+    .nav-item {
+        padding: 4px 5px;
+        font-size: 0.72rem;
+    }
+    .main-navbar {
+        padding: 0 12px;
+    }
+}
+
+/* Tablet & Mobile Screens (<= 1024px) */
+@media (max-width: 1024px) {
+    .main-navbar .nav-links {
+        display: none !important; /* Hide horizontal button bar on mobile/tablet */
+    }
+    .mobile-menu-btn {
+        display: flex !important;
+    }
+    .main-navbar {
+        height: 56px;
+        padding: 0 12px;
+    }
+    .offline-badge {
+        display: none;
+    }
+    .app-container {
+        height: auto;
+        overflow: visible;
+    }
+}
+
+/* Narrow Phone Viewports (<= 640px) */
+@media (max-width: 640px) {
+    .top-lang-pill {
+        padding: 2px 6px;
+    }
+    .top-lang-pill .lang-dropdown {
+        font-size: 0.72rem;
+    }
+    .auth-buttons-bar .signup-btn-pill {
+        display: none; /* Login button + Hamburger for ultra-compact mobile header */
+    }
+    .login-btn-pill {
+        padding: 4px 9px;
+        font-size: 0.72rem;
+    }
+    .mobile-nav-drawer {
+        width: 280px;
+    }
+}
+
+/* Document Vitals Card Styling */
+.doc-vital-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--border-glass);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+.doc-vital-card.warning {
+    border-color: rgba(245, 158, 11, 0.4);
+    background: rgba(245, 158, 11, 0.05);
+}
+.doc-vital-card.danger {
+    border-color: rgba(239, 68, 68, 0.4);
+    background: rgba(239, 68, 68, 0.05);
+}
+.doc-vital-card.success {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.04);
+}
