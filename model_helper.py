@@ -1,10 +1,13 @@
 import os
 import pickle
 import re
+import warnings
 import numpy as np
-import pandas as pd
 from PIL import Image
 import io
+
+# Suppress feature names user warnings when passing numpy array to model
+warnings.filterwarnings("ignore", category=UserWarning)
 
 # Paths to models
 SYMPTOM_MODEL_PATH = "models/symptom_model.pkl"
@@ -1275,11 +1278,11 @@ def predict_disease(symptom_keys, lang="en"):
             "detected_symptom_count": 1
         }
 
-    # Vectorize for ML model with feature column names
+    # Vectorize for ML model
     vector = [1 if sym in symptom_keys else 0 for sym in _symptoms_list]
-    vector_df = pd.DataFrame([vector], columns=_symptoms_list)
-    ml_prediction = _symptom_model.predict(vector_df)[0]
-    ml_probabilities = _symptom_model.predict_proba(vector_df)[0]
+    vector_arr = np.array([vector])
+    ml_prediction = _symptom_model.predict(vector_arr)[0]
+    ml_probabilities = _symptom_model.predict_proba(vector_arr)[0]
     ml_classes = _symptom_model.classes_
     ml_probs = {ml_classes[i]: float(ml_probabilities[i]) for i in range(len(ml_classes))}
 
