@@ -2108,3 +2108,258 @@ body.dark-theme .auth-divider span {
     font-size: 0.76rem;
     color: var(--text-muted);
 }
+
+
+/* ==========================================================================
+   TOP LANGUAGE SELECTOR PILL
+   ========================================================================== */
+.top-lang-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1.5px solid #d97706;
+    border-radius: 20px;
+    padding: 3px 10px;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.12);
+    transition: all 0.2s ease;
+}
+
+.top-lang-pill:hover {
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.22);
+    border-color: #b45309;
+}
+
+.top-lang-pill .lang-icon {
+    font-size: 0.9rem;
+}
+
+.top-lang-pill .lang-dropdown {
+    background: transparent;
+    border: none;
+    color: #92400e;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    outline: none;
+    padding: 2px 0;
+}
+
+/* ==========================================================================
+   ABOUT PAGE OVERHAUL (DATASET & ATTRIBUTION)
+   ========================================================================== */
+.about-page-wrapper {
+    max-width: 1040px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.about-hero-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 24px;
+    padding: 32px 36px;
+    box-shadow: 0 8px 30px rgba(245, 158, 11, 0.08);
+}
+
+.about-hero-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.about-hero-desc {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin: 0;
+}
+
+.about-section-heading {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.about-section-heading .sub-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #d97706;
+    background: rgba(245, 158, 11, 0.12);
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.about-section-heading h2 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.about-features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+}
+
+.about-feat-card {
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid var(--border-glass);
+    border-radius: 18px;
+    padding: 22px;
+    transition: all 0.3s ease;
+}
+
+.about-feat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    border-color: rgba(245, 158, 11, 0.4);
+}
+
+.about-feat-icon {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.about-feat-card h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.about-feat-card p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin: 0;
+}
+
+.about-dataset-section {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 24px;
+    padding: 35px 32px;
+    box-shadow: 0 10px 35px rgba(245, 158, 11, 0.08);
+}
+
+.about-stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin: 24px 0 30px 0;
+}
+
+.about-stat-box {
+    background: rgba(254, 243, 199, 0.4);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 16px;
+    padding: 16px 12px;
+    text-align: center;
+}
+
+.stat-big-num {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #b45309;
+    line-height: 1.1;
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+.stat-sub {
+    font-size: 0.74rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-top: 6px;
+}
+
+.about-catalog-wrap {
+    margin-top: 24px;
+}
+
+.disease-category-block {
+    margin-bottom: 16px;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--border-glass);
+}
+
+.disease-cat-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #b45309;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.disease-tags-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.disease-badge {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    color: var(--text-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+}
+
+.disease-badge:hover {
+    background: #fef3c7;
+    border-color: #d97706;
+    color: #b45309;
+    transform: scale(1.04);
+}
+
+.symptoms-summary-box {
+    margin-top: 24px;
+    background: #fffdf7;
+    border: 1px dashed rgba(217, 119, 6, 0.4);
+    border-radius: 16px;
+    padding: 18px 20px;
+}
+
+.about-attribution-container {
+    margin-top: 10px;
+}
+
+.about-attribution-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(254, 243, 199, 0.5));
+    border: 1.5px solid #d97706;
+    border-radius: 24px;
+    padding: 32px 36px;
+    box-shadow: 0 12px 35px rgba(217, 119, 6, 0.15);
+}
+
+.attribution-header-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.about-attribution-details {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(217, 119, 6, 0.2);
+    border-radius: 16px;
+    padding: 16px 20px;
+}
