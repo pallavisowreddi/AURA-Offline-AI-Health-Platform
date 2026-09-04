@@ -199,6 +199,125 @@ def chat():
         return jsonify(response_data)
         
     # Step 1: Check for symptoms in user's query text using language matching
+    
+    # =====================================================================
+    # STEP 0: ACUTE MEDICAL EMERGENCY & TOXICOLOGY TRIAGE PROTOCOL
+    # Handles snake bites, animal/dog bites, scorpion stings, and burns
+    # =====================================================================
+    snake_keywords = ["snake", "snake bite", "snakebite", "venom", "cobra", "viper", "krait", "सांप", "साँप", "सर्प", "పాము", "పాము కాటు", "విషసర్పం"]
+    dog_keywords = ["dog bite", "rabies", "monkey bite", "animal bite", "कुत्ता", "कुत्ते का काटना", "रेबीज", "కుక్క", "కుక్క కాటు", "పిచ్చి కుక్క"]
+    scorpion_keywords = ["scorpion", "scorpion sting", "बिच्छू", "తేలు", "తేలు కాటు"]
+    burn_keywords = ["burn", "burns", "burned", "chemical burn", "acid burn", "जल गया", "आग से जलना", "కాలిన", "కాలిన గాయం"]
+
+    if any(k in message_lower for k in snake_keywords):
+        response_data["detected_symptoms"] = ["Snake Bite Exposure", "Toxic Envenomation Risk", "Severe Puncture Wound"]
+        response_data["disease_prediction"] = {
+            "prediction": "Snake Envenomation (Acute Emergency)",
+            "confidence": 1.0,
+            "description": "Acute medical emergency involving potential neurotoxic or hemotoxic venom injection. Requires immediate Polyvalent Anti-Snake Venom (ASV) therapy.",
+            "advice": "1. Keep patient completely still and calm.\n2. Immobilize bitten limb with a splint at or below heart level.\n3. Transport immediately to the nearest tertiary hospital / PHC with ASV.\n4. DO NOT apply a tourniquet, DO NOT cut the wound, and DO NOT attempt to suck venom.",
+            "urgency": "Critical",
+            "probabilities": {"Snake Envenomation": 1.0},
+            "prediction_mode": "emergency",
+            "care_level": "seek_emergency"
+        }
+
+        if lang == "hi":
+            emergency_text = (
+                "### 🚨 आपातकालीन चिकित्सा प्रोटोकॉल: सांप का काटना (Snake Bite Protocol)\n\n"
+                "**तात्कालिकता: अति गंभीर (CRITICAL) ⚠️ | तत्काल अस्पताल पहुंचना अनिवार्य है**\n\n"
+                "#### 🛑 क्या बिल्कुल न करें (STRICT DO NOTs):\n"
+                "- **टूर्निकेट या रस्सी कसकर न बांधें** (इससे अंग में रक्त प्रवाह रुकने से अंग गलने और काटने की नौबत आ सकती है)।\n"
+                "- **घाव पर चीरा न लगाएं** और न ही मुंह से जहर चूसने की कोशिश करें (यह एक जानलेवा भ्रम है)।\n"
+                "- बर्फ, बिजली का झटका, पोटेशियम परमैंगनेट या कोई जड़ी-बूटी/गोबर न लगाएं।\n"
+                "- मरीज को शराब, चाय, कॉफी या कोई दर्द निवारक/नींद की गोली न दें।\n\n"
+                "#### ✅ तत्काल जीवन-रक्षक प्राथमिक उपचार (GOLDEN HOUR):\n"
+                "1. **मरीज को पूरी तरह शांत और स्थिर रखें**: घबराहट या चलने-फिरने से दिल की धड़कन तेज होती है और जहर पूरे शरीर में तेजी से फैलता है।\n"
+                "2. **काटे गए अंग को स्थिर करें**: हाथ या पैर को किसी खपच्ची या पट्टी से ऐसे बांधें जैसे टूटी हड्डी को सहारा देते हैं, और इसे **दिल के स्तर से थोड़ा नीचे** रखें।\n"
+                "3. अंगूठियां, कड़े, घड़ी और तंग जूते तुरंत उतार दें क्योंकि सूजन तेजी से बढ़ती है।\n"
+                "4. **तत्काल अस्पताल ले जाएं**: निकटतम अस्पताल या प्राथमिक स्वास्थ्य केंद्र जाएं जहां **एंटी-स्नेक वेनम (ASV)** और श्वसन सहायता उपलब्ध हो।\n"
+                "5. यदि संभव हो तो सांप का रंग और आकार दूर से नोट कर लें (सांप को पकड़ने या मारने का जोखिम न लें)।\n\n"
+                "---\n*🚨 तुरंत आपातकालीन एम्बुलेंस 108 / 112 पर कॉल करें या बाईं ओर SOS बटन दबाएं।*"
+            )
+        elif lang == "te":
+            emergency_text = (
+                "### 🚨 అత్యవసర వైద్య హెచ్చరిక: పాము కాటు (Snake Bite Protocol)\n\n"
+                "**అవసర స్థాయి: అత్యంత తీవ్రమైనది (CRITICAL) ⚠️ | తక్షణమే ఆసుపత్రికి వెళ్ళడం తప్పనిసరి**\n\n"
+                "#### 🛑 ఖచ్చితంగా చేయకూడని పనులు (STRICT DO NOTs):\n"
+                "- **రక్త ప్రసరణ ఆగిపోయేలా గట్టిగా తాడు లేదా బట్ట కట్టవద్దు** (దీనివల్ల చేయి లేదా కాలు కుళ్ళిపోయి తొలగించాల్సి రావచ్చు).\n"
+                "- **గాటు పెట్టడం లేదా నోటితో విషాన్ని పీల్చే ప్రయత్నం చేయవద్దు** (ఇది ప్రాణానికే ప్రమాదం).\n"
+                "- మంచు గడ్డలు, ఆకు పసర్లు, నిమ్మరసం లేదా రసాయనాలు రాయవద్దు.\n"
+                "- టీ, కాఫీ, మద్యం లేదా మత్తు మాత్రలు ఇవ్వవద్దు.\n\n"
+                "#### ✅ తక్షణ ప్రాణరక్షక ప్రథమ చికిత్స (GOLDEN HOUR):\n"
+                "1. **బాధితుడిని కదలకుండా స్థిరంగా ఉంచండి**: కంగారుపడటం లేదా నడవడం వల్ల గుండె వేగం పెరిగి విషం శరీరమంతా వేగంగా వ్యాపిస్తుంది.\n"
+                "2. **కాటు వేసిన అవయవాన్ని కదలకుండా చేయండి**: ఎముక విరిగినప్పుడు కట్టు కట్టినట్లుగా ఒక చెక్క లేదా స్ప్లింట్‌తో కదలకుండా చేసి, **గుండె స్థాయి కన్నా కొద్దిగా కిందనే** ఉంచండి.\n"
+                "3. వాపు వచ్చేలోపు ఉంగరాలు, గొలుసులు, గాజులు, బూట్లను వెంటనే తొలగించండి.\n"
+                "4. **వెంటనే ఆసుపత్రికి చేర్చండి**: **యాంటీ-స్నేక్ వెనమ్ (ASV)** ఇంజెక్షన్ మరియు ఆక్సిజన్ సదుపాయం ఉన్న సమీప ప్రభుత్వ లేదా పెద్ద ఆసుపత్రికి తీసుకెళ్లండి.\n"
+                "5. సురక్షితంగా వీలైతే పాము రంగు, ఆకారాన్ని గమనించండి (పామును పట్టుకోవడానికి ప్రయత్నించవద్దు).\n\n"
+                "---\n*🚨 వెంటనే 108 లేదా 112 అత్యవసర నంబర్‌కు కాల్ చేయండి లేదా ఎమర్జెన్సీ SOS బటన్ నొక్కండి.*"
+            )
+        else:
+            emergency_text = (
+                "### 🚨 LEVEL 1 CRITICAL EMERGENCY: SNAKE BITE PROTOCOL\n\n"
+                "**Urgency: CRITICAL ⚠️ | Immediate Emergency Hospitalization Required**\n\n"
+                "#### 🛑 CRITICAL 'DO NOT' WARNINGS (STRICT DO NOTs):\n"
+                "- **DO NOT** apply a tight arterial tourniquet (stops blood flow and can lead to gangrene / limb amputation).\n"
+                "- **DO NOT** cut the bite site or attempt to suck out the venom with your mouth (myth; causes tissue trauma and envenomation of rescuer).\n"
+                "- **DO NOT** apply ice packs, potassium permanganate, electric shocks, or herbal pastes.\n"
+                "- **DO NOT** administer aspirin, pain-killers, alcohol, or sedatives.\n\n"
+                "#### ✅ IMMEDIATE FIRST-AID DIRECTIVES (THE GOLDEN HOUR):\n"
+                "1. **Complete Patient Immobilization**: Keep the victim calm and strictly still. Movement increases muscle contraction, dramatically speeding venom spread into the lymphatic and circulatory systems.\n"
+                "2. **Splint and Immobilize the Bitten Limb**: Use a splint, stick, or crepe bandage to immobilize the limb (just like treating a bone fracture). Keep the limb **at or slightly below heart level**.\n"
+                "3. **Remove Constricting Items**: Promptly remove rings, watches, tight bangles, or shoes before progressive edema (swelling) sets in.\n"
+                "4. **Immediate Emergency Transport**: Rush to the nearest hospital or Primary Health Centre (PHC) equipped with **Polyvalent Anti-Snake Venom (ASV)** and endotracheal ventilation support.\n"
+                "5. **Snake Identification**: If safely visible, note the snake's color, head shape, or markings (never endanger yourself to capture or kill the snake).\n\n"
+                "---\n*🚨 Immediately call emergency ambulance 108 / 112 or click the SOS Emergency Alert button on the left.*"
+            )
+        response_data["response"] = emergency_text
+        return jsonify(response_data)
+
+    elif any(k in message_lower for k in dog_keywords):
+        response_data["detected_symptoms"] = ["Animal Bite Wound", "Rabies Viral Transmission Risk"]
+        response_data["disease_prediction"] = {
+            "prediction": "Rabies Post-Exposure Prophylaxis (Animal Bite)",
+            "confidence": 1.0,
+            "description": "Category II / III animal exposure carrying severe viral rabies risk. 100% fatal once symptoms appear, but 100% preventable with immediate Post-Exposure Prophylaxis (PEP).",
+            "advice": "1. Wash wound immediately under vigorous running tap water with soap for 15 full minutes.\n2. Apply Povidone Iodine antiseptic.\n3. DO NOT suture the wound.\n4. Rush to clinic for Anti-Rabies Vaccine (ARV) and Rabies Immunoglobulin (RIG).",
+            "urgency": "High",
+            "probabilities": {"Rabies Exposure Risk": 1.0},
+            "prediction_mode": "emergency",
+            "care_level": "seek_emergency"
+        }
+        if lang == "hi":
+            dog_text = (
+                "### 🚨 आपातकालीन प्राथमिक उपचार: कुत्ते या जानवर का काटना (Rabies Protocol)\n\n"
+                "**तात्कालिकता: उच्च (HIGH) ⚠️ | रेबीज जानलेवा है लेकिन समय पर टीके से 100% रोकथाम संभव है**\n\n"
+                "1. **घाव को तुरंत धोएं**: बहते नल के पानी और साबुन से घाव को **लगातार 15 मिनट तक** अच्छी तरह धोएं। यह वायरस को 70% तक खत्म कर देता है।\n"
+                "2. **एंटीसेप्टिक लगाएं**: धोने के बाद पोविडोन आयोडीन या डिटॉल/बीटाडीन लगाएं।\n"
+                "3. **घाव पर टांके न लगवाएं**: घाव को खुला रखें, जब तक कि रेबीज इम्युनोग्लोबुलिन न दिया जाए।\n"
+                "4. **तत्काल टीका लगवाएं**: 24 घंटे के भीतर सरकारी अस्पताल जाकर एंटी-रेबीज वैक्सीन (ARV) की पहली खुराक (दिन 0, 3, 7, 14, 28) लें।"
+            )
+        elif lang == "te":
+            dog_text = (
+                "### 🚨 అత్యవసర ప్రథమ చికిత్స: కుక్క లేదా జంతువు కాటు (Rabies Protocol)\n\n"
+                "**అవసర స్థాయి: తీవ్రం (HIGH) ⚠️ | రేబీస్ ప్రాణాంతకం, కానీ వెంటనే టీకా వేస్తే 100% నివారించవచ్చు**\n\n"
+                "1. **గాయాన్ని వెంటనే కడగాలి**: పారే నీటి కింద సబ్బుతో గాయాన్ని **కనీసం 15 నిమిషాల పాటు** బాగా రుద్ది కడగాలి. ఇది వైరస్‌ను చాలా వరకు తొలగిస్తుంది.\n"
+                "2. **యాంటీసెప్టిక్ రాయండి**: పొవిడోన్ అయోడిన్ లేదా బెటాడిన్ ద్రవాన్ని రాయండి.\n"
+                "3. **కుట్లు వేయించవద్దు**: వైద్యుడి సూచన లేకుండా గాయానికి కుట్లు వేయకూడదు.\n"
+                "4. **వెంటనే రేబీస్ టీకా తీసుకోండి**: 24 గంటలలోపు ఆసుపత్రికి వెళ్లి యాంటీ-రేబీస్ వ్యాక్సిన్ (ARV) మొదటి డోస్ (Day 0, 3, 7, 14, 28) తీసుకోవాలి."
+            )
+        else:
+            dog_text = (
+                "### 🚨 EMERGENCY FIRST-AID: ANIMAL / DOG BITE (RABIES PROTOCOL)\n\n"
+                "**Urgency: HIGH ⚠️ | Rabies is 100% fatal once clinical symptoms appear, but 100% preventable with immediate PEP!**\n\n"
+                "1. **Immediate Wound Washing**: Flush the bite wound under vigorous running tap water with soap for **at least 15 full minutes**. This mechanically removes up to 70-80% of the viral load.\n"
+                "2. **Antiseptic Application**: Apply Povidone-Iodine (Betadine) or 70% alcohol solution thoroughly.\n"
+                "3. **DO NOT Suture**: Wounds should generally not be stitched immediately as it drives the virus deeper into nerves.\n"
+                "4. **Post-Exposure Prophylaxis (PEP)**: Visit a hospital within 24 hours to receive the Anti-Rabies Vaccine (ARV Schedule: Days 0, 3, 7, 14, 28) and Rabies Immunoglobulin (RIG) for Category III deep bites."
+            )
+        response_data["response"] = dog_text
+        return jsonify(response_data)
+
     detected_symptoms = model_helper.extract_symptoms_from_text(message, lang)
     response_data["detected_symptoms"] = detected_symptoms
     

@@ -8,6 +8,12 @@ const UI_TRANSLATIONS = {
         badge_offline: "Local Offline",
         nav_home: "Home",
         nav_prediction: "Disease Prediction",
+        nav_vaccines: "Vaccination",
+        vac_title: "Universal Immunization & Vaccine Schedules",
+        vac_subtitle: "Official National Immunization Schedule (NIS) & WHO life-course vaccine guidelines.",
+        vac_print_card: "Print Vaccine Card",
+        rep_tab_visual: "Visual Skin Pathology Scanner",
+        rep_tab_lab: "Digital Lab Report Biomarker Analyzer",
         nav_reports: "Medical Reports",
         nav_reminders: "Medicine Reminder",
         nav_dashboard: "Health Dashboard",
@@ -745,6 +751,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1. SMART PAGE GUIDANCE & VOICE SYNTHESIS
     // ==========================================
     const pageGuidanceData = {
+        "vaccines": {
+            "title": "Universal Immunization Hub",
+            "body": "Explore comprehensive life-course immunization schedules from infant birth doses to senior booster vaccines. Mark doses as taken to track immunity.",
+            "speech": "This is the Universal Immunization Hub. Browse official vaccine schedules across all age categories and track completed doses offline."
+        },
         "home": {
             "title": "AURA Welcome Home",
             "body": "Welcome to AURA AI. You can check symptoms, log clinical vitals, or schedule medicine reminders. All predictions run 100% locally.",
@@ -878,6 +889,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         
         triggerPageGuidance(tabName);
+        if (tabName === "vaccines" && typeof renderVaccinesList === "function") {
+            renderVaccinesList();
+        }
     };
 
     navItems.forEach(item => {
@@ -2657,6 +2671,338 @@ document.addEventListener("DOMContentLoaded", () => {
             if (mismatch) mismatch.style.display = "none";
         });
     }
+
+
+    // ========================================================================
+    // VACCINATION SCHEDULES MODULE
+    // ========================================================================
+    const VACCINE_DATABASE = [
+        { id: "bcg", name: "BCG (Bacillus Calmette-Guérin)", cat: "infants", age: "At Birth", route: "Intradermal", target: "Tuberculosis (TB)", notes: "Essential for pediatric TB meningitis prevention." },
+        { id: "hepb_birth", name: "Hepatitis B (Birth Dose)", cat: "infants", age: "At Birth (<24h)", route: "Intramuscular", target: "Hepatitis B Virus", notes: "Prevents perinatal transmission from mother to baby." },
+        { id: "opv_0", name: "OPV-0 (Oral Polio Vaccine)", cat: "infants", age: "At Birth", route: "Oral Drops (2 drops)", target: "Poliomyelitis (Polio)", notes: "Birth dose gives early mucosal gut immunity." },
+        { id: "penta_1", name: "Pentavalent-1 (DTP-HepB-Hib)", cat: "infants", age: "6 Weeks", route: "Intramuscular", target: "Diphtheria, Pertussis, Tetanus, Hep B, Hib", notes: "5-in-1 combo vaccine saving infants from 5 fatal diseases." },
+        { id: "rota_1", name: "Rotavirus Vaccine (RVV-1)", cat: "infants", age: "6 Weeks", route: "Oral (5 drops)", target: "Rotavirus Severe Diarrhea", notes: "Protects infants against dehydration from viral diarrhea." },
+        { id: "pcv_1", name: "PCV-1 (Pneumococcal Conjugate)", cat: "infants", age: "6 Weeks", route: "Intramuscular", target: "Streptococcus Pneumoniae", notes: "Shields against severe pneumonia & bacterial sepsis." },
+        { id: "mr_1", name: "MR-1 (Measles & Rubella)", cat: "children", age: "9-12 Months", route: "Subcutaneous", target: "Measles & Rubella Virus", notes: "Prevents fatal measles complications & congenital rubella." },
+        { id: "je_1", name: "JE Vaccine (Japanese Encephalitis)", cat: "children", age: "9-12 Months", route: "Subcutaneous", target: "Japanese Encephalitis Virus", notes: "Crucial in endemic agricultural & wetland regions." },
+        { id: "dtp_b1", name: "DTP Booster-1", cat: "children", age: "16-24 Months", route: "Intramuscular", target: "Diphtheria, Tetanus, Pertussis", notes: "Reinforces waning infant immunity." },
+        { id: "typhoid_c", name: "Typhoid Conjugate Vaccine (TCV)", cat: "children", age: "2 Years", route: "Intramuscular", target: "Salmonella Typhi (Typhoid)", notes: "Long-lasting protection against enteric typhoid fever." },
+        { id: "hpv", name: "HPV Vaccine (Human Papillomavirus)", cat: "teens", age: "9-14 Years", route: "Intramuscular (2 Doses)", target: "Cervical Cancer & Genital Warts", notes: "Protects young girls against high-risk oncogenic strains." },
+        { id: "td_teens", name: "Td (Tetanus & adult Diphtheria)", cat: "teens", age: "10 & 16 Years", route: "Intramuscular", target: "Tetanus & Diphtheria", notes: "Routine decennial adolescent boosters." },
+        { id: "flu_annual", name: "Influenza (Annual Flu Shot)", cat: "adults", age: "Yearly", route: "Intramuscular", target: "Seasonal Influenza (H1N1/H3N2)", notes: "Recommended for healthcare workers and individuals with asthma." },
+        { id: "covid_booster", name: "COVID-19 Updated Booster", cat: "adults", age: "Annual / High Risk", route: "Intramuscular", target: "SARS-CoV-2 Variants", notes: "Sustains neutralizing spike antibodies." },
+        { id: "pneumo_senior", name: "Pneumococcal Polysaccharide (PPSV23)", cat: "seniors", age: "65+ Years", route: "Intramuscular", target: "Invasive Pneumococcal Disease", notes: "Prevents bacteremic pneumonia and meningitis in seniors." },
+        { id: "shingles", name: "Recombinant Zoster Vaccine (Shingrix)", cat: "seniors", age: "50+ Years", route: "Intramuscular (2 Doses)", target: "Herpes Zoster (Shingles)", notes: "Over 90% protection against painful postherpetic neuralgia." }
+    ];
+
+    let currentVacFilter = "all";
+
+    function renderVaccinesList() {
+        const container = document.getElementById("vac-cards-grid");
+        if (!container) return;
+
+        const searchVal = (document.getElementById("vac-search-input")?.value || "").toLowerCase();
+        let takenSet = new Set(JSON.parse(localStorage.getItem("aura_taken_vaccines") || "[]"));
+
+        const filtered = VACCINE_DATABASE.filter(v => {
+            const matchesCat = (currentVacFilter === "all" || v.cat === currentVacFilter);
+            const matchesSearch = v.name.toLowerCase().includes(searchVal) || 
+                                  v.target.toLowerCase().includes(searchVal) || 
+                                  v.age.toLowerCase().includes(searchVal);
+            return matchesCat && matchesSearch;
+        });
+
+        container.innerHTML = "";
+        if (filtered.length === 0) {
+            container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: var(--text-muted);">No immunization schedules matched your search.</div>`;
+            return;
+        }
+
+        filtered.forEach(v => {
+            const isTaken = takenSet.has(v.id);
+            const card = document.createElement("div");
+            card.className = "vac-card" + (isTaken ? " vac-taken" : "");
+            card.innerHTML = `
+                <div>
+                    <div class="vac-card-header">
+                        <span class="vac-card-title">${v.name}</span>
+                        <span class="vac-age-tag">${v.age}</span>
+                    </div>
+                    <div class="vac-target-disease">🛡️ <strong>Prevents:</strong> ${v.target}</div>
+                    <div style="font-size: 0.76rem; color: var(--text-secondary); margin-bottom: 10px;">${v.notes}</div>
+                </div>
+                <div class="vac-footer-row">
+                    <span>Route: <strong>${v.route}</strong></span>
+                    <label class="vac-check-label">
+                        <input type="checkbox" ${isTaken ? "checked" : ""} onchange="toggleVaccineDose('${v.id}')">
+                        <span>${isTaken ? "✅ Administered" : "Mark as Taken"}</span>
+                    </label>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    window.toggleVaccineDose = function(id) {
+        let taken = JSON.parse(localStorage.getItem("aura_taken_vaccines") || "[]");
+        let set = new Set(taken);
+        if (set.has(id)) set.delete(id);
+        else set.add(id);
+        localStorage.setItem("aura_taken_vaccines", JSON.stringify(Array.from(set)));
+        renderVaccinesList();
+    };
+
+    document.querySelectorAll(".vac-pill").forEach(pill => {
+        pill.addEventListener("click", () => {
+            document.querySelectorAll(".vac-pill").forEach(p => p.classList.remove("active"));
+            pill.classList.add("active");
+            currentVacFilter = pill.getAttribute("data-vac-filter");
+            renderVaccinesList();
+        });
+    });
+
+    const vacSearchInp = document.getElementById("vac-search-input");
+    if (vacSearchInp) vacSearchInp.addEventListener("input", renderVaccinesList);
+    renderVaccinesList();
+
+    // ========================================================================
+    // MEDICAL REPORTS: SUB-TAB SWITCHER & 1-CLICK LAB PRESETS
+    // ========================================================================
+    window.switchReportSubTab = function(sub) {
+        const btnVisual = document.getElementById("tab-btn-visual");
+        const btnLab = document.getElementById("tab-btn-lab");
+        const subVisual = document.getElementById("rep-subview-visual");
+        const subLab = document.getElementById("rep-subview-lab");
+
+        if (sub === "visual") {
+            btnVisual?.classList.add("active");
+            btnLab?.classList.remove("active");
+            subVisual?.classList.remove("hidden");
+            subLab?.classList.add("hidden");
+        } else {
+            btnLab?.classList.add("active");
+            btnVisual?.classList.remove("active");
+            subLab?.classList.remove("hidden");
+            subVisual?.classList.add("hidden");
+            if (!window.labTableInitialized) {
+                applyLabPreset("normal");
+                window.labTableInitialized = true;
+            }
+        }
+    };
+
+    const LAB_PRESETS_DATA = {
+        dengue: {
+            title: "Dengue Suspect (CBC Workup)",
+            statusBadge: "🚨 Severe Thrombocytopenia Warning",
+            statusColor: "#dc2626",
+            summary: "Severe thrombocytopenia (Platelets 62,000 /µL) and elevated Hematocrit (48%) indicate plasma leakage consistent with Dengue Hemorrhagic Fever warning signs. Immediate IV fluid resuscitation and platelet monitoring required.",
+            biomarkers: [
+                { test: "Platelet Count", val: "62,000", unit: "/µL", range: "150,000 - 450,000", status: "low", triage: "Critical Thrombocytopenia (Dengue risk)" },
+                { test: "Hematocrit (PCV)", val: "48.2", unit: "%", range: "36.0 - 46.0", status: "high", triage: "Hemoconcentration (Plasma leakage)" },
+                { test: "Total Leukocyte (WBC)", val: "3,200", unit: "/µL", range: "4,500 - 11,000", status: "low", triage: "Leukopenia (Viral marrow suppression)" },
+                { test: "Hemoglobin", val: "15.4", unit: "g/dL", range: "12.0 - 16.0", status: "normal", triage: "Normal circulating hemoglobin" },
+                { test: "Serum Creatinine", val: "0.9", unit: "mg/dL", range: "0.6 - 1.2", status: "normal", triage: "Adequate renal perfusion" }
+            ]
+        },
+        diabetes: {
+            title: "Diabetes Mellitus Metabolic Workup",
+            statusBadge: "🚨 Hyperglycemia Crisis",
+            statusColor: "#d97706",
+            summary: "Significantly elevated Fasting Blood Glucose (210 mg/dL) and HbA1c (9.2%) indicate chronic unmanaged hyperglycemia. Patient is at high risk for diabetic microvascular complications.",
+            biomarkers: [
+                { test: "Fasting Blood Glucose", val: "210", unit: "mg/dL", range: "70 - 99", status: "high", triage: "Marked Fasting Hyperglycemia" },
+                { test: "HbA1c (Glycated Hb)", val: "9.2", unit: "%", range: "< 5.7", status: "high", triage: "Poor 3-month glycemic control (>8%)" },
+                { test: "Serum Creatinine", val: "1.1", unit: "mg/dL", range: "0.6 - 1.2", status: "normal", triage: "Renal baseline acceptable" },
+                { test: "Total Cholesterol", val: "235", unit: "mg/dL", range: "< 200", status: "high", triage: "Concomitant Dyslipidemia" },
+                { test: "Hemoglobin", val: "13.8", unit: "g/dL", range: "12.0 - 16.0", status: "normal", triage: "Normal" }
+            ]
+        },
+        jaundice: {
+            title: "Liver Function Test (Hepatitis / Jaundice)",
+            statusBadge: "🚨 Acute Hepatic Cytolysis",
+            statusColor: "#dc2626",
+            summary: "Total Bilirubin (4.2 mg/dL) and severe ALT/AST transaminase spikes (>160 U/L) indicate hepatocellular inflammation. Strongly indicative of acute viral hepatitis or toxic liver insult.",
+            biomarkers: [
+                { test: "Total Bilirubin", val: "4.2", unit: "mg/dL", range: "0.2 - 1.2", status: "high", triage: "Overt Hyperbilirubinemia (Jaundice)" },
+                { test: "Direct (Conjugated) Bilirubin", val: "2.8", unit: "mg/dL", range: "< 0.3", status: "high", triage: "Hepatic / Post-hepatic jaundice" },
+                { test: "SGPT (ALT)", val: "180", unit: "U/L", range: "7 - 56", status: "high", triage: "Severe Hepatocyte Necrosis" },
+                { test: "SGOT (AST)", val: "165", unit: "U/L", range: "10 - 40", status: "high", triage: "Elevated liver parenchymal enzymes" },
+                { test: "Serum Albumin", val: "3.4", unit: "g/dL", range: "3.5 - 5.5", status: "low", triage: "Mild hepatic synthetic decrease" }
+            ]
+        },
+        anemia: {
+            title: "Severe Iron Deficiency Anemia",
+            statusBadge: "🚨 Severe Anemia",
+            statusColor: "#dc2626",
+            summary: "Critically depressed Hemoglobin (7.4 g/dL) and Serum Ferritin (8 ng/mL). Patient requires oral/parenteral iron repletion and immediate clinical evaluation for occult blood loss.",
+            biomarkers: [
+                { test: "Hemoglobin (Hb)", val: "7.4", unit: "g/dL", range: "12.0 - 16.0", status: "low", triage: "Severe Anemia (<8 g/dL)" },
+                { test: "Serum Ferritin", val: "8.0", unit: "ng/mL", range: "15 - 200", status: "low", triage: "Exhausted Iron Stores" },
+                { test: "Mean Corpuscular Volume (MCV)", val: "68.0", unit: "fL", range: "80 - 100", status: "low", triage: "Microcytic Red Blood Cells" },
+                { test: "Total Platelet Count", val: "310,000", unit: "/µL", range: "150,000 - 450,000", status: "normal", triage: "Normal platelet count" },
+                { test: "Total Leukocyte (WBC)", val: "6,500", unit: "/µL", range: "4,500 - 11,000", status: "normal", triage: "Normal leukocyte count" }
+            ]
+        },
+        normal: {
+            title: "Normative Health Baseline Panel",
+            statusBadge: "✅ Normative Baseline",
+            statusColor: "#059669",
+            summary: "All 5 core biomarkers reside safely within internationally standardized clinical reference intervals. No pathologic deviations detected.",
+            biomarkers: [
+                { test: "Hemoglobin", val: "14.2", unit: "g/dL", range: "12.0 - 16.0", status: "normal", triage: "Optimal oxygen carrying capacity" },
+                { test: "Platelet Count", val: "245,000", unit: "/µL", range: "150,000 - 450,000", status: "normal", triage: "Healthy hemostatic capacity" },
+                { test: "Fasting Blood Glucose", val: "88", unit: "mg/dL", range: "70 - 99", status: "normal", triage: "Normal euglycemia" },
+                { test: "Total Bilirubin", val: "0.8", unit: "mg/dL", range: "0.2 - 1.2", status: "normal", triage: "Clear hepatic clearance" },
+                { test: "Serum Creatinine", val: "0.9", unit: "mg/dL", range: "0.6 - 1.2", status: "normal", triage: "Optimal glomerular filtration" }
+            ]
+        }
+    };
+
+    window.applyLabPreset = function(presetKey) {
+        const data = LAB_PRESETS_DATA[presetKey];
+        if (!data) return;
+
+        const tbody = document.getElementById("lab-table-body");
+        const statusBadge = document.getElementById("lab-overall-status");
+        const summaryText = document.getElementById("lab-summary-text");
+
+        if (statusBadge) {
+            statusBadge.textContent = data.statusBadge;
+            statusBadge.style.background = data.statusColor;
+        }
+        if (summaryText) summaryText.textContent = data.summary;
+
+        if (tbody) {
+            tbody.innerHTML = "";
+            data.biomarkers.forEach(b => {
+                const tr = document.createElement("tr");
+                const badgeClass = b.status === "normal" ? "lab-badge-normal" : (b.status === "low" ? "lab-badge-low" : "lab-badge-high");
+                const badgeLabel = b.status.toUpperCase();
+                tr.innerHTML = `
+                    <td><strong>${b.test}</strong></td>
+                    <td style="font-weight: 800; font-family: 'IBM Plex Mono', monospace;">${b.val}</td>
+                    <td style="color: var(--text-muted);">${b.unit}</td>
+                    <td style="color: var(--text-secondary);">${b.range}</td>
+                    <td><span class="${badgeClass}">${badgeLabel}</span></td>
+                    <td style="font-size: 0.74rem; color: var(--text-secondary);">${b.triage}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    };
+
+    window.printLabReport = function() {
+        window.print();
+    };
+
+    // ========================================================================
+    // SOCIAL-MEDIA GRADE SETTINGS ENGINE
+    // ========================================================================
+    // 1. Theme Switcher
+    const themeSelect = document.getElementById("cfg-theme-selector");
+    if (themeSelect) {
+        const savedTheme = localStorage.getItem("aura_theme") || "light";
+        themeSelect.value = savedTheme;
+        applyTheme(savedTheme);
+        themeSelect.addEventListener("change", (e) => {
+            const t = e.target.value;
+            applyTheme(t);
+            localStorage.setItem("aura_theme", t);
+        });
+    }
+
+    function applyTheme(theme) {
+        if (theme === "dark") {
+            document.body.classList.add("dark-theme");
+            document.body.classList.remove("oled-theme");
+        } else if (theme === "oled") {
+            document.body.classList.add("oled-theme");
+            document.body.classList.remove("dark-theme");
+        } else {
+            document.body.classList.remove("dark-theme");
+            document.body.classList.remove("oled-theme");
+        }
+    }
+
+    // 2. Font Size Scaler
+    const fontSelect = document.getElementById("cfg-font-size");
+    if (fontSelect) {
+        const savedFont = localStorage.getItem("aura_font_size") || "normal";
+        fontSelect.value = savedFont;
+        applyFontSize(savedFont);
+        fontSelect.addEventListener("change", (e) => {
+            const f = e.target.value;
+            applyFontSize(f);
+            localStorage.setItem("aura_font_size", f);
+        });
+    }
+
+    function applyFontSize(size) {
+        document.documentElement.style.fontSize = size === "xlarge" ? "18px" : (size === "large" ? "16.5px" : "15px");
+    }
+
+    // 3. Voice Rate Slider
+    const rateSlider = document.getElementById("cfg-voice-rate");
+    const rateValText = document.getElementById("cfg-rate-val");
+    if (rateSlider && rateValText) {
+        const savedRate = localStorage.getItem("aura_voice_rate") || "1.0";
+        rateSlider.value = savedRate;
+        rateValText.textContent = `Speed: ${savedRate}x`;
+        rateSlider.addEventListener("input", (e) => {
+            rateValText.textContent = `Speed: ${e.target.value}x`;
+            localStorage.setItem("aura_voice_rate", e.target.value);
+        });
+    }
+
+    // 4. Patient Profile Save
+    const profileForm = document.getElementById("settings-profile-form");
+    if (profileForm) {
+        try {
+            const stored = JSON.parse(localStorage.getItem("aura_active_user") || "{}");
+            if (stored.name) document.getElementById("cfg-profile-name").value = stored.name;
+            if (stored.age) document.getElementById("cfg-profile-age").value = stored.age;
+            if (stored.blood) document.getElementById("cfg-profile-blood").value = stored.blood;
+            if (stored.phone) document.getElementById("cfg-profile-phone").value = stored.phone;
+            if (stored.allergies) document.getElementById("cfg-profile-allergies").value = stored.allergies;
+        } catch(e) {}
+
+        profileForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const profile = {
+                name: document.getElementById("cfg-profile-name").value || "Pallavi Sowreddi",
+                age: document.getElementById("cfg-profile-age").value || "21",
+                blood: document.getElementById("cfg-profile-blood").value || "O+",
+                phone: document.getElementById("cfg-profile-phone").value || "",
+                allergies: document.getElementById("cfg-profile-allergies").value || "",
+                identifier: "patient"
+            };
+            localStorage.setItem("aura_active_user", JSON.stringify(profile));
+            currentUser = profile;
+            renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
+            alert("✅ Patient profile updated successfully!");
+        });
+    }
+
+    // 5. Export Health Data to JSON Backup
+    window.exportHealthDataJSON = function() {
+        const backupData = {
+            platform: "AURA AI Offline Health Assistant",
+            version: "2026.1",
+            exportDate: new Date().toISOString(),
+            patientProfile: JSON.parse(localStorage.getItem("aura_active_user") || "{}"),
+            administeredVaccines: JSON.parse(localStorage.getItem("aura_taken_vaccines") || "[]"),
+            prescriptions: JSON.parse(localStorage.getItem("medications_list") || "[]"),
+            vitalsHistory: JSON.parse(localStorage.getItem("vitals_history") || "[]")
+        };
+        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `AURA_Health_Data_${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
 
     // Default calculations on load
     calculateBiometrics(120, 80, 72, 98, 98.6);

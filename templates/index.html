@@ -194,18 +194,24 @@
             <button class="nav-item active" data-tab="home" data-i18n="nav_home">Home</button>
             <button class="nav-item" data-tab="prediction" data-i18n="nav_prediction">Disease Prediction</button>
             <button class="nav-item" data-tab="reports" data-i18n="nav_reports">Medical Reports</button>
-            <button class="nav-item" data-tab="reminders" data-i18n="nav_reminders">Medicine Reminder</button>
+            <button class="nav-item" data-tab="vaccines" data-i18n="nav_vaccines">Vaccination</button>
             <button class="nav-item" data-tab="dashboard" data-i18n="nav_dashboard">Health Dashboard</button>
             <button class="nav-item" data-tab="emergency" data-i18n="nav_emergency">Emergency</button>
             <button class="nav-item" data-tab="settings" data-i18n="nav_settings">Settings</button>
             <button class="nav-item" data-tab="about" data-i18n="nav_about">About</button>
-            <button class="nav-item nav-item-highlight" data-tab="login" data-i18n="nav_login">Login</button>
-            <button class="nav-item nav-item-highlight" data-tab="signup" data-i18n="nav_signup">Sign Up</button>
         </nav>
         
         <div class="nav-right">
-            <!-- Top Language Selector (English, Hindi, Telugu) -->
-            <div class="top-lang-pill" title="Select Language">
+            <!-- Mindful Pause & Live Telemetry compact triggers -->
+            <button class="nav-extra-btn relax-btn" id="relax-btn" title="Mindful Breathing Pause">
+                <span>🎮</span> <span data-i18n="nav_relax">Take a Pause</span>
+            </button>
+            <button class="nav-extra-btn live-btn" id="live-reading-btn" title="Toggle Live Patient Simulator">
+                <span class="pulse-dot-green"></span> <span data-i18n="nav_live">Live Reading</span>
+            </button>
+
+            <!-- Language selector BEFORE login & signup -->
+            <div class="top-lang-pill" title="Select Indian Language">
                 <span class="lang-icon">🌐</span>
                 <select id="language-selector" class="lang-dropdown" title="Select Language">
                     <option value="en" selected>English</option>
@@ -214,20 +220,10 @@
                 </select>
             </div>
 
-            <!-- Mindful Pause (थोड़ा आराम करें) Button -->
-            <button class="nav-extra-btn relax-btn" id="relax-btn" title="Mindful Breathing Pause">
-                <span>🎮</span> <span data-i18n="nav_relax">Take a Pause</span>
-            </button>
-
-            <!-- Live Reading Telemetry Button -->
-            <button class="nav-extra-btn live-btn" id="live-reading-btn" title="Toggle Live Patient Simulator">
-                <span class="pulse-dot-green"></span> <span data-i18n="nav_live">Live Reading</span>
-            </button>
-            
-            <!-- Dedicated Login & Signup Action Buttons -->
+            <!-- Dedicated Login & Sign Up at the very end -->
             <div class="auth-buttons-bar" id="auth-buttons-bar">
-                <button class="login-btn-pill" id="quick-login-btn" data-tab="login" data-i18n="nav_login">Login</button>
-                <button class="signup-btn-pill" id="quick-signup-btn" data-tab="signup" data-i18n="nav_signup">Sign Up</button>
+                <button class="login-btn-pill" id="quick-login-btn" onclick="navigateToTab('login')" data-i18n="nav_login">Login</button>
+                <button class="signup-btn-pill" id="quick-signup-btn" onclick="navigateToTab('signup')" data-i18n="nav_signup">Sign Up</button>
             </div>
 
             <!-- Authenticated User Profile Greeting -->
@@ -239,7 +235,7 @@
 
             <!-- Guided Tour Launcher Icon Button -->
             <button class="icon-btn" id="tour-launcher-btn" title="Launch Interactive Guided Tour">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
             </button>
         </div>
     </header>
@@ -254,7 +250,7 @@
                     <div class="hero-text">
                         <div class="hero-eyebrow" data-i18n="hero_eyebrow">Local Intelligent Diagnostics</div>
                         <h1 data-i18n="hero_title">Your Personal Offline Clinical Assistant</h1>
-                        <p data-i18n="hero_desc">Fully offline, 34-disease multilingual clinical intelligence and predictive biometrics. Safeguard your family with reliable information.</p>
+                        <p data-i18n="hero_desc">Empowering families, rural clinics, and healthcare workers with instant, zero-latency clinical screening, emergency decision support, and preventive wellness intelligence — 100% offline.</p>
                         <div style="display: flex; gap: 12px; margin-top: 15px;">
                             <button class="btn btn-primary" onclick="navigateToTab('prediction')" data-i18n="hero_btn_check">Start Symptom Check</button>
                             <button class="btn btn-secondary" onclick="navigateToTab('dashboard')" data-i18n="hero_btn_dash">View Dashboard</button>
@@ -375,6 +371,16 @@
                         </div>
                     </div>
                 </div>
+            
+
+                <!-- Universal Section Attribution Stamp -->
+                <div class="section-footer-stamp">
+                    <span class="stamp-pill">📁 <strong>Project:</strong> AI(offline)-Driven Public Health Chatbot for Disease Awareness</span>
+                    <span>•</span>
+                    <span class="stamp-pill">👩‍💻 <strong>Created by:</strong> Pallavi Sowreddi (B.Tech Student)</span>
+                    <span>•</span>
+                    <span class="stamp-pill">© 2026 AURA Platform. All Rights Reserved.</span>
+                </div>
             </section>
 
             <!-- ================= VIEW 2: DISEASE PREDICTION ================= -->
@@ -490,92 +496,201 @@
                         </div>
                     </div>
                 </div>
+            
+
+                <!-- Universal Section Attribution Stamp -->
+                <div class="section-footer-stamp">
+                    <span class="stamp-pill">📁 <strong>Project:</strong> AI(offline)-Driven Public Health Chatbot for Disease Awareness</span>
+                    <span>•</span>
+                    <span class="stamp-pill">👩‍💻 <strong>Created by:</strong> Pallavi Sowreddi (B.Tech Student)</span>
+                    <span>•</span>
+                    <span class="stamp-pill">© 2026 AURA Platform. All Rights Reserved.</span>
+                </div>
             </section>
 
-            <!-- ================= VIEW 3: MEDICAL REPORTS / SCANNER ================= -->
-            <section id="section-reports" class="section-view hidden" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px;">
-                <div class="widget-card">
-                    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 10px;" data-i18n="rep_title">Visual Skin Diagnostic Analyzer</h2>
-                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 15px;" data-i18n="rep_desc">Scan skin symptoms locally. Our edge feature-extraction analyzer checks color histograms, saturation ratios, and surface roughness variables to predict conditions offline.</p>
+            <!-- ================= VIEW 3: MEDICAL REPORTS & DIGITAL LAB ANALYZER ================= -->
+            <section id="section-reports" class="section-view hidden">
+                <div class="reports-container" style="display: flex; flex-direction: column; gap: 20px;">
                     
-                    <!-- Drag & Drop Zone -->
-                    <div id="drop-zone" style="border: 2.5px dashed var(--accent-teal); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 180px; background: rgba(255, 255, 255, 0.015);">
-                        <div id="scanner-laser" style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, var(--accent-teal), transparent); box-shadow: 0 0 10px var(--accent-teal); display: none; animation: scanLaser 2s linear infinite; z-index: 10;"></div>
-                        <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="var(--accent-teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                        <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);" data-i18n="rep_drag_drop">Drag & Drop Skin Sample Image</span>
-                        <span style="font-size: 0.72rem; color: var(--text-muted);" data-i18n="rep_formats_hint">supports JPEG, PNG formats (Max 8MB)</span>
-                        <div id="scan-progress-container" style="width: 100%; background: rgba(255,255,255,0.06); height: 5px; border-radius: 3px; display: none; overflow: hidden; margin-top: 10px;">
-                            <div id="scan-progress-fill" style="width: 0%; height: 100%; background: var(--accent-teal); transition: width 0.1s linear;"></div>
-                        </div>
+                    <!-- Top Sub-Tab Switcher -->
+                    <div class="reports-tab-bar" style="display: flex; gap: 12px; border-bottom: 1px solid var(--border-glass); padding-bottom: 12px;">
+                        <button class="rep-sub-btn active" id="tab-btn-visual" onclick="switchReportSubTab('visual')" style="display: flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; border: 1px solid var(--accent-teal); background: var(--accent-teal-glow); color: var(--accent-teal);">
+                            📷 <span data-i18n="rep_tab_visual">Visual Skin Pathology Scanner</span>
+                        </button>
+                        <button class="rep-sub-btn" id="tab-btn-lab" onclick="switchReportSubTab('lab')" style="display: flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); color: var(--text-secondary);">
+                            🧪 <span data-i18n="rep_tab_lab">Digital Lab Report Biomarker Analyzer</span>
+                        </button>
                     </div>
 
-                    <!-- Custom upload file button -->
-                    <div style="text-align: center; margin-top: 15px;">
-                        <button class="btn btn-primary" onclick="document.getElementById('image-upload').click()" data-i18n="btn_browse_photos">Browse Local Photos</button>
-                    </div>
-
-                    <!-- Visual Scan Results Container -->
-                    <div id="reports-results-card" class="widget-card hidden" style="margin-top: 20px; border-top: 2px solid var(--accent-teal); padding-top: 15px;">
-                        <h3 style="font-size: 1rem; color: var(--accent-teal); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">🔬 Skin Scan Diagnostics</h3>
-                        <div style="display: flex; gap: 15px; align-items: flex-start; margin-bottom: 12px;">
-                            <div style="width: 100px; height: 100px; border-radius: 8px; overflow: hidden; border: 1.5px solid var(--accent-teal); flex-shrink: 0; background: rgba(0,0,0,0.03);">
-                                <img id="reports-preview-img" src="" alt="Scan preview" style="width: 100%; height: 100%; object-fit: cover;">
-                            </div>
-                            <div style="flex-grow: 1;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                    <h4 id="reports-result-name" style="font-size: 1.05rem; color: var(--text-primary); margin: 0; font-weight: 700;">Condition</h4>
-                                    <span id="reports-result-confidence" class="badge" style="background: var(--accent-teal-glow); color: var(--accent-teal); font-weight: 700; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px;">-- Match</span>
+                    <!-- SUB-VIEW A: VISUAL SKIN SCANNER -->
+                    <div id="rep-subview-visual" class="rep-subview" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px;">
+                        <div class="widget-card">
+                            <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 10px;" data-i18n="rep_title">Visual Skin Diagnostic Analyzer</h2>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 15px;" data-i18n="rep_desc">Scan skin symptoms locally. Our edge feature-extraction analyzer checks color histograms, saturation ratios, and surface roughness variables to predict conditions offline.</p>
+                            
+                            <!-- Drag & Drop Zone -->
+                            <div id="drop-zone" style="border: 2.5px dashed var(--accent-teal); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 180px; background: rgba(255, 255, 255, 0.015);">
+                                <div id="scanner-laser" style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, var(--accent-teal), transparent); box-shadow: 0 0 10px var(--accent-teal); display: none; animation: scanLaser 2s linear infinite; z-index: 10;"></div>
+                                <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="var(--accent-teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.85;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                                <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary);" data-i18n="rep_drag_drop">Drag & Drop Skin Sample Image</span>
+                                <span style="font-size: 0.72rem; color: var(--text-muted);" data-i18n="rep_formats_hint">supports JPEG, PNG formats (Max 8MB)</span>
+                                <div id="scan-progress-container" style="width: 100%; background: rgba(255,255,255,0.06); height: 5px; border-radius: 3px; display: none; overflow: hidden; margin-top: 10px;">
+                                    <div id="scan-progress-fill" style="width: 0%; height: 100%; background: var(--accent-teal); transition: width 0.1s linear;"></div>
                                 </div>
-                                <p id="reports-result-desc" style="font-size: 0.76rem; color: var(--text-secondary); line-height: 1.4; margin: 0;"></p>
+                            </div>
+
+                            <!-- Custom upload file button -->
+                            <div style="text-align: center; margin-top: 15px;">
+                                <input type="file" id="image-upload" accept="image/*" class="hidden" style="display: none;">
+                                <button class="btn btn-primary" onclick="document.getElementById('image-upload').click()" data-i18n="btn_browse_photos">Browse Local Photos</button>
+                            </div>
+
+                            <!-- Visual Scan Results Container -->
+                            <div id="reports-results-card" class="widget-card hidden" style="margin-top: 20px; border-top: 2px solid var(--accent-teal); padding-top: 15px;">
+                                <h3 style="font-size: 1rem; color: var(--accent-teal); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">🔬 Skin Scan Diagnostics</h3>
+                                <div style="display: flex; gap: 15px; align-items: flex-start; margin-bottom: 12px;">
+                                    <div style="width: 100px; height: 100px; border-radius: 8px; overflow: hidden; border: 1.5px solid var(--accent-teal); flex-shrink: 0; background: rgba(0,0,0,0.03);">
+                                        <img id="reports-preview-img" src="" alt="Scan preview" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <div style="flex-grow: 1;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                            <h4 id="reports-result-name" style="font-size: 1.05rem; color: var(--text-primary); margin: 0; font-weight: 700;">Condition</h4>
+                                            <span id="reports-result-confidence" class="badge" style="background: var(--accent-teal-glow); color: var(--accent-teal); font-weight: 700; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px;">-- Match</span>
+                                        </div>
+                                        <p id="reports-result-desc" style="font-size: 0.76rem; color: var(--text-secondary); line-height: 1.4; margin: 0;"></p>
+                                    </div>
+                                </div>
+                                
+                                <div style="background: var(--accent-teal-glow); border: 1px solid var(--border-glass-glow); border-radius: 8px; padding: 10px; margin-bottom: 15px;">
+                                    <strong style="font-size: 0.72rem; color: var(--accent-teal); display: block; margin-bottom: 2px;">🛡️ Clinical Care Recommendation:</strong>
+                                    <p id="reports-result-guidance" style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.35; margin: 0;"></p>
+                                </div>
+                                
+                                <!-- Visual metrics parameter bars -->
+                                <div id="reports-result-metrics" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; border-top: 1px dashed var(--border-glass); padding-top: 12px;">
+                                    <!-- Filled dynamically by JS -->
+                                </div>
                             </div>
                         </div>
-                        
-                        <div style="background: var(--accent-teal-glow); border: 1px solid var(--border-glass-glow); border-radius: 8px; padding: 10px; margin-bottom: 15px;">
-                            <strong style="font-size: 0.72rem; color: var(--accent-teal); display: block; margin-bottom: 2px;">🛡️ Clinical Care Recommendation:</strong>
-                            <p id="reports-result-guidance" style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.35; margin: 0;"></p>
-                        </div>
-                        
-                        <!-- Visual metrics parameter bars -->
-                        <div id="reports-result-metrics" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; border-top: 1px dashed var(--border-glass); padding-top: 12px;">
-                            <!-- Filled dynamically by JS -->
+
+                        <div class="reports-samples-panel" style="display: flex; flex-direction: column; gap: 15px;">
+                            <div class="widget-card">
+                                <h3 data-i18n="rep_samples_title">Interactive Sample Images</h3>
+                                <p class="section-desc" style="font-size: 0.72rem;" data-i18n="rep_samples_hint">Click a mock-lesion to verify vision classification model outputs:</p>
+                                <div class="sample-image-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                    <div class="sample-img-card" data-img="healthy_skin.png" style="cursor: pointer; border: 1px solid var(--border-glass); border-radius: 8px; padding: 6px; text-align: center;">
+                                        <img src="{{ url_for('static', filename='assets/sample_images/healthy_skin.png') }}" alt="Healthy Skin" style="width: 100%; height: 75px; object-fit: cover; border-radius: 6px;">
+                                        <span style="font-size: 0.7rem; font-weight: 600; display: block; margin-top: 5px;" data-i18n="rep_sample_healthy">Healthy Skin</span>
+                                    </div>
+                                    <div class="sample-img-card" data-img="skin_rash.png" style="cursor: pointer; border: 1px solid var(--border-glass); border-radius: 8px; padding: 6px; text-align: center;">
+                                        <img src="{{ url_for('static', filename='assets/sample_images/skin_rash.png') }}" alt="Skin Rash" style="width: 100%; height: 75px; object-fit: cover; border-radius: 6px;">
+                                        <span style="font-size: 0.7rem; font-weight: 600; display: block; margin-top: 5px;" data-i18n="rep_sample_rash">Skin Rash</span>
+                                    </div>
+                                    <div class="sample-img-card" data-img="acne.png" style="cursor: pointer; border: 1px solid var(--border-glass); border-radius: 8px; padding: 6px; text-align: center;">
+                                        <img src="{{ url_for('static', filename='assets/sample_images/acne.png') }}" alt="Acne" style="width: 100%; height: 75px; object-fit: cover; border-radius: 6px;">
+                                        <span style="font-size: 0.7rem; font-weight: 600; display: block; margin-top: 5px;" data-i18n="rep_sample_acne">Acne</span>
+                                    </div>
+                                    <div class="sample-img-card" data-img="eczema.png" style="cursor: pointer; border: 1px solid var(--border-glass); border-radius: 8px; padding: 6px; text-align: center;">
+                                        <img src="{{ url_for('static', filename='assets/sample_images/eczema.png') }}" alt="Eczema" style="width: 100%; height: 75px; object-fit: cover; border-radius: 6px;">
+                                        <span style="font-size: 0.7rem; font-weight: 600; display: block; margin-top: 5px;" data-i18n="rep_sample_eczema">Eczema</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="widget-card">
+                                <h3 data-i18n="rep_reader_title">Offline Report Reader</h3>
+                                <p class="section-desc" style="font-size: 0.72rem;" data-i18n="rep_reader_hint">Log diagnostic lab reports (.txt, .json formats) to check clinical reference anomalies.</p>
+                                <div style="border: 1px dashed var(--border-glass); border-radius: 8px; padding: 15px; text-align: center; background: rgba(0,0,0,0.05);">
+                                    <span style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 8px;" data-i18n="rep_upload_hint">Upload textual lab values</span>
+                                    <input type="file" id="report-file-upload" accept=".txt,.json" class="hidden" style="display: none;">
+                                    <button class="btn btn-secondary" onclick="document.getElementById('report-file-upload').click()" style="font-size: 0.7rem; padding: 5px 10px;" data-i18n="btn_select_report">Select Report File</button>
+                                </div>
+                                <div id="report-analysis-results" style="margin-top: 10px; font-size: 0.7rem; color: var(--text-secondary);"></div>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- SUB-VIEW B: DIGITAL LAB BIOMARKER ANALYZER -->
+                    <div id="rep-subview-lab" class="rep-subview hidden" style="display: flex; flex-direction: column; gap: 20px;">
+                        
+                        <!-- 1-Click Clinical Presets Card -->
+                        <div class="widget-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                                <div>
+                                    <h3 style="font-size: 1.15rem; font-weight: 800; color: #b45309; margin: 0;">⚡ 1-Click Clinical Lab Presets</h3>
+                                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px;">Simulate real pathology reports to test multi-biomarker abnormality detection offline.</p>
+                                </div>
+                                <button class="btn btn-primary" onclick="window.print()" style="font-size: 0.8rem; padding: 7px 16px;">
+                                    🖨️ Print Clinical Summary
+                                </button>
+                            </div>
+                            
+                            <div class="lab-presets-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                                <button class="lab-preset-btn" onclick="applyLabPreset('dengue')" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); text-align: left; cursor: pointer;">
+                                    <strong style="display: block; font-size: 0.82rem; color: #ef4444;">🩸 Dengue Suspect (CBC)</strong>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Platelets: 62k (Critical Low), High Hct</span>
+                                </button>
+                                <button class="lab-preset-btn" onclick="applyLabPreset('diabetes')" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); text-align: left; cursor: pointer;">
+                                    <strong style="display: block; font-size: 0.82rem; color: #f59e0b;">🩺 Diabetes Workup</strong>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Fasting: 210 mg/dL, HbA1c: 9.2%</span>
+                                </button>
+                                <button class="lab-preset-btn" onclick="applyLabPreset('jaundice')" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); text-align: left; cursor: pointer;">
+                                    <strong style="display: block; font-size: 0.82rem; color: #eab308;">🧬 Liver Function (LFT)</strong>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Bilirubin: 4.2 mg/dL, ALT: 180 U/L</span>
+                                </button>
+                                <button class="lab-preset-btn" onclick="applyLabPreset('anemia')" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); text-align: left; cursor: pointer;">
+                                    <strong style="display: block; font-size: 0.82rem; color: #dc2626;">🩸 Severe Anemia</strong>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Hemoglobin: 7.4 g/dL, Ferritin: 8</span>
+                                </button>
+                                <button class="lab-preset-btn" onclick="applyLabPreset('normal')" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); text-align: left; cursor: pointer;">
+                                    <strong style="display: block; font-size: 0.82rem; color: #10b981;">💚 Healthy Baseline</strong>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">All parameters within normal range</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Biomarkers Table Card -->
+                        <div class="widget-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin: 0;">📋 Pathology Biomarkers &amp; Clinical Thresholds</h3>
+                                <div id="lab-overall-status" class="badge" style="background: #10b981; color: #fff; font-size: 0.78rem; padding: 4px 12px; border-radius: 4px;">Baseline Normal</div>
+                            </div>
+
+                            <div class="table-responsive" style="overflow-x: auto;">
+                                <table class="lab-table" id="lab-biomarkers-table" style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                                    <thead>
+                                        <tr style="border-bottom: 1px solid var(--border-glass); text-align: left; color: var(--text-muted);">
+                                            <th style="padding: 8px;">Biomarker Test</th>
+                                            <th style="padding: 8px;">Patient Value</th>
+                                            <th style="padding: 8px;">Units</th>
+                                            <th style="padding: 8px;">Reference Range</th>
+                                            <th style="padding: 8px;">Clinical Status</th>
+                                            <th style="padding: 8px;">Triage Evaluation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="lab-table-body">
+                                        <!-- Dynamically populated rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="lab-diagnostic-summary" id="lab-diagnostic-summary" style="margin-top: 15px; padding: 12px; border-radius: 8px; background: rgba(2, 132, 199, 0.05); border: 1px solid rgba(2, 132, 199, 0.15);">
+                                <strong style="color: var(--accent-teal); display: block; margin-bottom: 4px;">💡 Diagnostic Interpretation:</strong>
+                                <span id="lab-summary-text" style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4;">All parameters align with normative physiologic baselines. No emergency anomalies flagged.</span>
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <div class="reports-samples-panel" style="display: flex; flex-direction: column; gap: 15px;">
-                    <div class="widget-card">
-                        <h3 data-i18n="rep_samples_title">Interactive Sample Images</h3>
-                        <p class="section-desc" style="font-size: 0.72rem;" data-i18n="rep_samples_hint">Click a mock-lesion to verify vision classification model outputs:</p>
-                        <div class="sample-image-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-                            <div class="sample-img-card" data-img="healthy_skin.png">
-                                <img src="{{ url_for('static', filename='assets/sample_images/healthy_skin.png') }}" alt="Healthy Skin" style="width: 100%; height: 75px; object-fit: cover; border-radius: 6px;">
-                                <span style="font-size: 0.7rem; font-weight: 600; display: block; text-align: center; margin-top: 5px;" data-i18n="rep_sample_healthy">Healthy Skin</span>
-                            </div>
-                            <div class="sample-img-card" data-img="skin_rash.png">
-                                <img src="{{ url_for('static', filename='assets/sample_images/skin_rash.png') }}" alt="Skin Rash" style="width: 100%; height: 75px; object-fit: cover; border-radius: 6px;">
-                                <span style="font-size: 0.7rem; font-weight: 600; display: block; text-align: center; margin-top: 5px;" data-i18n="rep_sample_rash">Skin Rash</span>
-                            </div>
-                            <div class="sample-img-card" data-img="acne.png">
-                                <img src="{{ url_for('static', filename='assets/sample_images/acne.png') }}" alt="Acne" style="width: 100%; height: 75px; object-fit: cover; border-radius: 6px;">
-                                <span style="font-size: 0.7rem; font-weight: 600; display: block; text-align: center; margin-top: 5px;" data-i18n="rep_sample_acne">Acne</span>
-                            </div>
-                            <div class="sample-img-card" data-img="eczema.png">
-                                <img src="{{ url_for('static', filename='assets/sample_images/eczema.png') }}" alt="Eczema" style="width: 100%; height: 75px; object-fit: cover; border-radius: 6px;">
-                                <span style="font-size: 0.7rem; font-weight: 600; display: block; text-align: center; margin-top: 5px;" data-i18n="rep_sample_eczema">Eczema</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="widget-card">
-                        <h3 data-i18n="rep_reader_title">Offline Report Reader</h3>
-                        <p class="section-desc" style="font-size: 0.72rem;" data-i18n="rep_reader_hint">Log diagnostic lab reports (.txt, .json formats) to check clinical reference anomalies.</p>
-                        <div style="border: 1px dashed var(--border-glass); border-radius: 8px; padding: 15px; text-align: center; background: rgba(0,0,0,0.05);">
-                            <span style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 8px;" data-i18n="rep_upload_hint">Upload textual lab values</span>
-                            <input type="file" id="report-file-upload" accept=".txt,.json" class="hidden">
-                            <button class="btn btn-secondary" onclick="document.getElementById('report-file-upload').click()" style="font-size: 0.7rem; padding: 5px 10px;" data-i18n="btn_select_report">Select Report File</button>
-                        </div>
-                        <div id="report-analysis-results" style="margin-top: 10px; font-size: 0.7rem; color: var(--text-secondary);"></div>
-                    </div>
+                <!-- Universal Section Attribution Stamp -->
+                <div class="section-footer-stamp">
+                    <span class="stamp-pill">📁 <strong>Project:</strong> AI(offline)-Driven Public Health Chatbot for Disease Awareness</span>
+                    <span>•</span>
+                    <span class="stamp-pill">👩‍💻 <strong>Created by:</strong> Pallavi Sowreddi (B.Tech Student)</span>
+                    <span>•</span>
+                    <span class="stamp-pill">© 2026 AURA Platform. All Rights Reserved.</span>
                 </div>
             </section>
 
@@ -621,6 +736,70 @@
                             <span style="font-style: italic; font-size: 0.8rem; color: var(--text-muted);" data-i18n="rem_no_meds">No medications scheduled yet.</span>
                         </div>
                     </div>
+                </div>
+            
+
+                <!-- Universal Section Attribution Stamp -->
+                <div class="section-footer-stamp">
+                    <span class="stamp-pill">📁 <strong>Project:</strong> AI(offline)-Driven Public Health Chatbot for Disease Awareness</span>
+                    <span>•</span>
+                    <span class="stamp-pill">👩‍💻 <strong>Created by:</strong> Pallavi Sowreddi (B.Tech Student)</span>
+                    <span>•</span>
+                    <span class="stamp-pill">© 2026 AURA Platform. All Rights Reserved.</span>
+                </div>
+            </section>
+
+            <!-- ================= VIEW: VACCINATION SCHEDULES ================= -->
+            <section id="section-vaccines" class="section-view hidden">
+                <div class="vaccines-page-container">
+                    <div class="vaccines-header-card widget-card" style="margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px;">
+                            <div class="footer-logo-circle" style="width: 46px; height: 46px; background: #0284c7; color: #fff; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.3rem;">
+                                💉
+                            </div>
+                            <div>
+                                <h2 style="font-size: 1.55rem; font-weight: 800; color: var(--text-primary); margin: 0;" data-i18n="vac_title">Universal Immunization &amp; Vaccine Schedules</h2>
+                                <p style="font-size: 0.84rem; color: var(--text-secondary); margin: 3px 0 0 0;" data-i18n="vac_subtitle">
+                                    Official National Immunization Schedule (NIS) &amp; WHO life-course vaccine guidelines with dose tracking.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Search and Filter Bar -->
+                        <div class="vac-toolbar" style="display: flex; gap: 12px; margin-bottom: 15px; flex-wrap: wrap;">
+                            <div class="vac-search-wrap" style="flex: 1; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.06); padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border-glass);">
+                                <span style="font-size: 1rem; color: var(--text-muted);">🔍</span>
+                                <input type="text" id="vac-search-input" placeholder="Search vaccine (e.g. BCG, Hepatitis, MMR, Polio, Tdap)..." style="border: none; outline: none; background: transparent; width: 100%; font-size: 0.85rem; color: var(--text-primary);">
+                            </div>
+                            <button class="btn btn-secondary" id="vac-print-btn" style="padding: 8px 16px; font-size: 0.8rem;" onclick="window.print()">
+                                🖨️ <span data-i18n="vac_print_card">Print Vaccine Card</span>
+                            </button>
+                        </div>
+
+                        <!-- Age Category Filter Pills -->
+                        <div class="vac-filter-pills" id="vac-filter-pills" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="vac-pill active" data-vac-filter="all">All Lifecourse</button>
+                            <button class="vac-pill" data-vac-filter="infants">Infants (0-12 Mo)</button>
+                            <button class="vac-pill" data-vac-filter="children">Children (1-6 Yrs)</button>
+                            <button class="vac-pill" data-vac-filter="teens">Adolescents (7-18 Yrs)</button>
+                            <button class="vac-pill" data-vac-filter="adults">Adults (19-49 Yrs)</button>
+                            <button class="vac-pill" data-vac-filter="seniors">Seniors (50+ Yrs)</button>
+                        </div>
+                    </div>
+
+                    <!-- Vaccination Cards Grid -->
+                    <div class="vac-cards-grid" id="vac-cards-grid">
+                        <!-- Rendered dynamically by JavaScript with dose tracking -->
+                    </div>
+                </div>
+
+                <!-- Universal Section Attribution Stamp -->
+                <div class="section-footer-stamp">
+                    <span class="stamp-pill">📁 <strong>Project:</strong> AI(offline)-Driven Public Health Chatbot for Disease Awareness</span>
+                    <span>•</span>
+                    <span class="stamp-pill">👩‍💻 <strong>Created by:</strong> Pallavi Sowreddi (B.Tech Student)</span>
+                    <span>•</span>
+                    <span class="stamp-pill">© 2026 AURA Platform. All Rights Reserved.</span>
                 </div>
             </section>
 
@@ -754,6 +933,16 @@
                         </div>
                     </div>
                 </div>
+            
+
+                <!-- Universal Section Attribution Stamp -->
+                <div class="section-footer-stamp">
+                    <span class="stamp-pill">📁 <strong>Project:</strong> AI(offline)-Driven Public Health Chatbot for Disease Awareness</span>
+                    <span>•</span>
+                    <span class="stamp-pill">👩‍💻 <strong>Created by:</strong> Pallavi Sowreddi (B.Tech Student)</span>
+                    <span>•</span>
+                    <span class="stamp-pill">© 2026 AURA Platform. All Rights Reserved.</span>
+                </div>
             </section>
 
             <!-- ================= VIEW 6: EMERGENCY ================= -->
@@ -803,75 +992,213 @@
                         </div>
                     </div>
                 </div>
+            
+
+                <!-- Universal Section Attribution Stamp -->
+                <div class="section-footer-stamp">
+                    <span class="stamp-pill">📁 <strong>Project:</strong> AI(offline)-Driven Public Health Chatbot for Disease Awareness</span>
+                    <span>•</span>
+                    <span class="stamp-pill">👩‍💻 <strong>Created by:</strong> Pallavi Sowreddi (B.Tech Student)</span>
+                    <span>•</span>
+                    <span class="stamp-pill">© 2026 AURA Platform. All Rights Reserved.</span>
+                </div>
             </section>
 
-            <!-- ================= VIEW 7: SETTINGS ================= -->
-            <section id="section-settings" class="section-view hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="widget-card">
-                    <h3 data-i18n="set_custom_title">UI & Feature Customizations</h3>
-                    <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
-                        <!-- Mode toggle -->
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <strong style="font-size: 0.85rem; display: block; color: var(--text-primary);" data-i18n="set_dark_mode">Dark Theme Mode</strong>
-                                <span style="font-size: 0.7rem; color: var(--text-muted);" data-i18n="set_dark_mode_desc">Override the interface color palette</span>
-                            </div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="settings-darkmode-toggle">
-                                <span class="slider"></span>
-                            </label>
+                        <!-- ================= VIEW 7: APP SETTINGS & CONFIGURATION ================= -->
+            <section id="section-settings" class="section-view hidden">
+                <div class="settings-container">
+                    
+                    <div class="settings-header-banner">
+                        <div class="footer-logo-circle" style="width: 44px; height: 44px;">⚙️</div>
+                        <div>
+                            <h2 style="font-size: 1.55rem; font-weight: 800; color: var(--text-primary); margin: 0;">Platform Settings &amp; Personalization</h2>
+                            <p style="font-size: 0.82rem; color: var(--text-secondary); margin: 2px 0 0 0;">Configure clinical preferences, appearance, speech telemetry, and private offline health data.</p>
                         </div>
+                    </div>
+
+                    <div class="settings-cards-grid">
                         
-                        <!-- Voice Assistance -->
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <strong style="font-size: 0.85rem; display: block; color: var(--text-primary);" data-i18n="set_voice_tts">Voice TTS Feedback</strong>
-                                <span style="font-size: 0.7rem; color: var(--text-muted);" data-i18n="set_voice_desc">Read results and predictions aloud</span>
+                        <!-- CARD 1: PATIENT CLINICAL PROFILE -->
+                        <div class="widget-card settings-card">
+                            <div class="settings-card-title">
+                                <span>👤</span> <h4>Patient Identity &amp; Clinical Card</h4>
                             </div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="settings-voice-toggle" checked>
-                                <span class="slider"></span>
-                            </label>
+                            <p class="settings-desc">Update your offline patient profile for instant emergency contact and medical records.</p>
+                            
+                            <form id="settings-profile-form" class="settings-form">
+                                <div class="form-group">
+                                    <label>Full Patient Name</label>
+                                    <input type="text" id="cfg-profile-name" placeholder="Pallavi Sowreddi" class="settings-input">
+                                </div>
+                                <div style="display: flex; gap: 10px;">
+                                    <div class="form-group" style="flex: 1;">
+                                        <label>Age</label>
+                                        <input type="number" id="cfg-profile-age" placeholder="21" class="settings-input">
+                                    </div>
+                                    <div class="form-group" style="flex: 1;">
+                                        <label>Blood Group</label>
+                                        <select id="cfg-profile-blood" class="settings-input">
+                                            <option value="O+">O+</option>
+                                            <option value="A+">A+</option>
+                                            <option value="B+">B+</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="O-">O-</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B-">B-</option>
+                                            <option value="AB-">AB-</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Emergency Contact Phone</label>
+                                    <input type="tel" id="cfg-profile-phone" placeholder="+91 98765 43210" class="settings-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Known Allergies / Pre-existing Conditions</label>
+                                    <input type="text" id="cfg-profile-allergies" placeholder="e.g. Penicillin, Asthma, Peanuts" class="settings-input">
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="font-size: 0.8rem; padding: 8px 16px;">💾 Save Clinical Profile</button>
+                            </form>
                         </div>
 
-                        <!-- Onboarding Tour -->
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <strong style="font-size: 0.85rem; display: block; color: var(--text-primary);" data-i18n="set_avatar">AI Assistant Widget</strong>
-                                <span style="font-size: 0.7rem; color: var(--text-muted);" data-i18n="set_avatar_desc">Display floating doctor overlay</span>
+                        <!-- CARD 2: APPEARANCE & THEME ENGINE -->
+                        <div class="widget-card settings-card">
+                            <div class="settings-card-title">
+                                <span>🎨</span> <h4>Theme &amp; Visual Appearance</h4>
                             </div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="settings-avatar-toggle" checked>
-                                <span class="slider"></span>
-                            </label>
+                            <p class="settings-desc">Customize interface theme for day, night, or low-light clinical environments.</p>
+                            
+                            <div class="setting-option-row">
+                                <div>
+                                    <strong>Interface Theme Mode</strong>
+                                    <div class="setting-sub">Choose between modern clinical light, dark glass, or OLED black.</div>
+                                </div>
+                                <select id="cfg-theme-selector" class="settings-input" style="width: 140px;">
+                                    <option value="light" selected>☀️ Light</option>
+                                    <option value="dark">🌙 Dark Glass</option>
+                                    <option value="oled">⬛ High Contrast</option>
+                                </select>
+                            </div>
+
+                            <div class="setting-option-row">
+                                <div>
+                                    <strong>Primary Clinical Accent</strong>
+                                    <div class="setting-sub">Choose theme accent color palette.</div>
+                                </div>
+                                <div class="accent-color-picker">
+                                    <span class="color-dot active" style="background: #0284c7;" data-color="teal" title="Clinical Teal"></span>
+                                    <span class="color-dot" style="background: #d97706;" data-color="amber" title="Warm Amber"></span>
+                                    <span class="color-dot" style="background: #059669;" data-color="emerald" title="Medic Emerald"></span>
+                                    <span class="color-dot" style="background: #7c3aed;" data-color="purple" title="Royal Purple"></span>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- CARD 3: SPEECH & AUDIO TELEMETRY -->
+                        <div class="widget-card settings-card">
+                            <div class="settings-card-title">
+                                <span>🔊</span> <h4>Speech &amp; Audio Telemetry</h4>
+                            </div>
+                            <p class="settings-desc">Fine-tune the offline text-to-speech engine and acoustic alarms.</p>
+                            
+                            <div class="setting-option-row">
+                                <div>
+                                    <strong>Voice Speech Rate</strong>
+                                    <div class="setting-sub" id="cfg-rate-val">Normal Speed (1.0x)</div>
+                                </div>
+                                <input type="range" id="cfg-voice-rate" min="0.75" max="1.5" step="0.05" value="1.0" style="width: 130px;">
+                            </div>
+
+                            <div class="setting-option-row">
+                                <div>
+                                    <strong>Medicine Reminder Chime</strong>
+                                    <div class="setting-sub">Play audio chime when scheduled medication is due.</div>
+                                </div>
+                                <label class="switch-toggle">
+                                    <input type="checkbox" id="cfg-chime-toggle" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-option-row">
+                                <div>
+                                    <strong>Critical SOS Siren Audio</strong>
+                                    <div class="setting-sub">Play audible siren during emergency vital alarms.</div>
+                                </div>
+                                <label class="switch-toggle">
+                                    <input type="checkbox" id="cfg-siren-toggle" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- CARD 4: ACCESSIBILITY & DISPLAY -->
+                        <div class="widget-card settings-card">
+                            <div class="settings-card-title">
+                                <span>🔤</span> <h4>Accessibility &amp; Typography</h4>
+                            </div>
+                            <p class="settings-desc">Enhance readability for elderly patients or low-vision users.</p>
+                            
+                            <div class="setting-option-row">
+                                <div>
+                                    <strong>Reading Font Size</strong>
+                                    <div class="setting-sub">Scale body text across all clinical tabs.</div>
+                                </div>
+                                <select id="cfg-font-size" class="settings-input" style="width: 140px;">
+                                    <option value="normal" selected>Normal (100%)</option>
+                                    <option value="large">Large (115%)</option>
+                                    <option value="xlarge">Senior (130%)</option>
+                                </select>
+                            </div>
+
+                            <div class="setting-option-row">
+                                <div>
+                                    <strong>Floating Medical Particles</strong>
+                                    <div class="setting-sub">Enable smooth floating background particle animation.</div>
+                                </div>
+                                <label class="switch-toggle">
+                                    <input type="checkbox" id="cfg-particles-toggle" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- CARD 5: PRIVACY & DATA EXPORT/BACKUP -->
+                        <div class="widget-card settings-card" style="grid-column: 1 / -1;">
+                            <div class="settings-card-title">
+                                <span>🔒</span> <h4>Privacy, Storage &amp; Data Backup</h4>
+                            </div>
+                            <p class="settings-desc">AURA operates 100% locally with zero cloud leakage. You retain absolute ownership of all diagnostic history.</p>
+                            
+                            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-top: 14px;">
+                                <div class="storage-usage-pill">
+                                    <span>💾 Local Cache Used:</span>
+                                    <strong id="cfg-storage-used">18.4 KB</strong>
+                                </div>
+                                <button class="btn btn-secondary" id="btn-export-health-data" onclick="exportHealthDataJSON()">
+                                    📥 Export Health Data (.JSON)
+                                </button>
+                                <button class="btn btn-secondary" onclick="alert('Offline System: Local diagnostic matrix verified intact. Zero remote telemetry active.')">
+                                    🛡️ Verify Privacy Sandbox
+                                </button>
+                                <button class="btn" id="clear-db-btn" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 0.8rem; padding: 7px 14px;">
+                                    🗑️ Reset All Local Data
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
+
                 </div>
+            
 
-                <div class="widget-card">
-                    <h3 data-i18n="set_access_title">Accessibility Preferences</h3>
-                    <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
-                        <!-- Font Size -->
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <strong style="font-size: 0.85rem; display: block; color: var(--text-primary);">Large Text Layout</strong>
-                                <span style="font-size: 0.7rem; color: var(--text-muted);">Enlarge typography scaling</span>
-                            </div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="settings-fontsize-toggle">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-
-                        <!-- Database clear -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-glass); padding-top: 15px;">
-                            <div>
-                                <strong style="font-size: 0.85rem; display: block; color: var(--text-primary);">Local Storage Flush</strong>
-                                <span style="font-size: 0.7rem; color: var(--text-muted);">Clear medications log and vitals history</span>
-                            </div>
-                            <button class="btn btn-secondary" id="clear-db-btn" style="background: rgba(239,68,68,0.1); border:1px solid #ef4444; color:#f87171; font-size:0.72rem; padding: 6px 12px;">Reset Database</button>
-                        </div>
-                    </div>
+                <!-- Universal Section Attribution Stamp -->
+                <div class="section-footer-stamp">
+                    <span class="stamp-pill">📁 <strong>Project:</strong> AI(offline)-Driven Public Health Chatbot for Disease Awareness</span>
+                    <span>•</span>
+                    <span class="stamp-pill">👩‍💻 <strong>Created by:</strong> Pallavi Sowreddi (B.Tech Student)</span>
+                    <span>•</span>
+                    <span class="stamp-pill">© 2026 AURA Platform. All Rights Reserved.</span>
                 </div>
             </section>
 
@@ -1084,6 +1411,16 @@
                         </div>
                     </div>
 
+                </div>
+            
+
+                <!-- Universal Section Attribution Stamp -->
+                <div class="section-footer-stamp">
+                    <span class="stamp-pill">📁 <strong>Project:</strong> AI(offline)-Driven Public Health Chatbot for Disease Awareness</span>
+                    <span>•</span>
+                    <span class="stamp-pill">👩‍💻 <strong>Created by:</strong> Pallavi Sowreddi (B.Tech Student)</span>
+                    <span>•</span>
+                    <span class="stamp-pill">© 2026 AURA Platform. All Rights Reserved.</span>
                 </div>
             </section>
 
