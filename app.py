@@ -323,17 +323,81 @@ def chat():
     
     # Step 2: If symptoms are detected, perform predictive analytics
     if detected_symptoms:
-        prediction = model_helper.predict_disease(detected_symptoms, lang)
-        response_data["disease_prediction"] = prediction
-        
         # Translate symptom display list
         translated_syms = []
         for s in detected_symptoms:
-            # simple lookup translations for display
             vocab_terms = model_helper.SYMPTOM_VOCAB.get(lang, {}).get(s, [s])
             translated_syms.append(vocab_terms[0].title())
-            
         symptoms_str = ", ".join(translated_syms)
+
+        # Single-symptom clinical accuracy safeguard: prompt for additional symptoms
+        if len(detected_symptoms) == 1:
+            if lang == "hi":
+                response_text = (
+                    f"### ℹ️ प्रारंभिक लक्षण दर्ज: **{symptoms_str}**\n\n"
+                    f"आपने केवल 1 लक्षण बताया है। केवल एक लक्षण के आधार पर किसी बीमारी का जिम्मेदार और सटीक निष्कर्ष निकालना चिकित्सकीय रूप से सुरक्षित नहीं है।\n\n"
+                    f"**सटीक विश्लेषण के लिए कृपया 1 या 2 और लक्षण बताएं** जो आप महसूस कर रहे हैं "
+                    f"(जैसे: बुखार, सिरदर्द, थकान, खांसी, सीने में दर्द, पेट में जलन, उल्टी, या लक्षण कितने दिनों से हैं)।"
+                )
+            elif lang == "te":
+                response_text = (
+                    f"### ℹ️ ప్రాథమిక లక్షణం గుర్తించబడింది: **{symptoms_str}**\n\n"
+                    f"మీరు కేవలం 1 లక్షణం మాత్రమే పేర్కొన్నారు. ఒకే లక్షణం ఆధారంగా వ్యాధిని నిర్ధారించడం క్లినికల్‌గా సురక్షితం కాదు.\n\n"
+                    f"**ఖచ్చితమైన విశ్లేషణ కోసం దయచేసి మరో 1 లేదా 2 లక్షణాలను తెలపండి** "
+                    f"(ఉదాహరణకు: జ్వరం, తలనొప్పి, అలసట, దగ్గు, ఛాతీ నొప్పి, కడుపులో మంట, వాంతులు లేదా లక్షణాలు ఎప్పటి నుండి ఉన్నాయి)."
+                )
+            else:
+                response_text = (
+                    f"### ℹ️ Initial Symptom Noted: **{symptoms_str}**\n\n"
+                    f"You have reported only one symptom. Evaluating an isolated symptom is insufficient to form a clinically responsible assessment.\n\n"
+                    f"**To provide an accurate screening, please share 1 or 2 additional symptoms** you are experiencing "
+                    f"(e.g., fever, headache, cough, fatigue, chest discomfort, nausea, body ache, or symptom duration)."
+                )
+            response_data["response"] = response_text
+            response_data["disease_prediction"] = None
+            return jsonify(response_data)
+
+        prediction = model_helper.predict_disease(detected_symptoms, lang)
+        response_data["disease_prediction"] = prediction
+
+        # Confidence < 40% clinical safeguard
+        if prediction["confidence"] < 0.40:
+            if lang == "hi":
+                response_text = (
+                    f"### ⚠️ चिकित्सीय स्पष्टता अपर्याप्त\n\n"
+                    f"This isn't clear enough to name a specific condition — here's what I detected, but please consult a doctor.\n\n"
+                    f"**पाए गए लक्षण:** {symptoms_str}\n\n"
+                    f"**प्रारंभिक अवलोकन:** आपके लक्षणों का कुछ झुकाव **{prediction['prediction']}** की ओर हो सकता है "
+                    f"(आत्मविश्वास: **{prediction['confidence']:.1%}**), लेकिन नैदानिक निश्चितता 40% से कम है। कृपया औपचारिक जांच के लिए डॉक्टर या स्वास्थ्य केंद्र से परामर्श करें।\n\n"
+                    f"**सामान्य देखभाल सलाह:**\n{prediction['advice']}\n\n"
+                    f"--- \n"
+                    f"*यह एक ऑफलाइन शैक्षणिक उपकरण है। गंभीर या अस्पष्ट लक्षणों पर तुरंत डॉक्टर से संपर्क करें।*"
+                )
+            elif lang == "te":
+                response_text = (
+                    f"### ⚠️ క్లినికల్ స్పష్టత సరిపోలేదు\n\n"
+                    f"This isn't clear enough to name a specific condition — here's what I detected, but please consult a doctor.\n\n"
+                    f"**గుర్తించిన లక్షణాలు:** {symptoms_str}\n\n"
+                    f"**ప్రాథమిక పరిశీలన:** మీ లక్షణాల ఆధారంగా **{prediction['prediction']}** సంభావ్యత కనిపిస్తోంది "
+                    f"(ఖచ్చితత్వం: **{prediction['confidence']:.1%}**), కానీ నమ్మకం 40% కంటే తక్కువగా ఉంది. దయచేసి సరైన నిర్ధారణ కోసం వైద్యుడిని సంప్రదించండి.\n\n"
+                    f"**సాధారణ సంరక్షణ సలహా:**\n{prediction['advice']}\n\n"
+                    f"--- \n"
+                    f"*ఇది అవగాహన కోసం ఆఫ్-లైన్ AI సాధనం. తీవ్ర అనారోగ్య సమయాలలో వైద్యుడిని సంప్రదించండి.*"
+                )
+            else:
+                response_text = (
+                    f"### ⚠️ Inconclusive Clinical Confidence\n\n"
+                    f"This isn't clear enough to name a specific condition — here's what I detected, but please consult a doctor.\n\n"
+                    f"**Detected Symptoms:** {symptoms_str}\n\n"
+                    f"**Preliminary Signal:** Overlaps with **{prediction['prediction']}** "
+                    f"(confidence: **{prediction['confidence']:.1%}**), but model confidence falls below the 40% threshold. "
+                    f"Please consult a certified medical practitioner or local health worker for diagnostic clarity.\n\n"
+                    f"**General Supportive Care:**\n{prediction['advice']}\n\n"
+                    f"--- \n"
+                    f"*Notice: Offline educational screening tool. Consult a doctor for any persistent symptoms.*"
+                )
+            response_data["response"] = response_text
+            return jsonify(response_data)
         
         if prediction["prediction"] == "No Symptoms Detected":
             response_data["response"] = responses["diagnostics_error"]
@@ -342,9 +406,9 @@ def chat():
             urgency_icon = "⚠️" if urgency in ["High", "Critical"] else "ℹ️"
             mode = prediction.get("prediction_mode", "confirmed")
             mode_labels = {
-                "confirmed": {"en": "Confirmed Assessment", "hi": "पुष्ट निदान", "te": "నిర్ధారిత అంచనా", "or": "ନିଶ୍ଚିତ ମୂଲ୍ୟାଙ୍କନ"},
-                "differential": {"en": "Differential Diagnosis (Preliminary)", "hi": "प्रारंभिक विभेदक निदान", "te": "ప్రాథమిక వ్యత్యాస నిర్ధారణ", "or": "ପ୍ରାଥମିକ ବିଭେଦନ"},
-                "insufficient": {"en": "Preliminary Screening (More Info Needed)", "hi": "प्रारंभिक जांच (अधिक जानकारी चाहिए)", "te": "ప్రాథమిక పరీక్ష (మరింత సమాచారం)", "or": "ପ୍ରାଥମିକ ଯାଞ୍ଚ (ଅଧିକ ସୂଚନା)"}
+                "confirmed": {"en": "Confirmed Assessment", "hi": "पुष्ट निदान", "te": "నిర్ధారిత అంచనా"},
+                "differential": {"en": "Differential Diagnosis (Preliminary)", "hi": "प्रारंभिक विभेदक निदान", "te": "ప్రాథమిక వ్యత్యాస నిర్ధారణ"},
+                "insufficient": {"en": "Preliminary Screening (More Info Needed)", "hi": "प्रारंभिक जांच (अधिक जानकारी चाहिए)", "te": "ప్రాథమిక పరీక్ష (మరింత సమాచారం)"}
             }
             mode_label = mode_labels.get(mode, mode_labels["confirmed"]).get(lang, mode_labels.get(mode, mode_labels["confirmed"])["en"])
 
@@ -353,7 +417,7 @@ def chat():
             follow_up_block = ""
             if follow_ups and mode in ("insufficient", "differential"):
                 q_header = {"en": "To improve accuracy, please also tell me:", "hi": "सटीकता बढ़ाने के लिए बताएं:",
-                            "te": "ఖచ్చితత్వం కోసం ఇవి కూడా చెప్పండి:", "or": "ସଠିକତା ପାଇଁ ଏହା ମଧ୍ୟ ଜଣାନ୍ତୁ:"}
+                            "te": "ఖచ్చితత్వం కోసం ఇవి కూడా చెప్పండి:"}
                 follow_up_block = f"\n\n**{q_header.get(lang, q_header['en'])}**\n"
                 for i, q in enumerate(follow_ups, 1):
                     follow_up_block += f"{i}. {q}\n"
@@ -397,20 +461,6 @@ def chat():
                     f"--- \n"
                     f"*ఇది అవగాహన కోసం ఆఫ్-లైన్ AI సాధనం. తీవ్ర అనారోగ్య సమయాలలో వైద్యుడిని సంప్రదించండి.*"
                 )
-            elif lang == "or":
-                response_text = (
-                    f"### 🩺 {mode_label}\n\n"
-                    f"ଆପଣଙ୍କ ଲକ୍ଷଣ (**{symptoms_str}**) ଆଧାରରେ, AURA ହାଇବ୍ରିଡ୍ ମୋଡେଲ୍ "
-                    f"**{prediction['prediction']}** ସମ୍ଭାବନା ଦର୍ଶାଉଛି "
-                    f"(ବିଶ୍ୱାସ: **{prediction['confidence']:.1%}**).\n\n"
-                    f"**ବିବରଣ:** {prediction['description']}\n\n"
-                    f"{urgency_icon} **ଜରୁରୀତା:** {prediction['urgency']}\n\n"
-                    f"**ସତର୍କତା:**\n{prediction['advice']}\n\n"
-                    f"{care_guidance}"
-                    f"{red_flag_block}{follow_up_block}\n"
-                    f"--- \n"
-                    f"*ଏହା ଶିକ୍ଷାମୂଳକ ଯଞ୍ତ୍ର | ଗମ୍ଭୀର ଲକ୍ଷଣରେ ଡାକ୍ତରଙ୍କୁ ଦେଖାନ୍ତୁ |*"
-                )
             else:
                 response_text = (
                     f"### 🩺 {mode_label}\n\n"
@@ -428,7 +478,7 @@ def chat():
             response_data["response"] = response_text
             return jsonify(response_data)
             
-    # Step 3: Handle direct disease inquiries (comprehensive 34-disease medical glossary)
+    # Step 3: Handle direct disease inquiries (comprehensive medical glossary)
     matched_disease = None
     for disease_name, aliases in DISEASE_ALIASES.items():
         if any(re.search(r'\b' + re.escape(alias) + r'\b', message_lower) or alias in message_lower for alias in aliases):

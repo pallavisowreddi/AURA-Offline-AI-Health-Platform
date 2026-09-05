@@ -350,7 +350,7 @@ IMAGE_INFO = {
 }
 
 # ==========================================
-# Comprehensive 34-Disease Medical Knowledge Base
+# Comprehensive Medical Knowledge Base
 # ==========================================
 DISEASE_INFO = {
     # 1. User Kaggle Notebook Diseases
@@ -1320,17 +1320,31 @@ def predict_disease(symptom_keys, lang="en"):
     top_probs = {k: round(v, 4) for k, v in sorted_probs if v > 0.02}
 
     all_lang_info = DISEASE_INFO.get(top_disease, {})
-    info = all_lang_info.get(lang, all_lang_info.get("en", {
+    en_info = all_lang_info.get("en", {
         "prediction": top_disease,
         "description": "Comprehensive medical assessment.",
         "advice": "Please consult a healthcare provider.",
         "urgency": "Medium"
-    }))
+    })
+    if lang in all_lang_info:
+        info = all_lang_info[lang]
+    else:
+        info = {
+            "prediction": f"{en_info['prediction']} (translation pending)",
+            "description": f"{en_info['description']} (translation pending)",
+            "advice": f"{en_info['advice']} (translation pending)",
+            "urgency": en_info.get('urgency', 'Medium')
+        }
 
     care_level = _get_care_level(info["urgency"], red_flags, prediction_mode)
     translated_top_probs = {}
     for k, v in top_probs.items():
         translated_top_probs[DISEASE_INFO.get(k, {}).get(lang, {}).get("prediction", k)] = v
+
+    care_guidance = CARE_LEVEL_TEXT.get(care_level, {}).get(lang)
+    if not care_guidance:
+        base_guidance = CARE_LEVEL_TEXT.get(care_level, {}).get("en", CARE_LEVEL_TEXT["home_care_ok"]["en"])
+        care_guidance = f"{base_guidance} (translation pending)" if lang != "en" else base_guidance
 
     return {
         "prediction": info["prediction"],
@@ -1343,8 +1357,9 @@ def predict_disease(symptom_keys, lang="en"):
         "follow_up_questions": follow_ups,
         "red_flags": red_flags,
         "care_level": care_level,
-        "care_guidance": CARE_LEVEL_TEXT.get(care_level, {}).get(lang, CARE_LEVEL_TEXT["home_care_ok"]["en"]),
-        "detected_symptom_count": len(symptom_keys)
+        "care_guidance": care_guidance,
+        "detected_symptom_count": len(symptom_keys),
+        "matched_symptoms": symptom_keys
     }
 
 

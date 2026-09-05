@@ -79,7 +79,7 @@
                 <button class="tour-close-btn" id="tour-close-btn">&times;</button>
             </div>
             <h3 class="tour-title" id="tour-title">Welcome to AURA AI</h3>
-            <p class="tour-desc" id="tour-desc">AURA is your fully offline, local clinical intelligence platform powered by 34-disease Random Forest Machine Learning.</p>
+            <p class="tour-desc" id="tour-desc">AURA is your fully offline, local clinical intelligence platform powered by Random Forest Machine Learning.</p>
             <div class="tour-controls">
                 <button class="tour-btn tour-skip" id="tour-skip-btn" data-i18n="tour_skip">Skip Tour</button>
                 <div style="display: flex; gap: 8px;">
@@ -199,7 +199,7 @@
     <!-- STICKY PREMIUM HEADER NAVIGATION -->
     <header class="main-navbar" id="navbar-main">
         <div class="nav-left">
-            <div class="logo" onclick="navigateToTab(\'home\')" style="cursor: pointer;" title="Return to Home Page">
+            <div class="logo" onclick="returnToHomeOrLanding()" style="cursor: pointer;" title="AURA AI Platform">
                 <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="pulse-icon"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
                 <span data-i18n="nav_brand">AURA Platform</span>
             </div>
@@ -267,7 +267,7 @@
     <div class="mobile-drawer-overlay hidden" id="mobile-drawer-overlay"></div>
     <aside class="mobile-nav-drawer" id="mobile-nav-drawer" aria-label="Mobile Navigation">
         <div class="drawer-header">
-            <div class="logo" onclick="navigateToTab(\'home\'); document.getElementById(\'mobile-drawer-overlay\').classList.add(\'hidden\'); document.getElementById(\'mobile-nav-drawer\').classList.remove(\'open\');" style="cursor: pointer;" title="Return to Home Page"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+            <div class="logo" onclick="returnToHomeOrLanding(); closeMobileDrawer();" style="cursor: pointer;" title="AURA AI Platform"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
                 <span>AURA Platform</span>
             </div>
             <button class="drawer-close-btn" id="drawer-close-btn" aria-label="Close menu">&times;</button>
@@ -332,13 +332,88 @@
     <div class="app-container">
         <div class="app-content-wrapper">
             
+                        <!-- ================= VIEW 0: PRE-LOGIN CLINICAL WELCOME GATE (ORIGINAL AURA DESIGN) ================= -->
+            <section id="section-landing" class="section-view">
+                <div class="landing-hero-container">
+                    <!-- Glowing Edge Clinical Badge -->
+                    <div class="landing-badge-pulse">
+                        <span class="pulse-dot-green"></span>
+                        <span>OFFLINE CLINICAL INTELLIGENCE PLATFORM • ZERO-CLOUD ARCHITECTURE</span>
+                    </div>
+
+                    <h1 class="landing-title">
+                        Empowering Local Healthcare With <span class="gradient-text">Clinical AI</span>
+                    </h1>
+                    
+                    <p class="landing-subtitle">
+                        Fully offline, multilingual clinical intelligence and predictive diagnostics. Safeguard your family with reliable information, instant disease screening, and private health monitoring.
+                    </p>
+
+                    <!-- Main Action CTA Row -->
+                    <div class="landing-cta-row">
+                        <button class="btn btn-primary btn-cta-main" onclick="navigateToTab('login')">
+                            <span>🔐</span> <span>Sign In to Clinical Workspace</span>
+                        </button>
+                        <button class="btn btn-secondary btn-cta-sub" onclick="navigateToTab('signup')">
+                            <span>📝</span> <span>Create Patient Profile</span>
+                        </button>
+                        <button class="btn btn-demo-quick" id="landing-demo-login-btn">
+                            <span>⚡</span> <span>1-Click Hackathon Demo Access</span>
+                        </button>
+                    </div>
+
+                    <!-- 3 Clinical Architecture Feature Cards -->
+                    <div class="landing-cards-grid">
+                        <div class="landing-card">
+                            <div class="landing-card-icon" style="background: rgba(2, 132, 199, 0.12); color: var(--accent-teal);">
+                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                            </div>
+                            <h3>Edge Random Forest Diagnostics</h3>
+                            <p>Locally evaluated Random Forest decision models for infectious fevers, metabolic syndromes, and chronic conditions with zero cloud reliance.</p>
+                            <div class="landing-card-tag">100% On-Device</div>
+                        </div>
+
+                        <div class="landing-card">
+                            <div class="landing-card-icon" style="background: rgba(16, 185, 129, 0.12); color: var(--accent-emerald);">
+                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                            </div>
+                            <h3>Multilingual Clinical Accessibility</h3>
+                            <p>Full-fidelity conversational voice and text interaction natively supported in English, Hindi (हिन्दी), and Telugu (తెలుగు) with clinical triage guidance.</p>
+                            <div class="landing-card-tag">EN • HI • TE</div>
+                        </div>
+
+                        <div class="landing-card">
+                            <div class="landing-card-icon" style="background: rgba(245, 158, 11, 0.12); color: #d97706;">
+                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            </div>
+                            <h3>Encrypted Local Patient Records</h3>
+                            <p>Client-side cryptographic credential hashing (SHA-256) and on-device private biometric storage. Zero personal data leaves the local browser sandbox.</p>
+                            <div class="landing-card-tag">Zero-Cloud Telemetry</div>
+                        </div>
+                    </div>
+
+                    <!-- Academic & SIH Hackathon Attribution Strip -->
+                    <div class="landing-academic-strip">
+                        <div class="landing-attribution-box">
+                            <div class="stamp-pill">SMART INDIA HACKATHON 2026 EDITION</div>
+                            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-top: 6px;">
+                                Project: AI-Driven Public Health Chatbot for Disease Awareness
+                            </div>
+                            <div style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 2px;">
+                                Developed by <strong>Pallavi Sowreddi</strong> (B.Tech Student)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- ================= VIEW 1: HOME ================= -->
             <section id="section-home" class="section-view">
                 <div class="hero-banner">
                     <div class="hero-text">
                         <div class="hero-eyebrow" data-i18n="hero_eyebrow">Local Intelligent Diagnostics</div>
                         <h1 data-i18n="hero_title">Your Personal Offline Clinical Assistant</h1>
-                        <p data-i18n="hero_desc">Empowering families, rural clinics, and healthcare workers with instant, zero-latency clinical screening, emergency decision support, and preventive wellness intelligence — 100% offline.</p>
+                        <p data-i18n="hero_desc">Fully offline, multilingual clinical intelligence and predictive diagnostics. Safeguard your family with reliable information.</p>
                         <div style="display: flex; gap: 12px; margin-top: 15px;">
                             <button class="btn btn-primary" onclick="navigateToTab('prediction')" data-i18n="hero_btn_check">Start Symptom Check</button>
                             <button class="btn btn-secondary" onclick="navigateToTab('dashboard')" data-i18n="hero_btn_dash">View Dashboard</button>
@@ -362,7 +437,7 @@
                     <div class="feature-card" onclick="navigateToTab('prediction')">
                         <div class="icon-wrap" style="color: var(--accent-teal);">💬</div>
                         <h3 data-i18n="feat_symptoms_title">Symptom Checker</h3>
-                        <p data-i18n="feat_symptoms_desc">Talk to our offline chatbot to diagnose 34 common conditions, chronic diseases, and epidemic symptoms.</p>
+                        <p data-i18n="feat_symptoms_desc">Talk to our offline chatbot to check symptoms across a wide range of common conditions, chronic diseases, and epidemic symptoms.</p>
                     </div>
                     <div class="feature-card" onclick="navigateToTab('reports')">
                         <div class="icon-wrap" style="color: var(--accent-orange);">📷</div>
@@ -474,7 +549,7 @@
             <!-- ================= VIEW 2: DISEASE PREDICTION ================= -->
             <section id="section-prediction" class="section-view hidden" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px;">
                 <div class="chat-layout-panel" style="display: flex; flex-direction: column; height: calc(100vh - 120px);">
-                    <button class="btn-back-home" onclick="navigateToTab('home')">← Back to Home</button>
+                    <button class="btn-back-home" onclick="returnToHomeOrLanding()">← Return</button>
                     <div class="messages-container" id="chat-messages" style="flex-grow: 1; overflow-y: auto; padding-right: 10px;">
                         <!-- Messages dynamically added by app.js -->
                     </div>
@@ -771,23 +846,23 @@
                             <div class="lab-presets-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
                                 <button class="lab-preset-btn" onclick="applyLabPreset('dengue')" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); text-align: left; cursor: pointer;">
                                     <strong style="display: block; font-size: 0.82rem; color: #ef4444;">🩸 Dengue Suspect (CBC)</strong>
-                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Platelets: 62k (Critical Low), High Hct</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Platelets: 45k (Critical Low), Hct: 48.5%</span>
                                 </button>
                                 <button class="lab-preset-btn" onclick="applyLabPreset('diabetes')" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); text-align: left; cursor: pointer;">
                                     <strong style="display: block; font-size: 0.82rem; color: #f59e0b;">🩺 Diabetes Workup</strong>
-                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Fasting: 210 mg/dL, HbA1c: 9.2%</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Fasting: 188 mg/dL, HbA1c: 9.4%</span>
                                 </button>
                                 <button class="lab-preset-btn" onclick="applyLabPreset('jaundice')" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); text-align: left; cursor: pointer;">
                                     <strong style="display: block; font-size: 0.82rem; color: #eab308;">🧬 Liver Function (LFT)</strong>
-                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Bilirubin: 4.2 mg/dL, ALT: 180 U/L</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Bilirubin: 3.8 mg/dL, ALT: 142 U/L</span>
                                 </button>
                                 <button class="lab-preset-btn" onclick="applyLabPreset('anemia')" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); text-align: left; cursor: pointer;">
                                     <strong style="display: block; font-size: 0.82rem; color: #dc2626;">🩸 Severe Anemia</strong>
-                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Hemoglobin: 7.4 g/dL, Ferritin: 8</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Hemoglobin: 6.2 g/dL, RBC: 2.1M</span>
                                 </button>
                                 <button class="lab-preset-btn" onclick="applyLabPreset('normal')" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); text-align: left; cursor: pointer;">
                                     <strong style="display: block; font-size: 0.82rem; color: #10b981;">💚 Healthy Baseline</strong>
-                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">All parameters within normal range</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Hemoglobin: 14.2 g/dL, BP: 118/76</span>
                                 </button>
                             </div>
                         </div>
@@ -1411,7 +1486,7 @@
                             <span class="sub-pill">DATASET SPECIFICATION</span>
                             <h2>Large Medical Dataset &amp; ML Architecture</h2>
                             <p style="font-size: 0.85rem; color: var(--text-secondary); max-width: 800px; margin: 6px auto 0 auto;">
-                                The platform's diagnostic intelligence is trained on <code>medical_symptoms_dataset.csv</code>, an extensive clinical matrix covering 34 diseases and 67 symptoms.
+                                The platform's diagnostic intelligence is trained on <code>medical_symptoms_dataset.csv</code>, an extensive clinical matrix covering multiple conditions and 67 symptoms.
                             </p>
                         </div>
 
@@ -1439,9 +1514,9 @@
                             </div>
                         </div>
 
-                        <!-- 34 Diseases Catalog (Categorized) -->
+                        <!-- Disease Catalog (Categorized) -->
                         <div class="about-catalog-wrap">
-                            <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 14px; color: var(--text-primary);">🩺 Comprehensive 34 Disease Coverage</h3>
+                            <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 14px; color: var(--text-primary);">🩺 Comprehensive Disease Coverage</h3>
                             
                             <div class="disease-category-block">
                                 <div class="disease-cat-title">🦠 Infectious &amp; Epidemic Fevers (11 Diseases)</div>
@@ -1535,7 +1610,7 @@
                             <div class="about-attribution-details">
                                 <div class="footer-credit-row">
                                     <span class="footer-credit-label">Project: </span>
-                                    <span class="footer-credit-value">AI(offline)-Driven Public Health Chatbot for Disease Awareness</span>
+                                    <span class="footer-credit-value">AI-Driven Public Health Chatbot for Disease Awareness</span>
                                 </div>
                                 <div class="footer-credit-row" style="margin-top: 6px;">
                                     <span class="footer-credit-label">Created by: </span>
@@ -1570,7 +1645,7 @@
                         <!-- ================= VIEW 9: DEDICATED LOGIN PAGE ================= -->
             <section id="section-login" class="section-view hidden">
                 <div class="auth-page-container">
-                    <button class="btn-back-home" onclick="navigateToTab('home')">← Back to Home</button>
+                    <button class="btn-back-home" onclick="returnToHomeOrLanding()">← Return</button>
                     <div class="auth-page-card" style="border-radius: 28px; padding: 40px 36px; max-width: 460px;">
                         <div class="auth-page-header" style="text-align: center; margin-bottom: 24px;">
                             <div class="auth-plus-circle">
@@ -1618,7 +1693,7 @@
             <!-- ================= VIEW 10: DEDICATED SIGN UP PAGE ================= -->
             <section id="section-signup" class="section-view hidden">
                 <div class="auth-page-container">
-                    <button class="btn-back-home" onclick="navigateToTab('home')">← Back to Home</button>
+                    <button class="btn-back-home" onclick="returnToHomeOrLanding()">← Return</button>
                     <div class="auth-page-card" style="border-radius: 28px; padding: 36px 34px; max-width: 480px;">
                         <div class="auth-page-header" style="text-align: center; margin-bottom: 20px;">
                             <div class="auth-plus-circle">
@@ -1777,13 +1852,13 @@
                     </div>
                     <span class="footer-brand-name">AURA Platform</span>
                 </div>
-                <p class="footer-desc">An AI(offline)-driven public health chatbot spreading disease awareness, prevention tips, and healthy-living guidance for everyone.</p>
+                <p class="footer-desc">An AI-driven public health chatbot spreading disease awareness, prevention tips, and healthy-living guidance for everyone.</p>
             </div>
 
             <div class="footer-right">
                 <div class="footer-credit-row">
                     <span class="footer-credit-label">Project:</span>
-                    <span class="footer-credit-value">AI(offline)-Driven Public Health Chatbot for Disease Awareness</span>
+                    <span class="footer-credit-value">AI-Driven Public Health Chatbot for Disease Awareness</span>
                 </div>
                 <div class="footer-credit-row">
                     <span class="footer-credit-label">Created by:</span>

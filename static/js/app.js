@@ -1,5 +1,110 @@
 
 // ============================================================================
+// AURA CLIENT-SIDE UTILITIES & CRYPTOGRAPHY
+// ============================================================================
+function toTitleCase(str) {
+    if (!str) return "";
+    return String(str).replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+}
+
+// Local-only offline demo authentication (SHA-256 hashed localStorage). Not production-grade backend security; designed for offline hackathon demonstration.
+function jsSha256(ascii) {
+    function rightRotate(value, amount) {
+        return (value >>> amount) | (value << (32 - amount));
+    }
+    const mathPow = Math.pow;
+    const maxWord = mathPow(2, 32);
+    let lengthProperty = 'length';
+    let i, j;
+    let result = '';
+    const words = [];
+    const asciiBitLength = ascii[lengthProperty] * 8;
+    let hash = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+    const k = [
+        0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+        0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+        0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+        0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+        0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+        0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+        0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+        0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+    ];
+    let isCompound = false;
+    for (i = 0; i < asciiBitLength; i += 8) {
+        words[i >> 5] |= (ascii.charCodeAt(i / 8) & 0xff) << (24 - (i % 32));
+    }
+    words[asciiBitLength >> 5] |= 0x80 << (24 - (asciiBitLength % 32));
+    words[(((asciiBitLength + 64) >> 9) << 4) + 15] = asciiBitLength;
+    for (let j = 0; j < words[lengthProperty]; j += 16) {
+        const w = words.slice(j, j + 16);
+        const oldHash = hash.slice(0);
+        hash = hash.slice(0, 8);
+        for (i = 0; i < 64; i++) {
+            const i2 = i + j;
+            const w15 = w[i - 15], w2 = w[i - 2];
+            const a = hash[0], e = hash[4];
+            const temp1 = hash[7]
+                + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
+                + ((e & hash[5]) ^ ((~e) & hash[6]))
+                + k[i]
+                + (w[i] = (i < 16) ? w[i] : (
+                    w[i - 16]
+                    + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
+                    + w[i - 7]
+                    + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
+                ) | 0);
+            const temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
+                + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+            hash = [(temp1 + temp2) | 0, a, hash[1], hash[2], (hash[3] + temp1) | 0, hash[4], hash[5], hash[6]];
+        }
+        for (i = 0; i < 8; i++) {
+            hash[i] = (hash[i] + oldHash[i]) | 0;
+        }
+    }
+    for (i = 0; i < 8; i++) {
+        for (let b = 3; b >= 0; b--) {
+            const byte = (hash[i] >> (b * 8)) & 0xff;
+            result += ((byte < 16 ? '0' : '') + byte.toString(16));
+        }
+    }
+    return result;
+}
+
+async function hashPasswordSHA256(password) {
+    if (!password) return "";
+    try {
+        if (window.crypto && window.crypto.subtle) {
+            const msgBuffer = new TextEncoder().encode(password);
+            const hashBuffer = await window.crypto.subtle.digest("SHA-256", msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+        }
+    } catch (e) {
+        console.warn("WebCrypto unavailable, falling back to local JS SHA-256", e);
+    }
+    return jsSha256(password);
+}
+
+function getActiveUser() {
+    try {
+        const stored = localStorage.getItem("aura_active_user");
+        return stored ? JSON.parse(stored) : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+window.returnToHomeOrLanding = function() {
+    if (getActiveUser()) {
+        window.navigateToTab("home");
+    } else {
+        window.navigateToTab("landing");
+    }
+};
+
+
+// ============================================================================
 // AURA CLIENT-SIDE MULTILINGUAL TRANSLATION DICTIONARY
 // ============================================================================
 const UI_TRANSLATIONS = {
@@ -43,11 +148,11 @@ const UI_TRANSLATIONS = {
         demo_accounts_title: "⚡ 1-Click Hackathon Demo Profiles",
         hero_eyebrow: "Local Intelligent Diagnostics",
         hero_title: "Your Personal Offline Clinical Assistant",
-        hero_desc: "Fully offline, 34-disease multilingual clinical intelligence and predictive biometrics. Safeguard your family with reliable information.",
+        hero_desc: "Fully offline, multilingual clinical intelligence and predictive diagnostics. Safeguard your family with reliable information.",
         hero_btn_check: "Start Symptom Check",
         hero_btn_dash: "View Dashboard",
         feat_symptoms_title: "Symptom Checker",
-        feat_symptoms_desc: "Talk to our offline chatbot to diagnose 34 common conditions, chronic diseases, and epidemic symptoms.",
+        feat_symptoms_desc: "Talk to our offline chatbot to check symptoms across a wide range of common conditions, chronic diseases, and epidemic symptoms.",
         feat_scanner_title: "Visual Skin Scanner",
         feat_scanner_desc: "Analyze skin lesions, rashes, eczema, or acne using local color and texture model scanning.",
         feat_reminders_title: "Medicine Reminders",
@@ -205,11 +310,11 @@ const UI_TRANSLATIONS = {
         demo_accounts_title: "⚡ 1-क्लिक डेमो प्रोफाइल",
         hero_eyebrow: "स्थानीय कृत्रिम बुद्धिमत्ता निदान",
         hero_title: "आपका व्यक्तिगत ऑफ़लाइन स्वास्थ्य सहायक",
-        hero_desc: "पूरी तरह से ऑफ़लाइन, 34 बीमारियों का बहुभाषी चिकित्सकीय ज्ञान और बायोमेट्रिक विश्लेषण। अपने परिवार को सुरक्षित रखें।",
+        hero_desc: "पूरी तरह से ऑफ़लाइन, बहुभाषी चिकित्सकीय ज्ञान और भविष्य कहनेवाला निदान। अपने परिवार को सुरक्षित रखें।",
         hero_btn_check: "लक्षण जांच शुरू करें",
         hero_btn_dash: "डैशबोर्ड देखें",
         feat_symptoms_title: "लक्षण जांचकर्ता (Chat)",
-        feat_symptoms_desc: "34 सामान्य और पुरानी बीमारियों के लक्षणों के निदान के लिए हमारे ऑफ़लाइन AI चैटबॉट से बात करें।",
+        feat_symptoms_desc: "सामान्य और पुरानी बीमारियों के लक्षणों की जांच के लिए हमारे ऑफ़लाइन AI चैटबॉट से बात करें।",
         feat_scanner_title: "त्वचा रोग स्कैनर",
         feat_scanner_desc: "रंग और बनावट मॉडल का उपयोग करके त्वचा के दाने, एक्जिमा या मुंहासों का ऑफ़लाइन विश्लेषण करें।",
         feat_reminders_title: "दवा रिमाइंडर",
@@ -367,11 +472,11 @@ const UI_TRANSLATIONS = {
         demo_accounts_title: "⚡ 1-క్లిక్ డెమో ప్రొఫైల్స్",
         hero_eyebrow: "స్థానిక కృత్రిమ మేధస్సు నిర్ధారణ",
         hero_title: "మీ వ్యక్తిగత ఆఫ్‌లైన్ క్లినికల్ సహాయకుడు",
-        hero_desc: "పూర్తిగా ఆఫ్‌లైన్, 34 వ్యాధుల బహుభాషా క్లినికల్ పరిజ్ఞానం మరియు బయోమెట్రిక్స్. మీ కుటుంబాన్ని సురక్షితంగా ఉంచండి.",
+        hero_desc: "పూర్తిగా ఆఫ్‌లైన్, బహుభాషా క్లినికల్ పరిజ్ఞానం మరియు ప్రిడిక్టివ్ డయాగ్నస్టిక్స్. మీ కుటుంబాన్ని సురక్షితంగా ఉంచండి.",
         hero_btn_check: "లక్షణాల పరీక్ష ప్రారంభించండి",
         hero_btn_dash: "డ్యాష్‌బోర్డ్ చూడండి",
         feat_symptoms_title: "లక్షణాల తనిఖీదారు",
-        feat_symptoms_desc: "34 సాధారణ మరియు దీర్ఘకాలిక వ్యాధుల లక్షణాల నిర్ధారణ కోసం మా ఆఫ్‌లైన్ AI చాట్‌బాట్‌తో మాట్లాడండి.",
+        feat_symptoms_desc: "సాధారణ మరియు దీర్ఘకాలిక వ్యాధుల లక్షణాల తనిఖీ కోసం మా ఆఫ్‌లైన్ AI చాట్‌బాట్‌తో మాట్లాడండి.",
         feat_scanner_title: "చర్మ వ్యాధి స్కానర్",
         feat_scanner_desc: "రంగ్ మరియు ఆకృతి మోడళ్లను ఉపయోగించి చర్మంపై దద్దుర్లు, తామర లేదా మొటిమలను ఆఫ్‌లైన్‌లో విశ్లేషించండి.",
         feat_reminders_title: "మందుల రిమైండర్లు",
@@ -869,7 +974,34 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 2. TABBED VIEWPORT NAVIGATION
     // ==========================================
+    const PROTECTED_TABS = ["home", "prediction", "reports", "vaccines", "reminders", "dashboard", "emergency", "settings"];
+
+    function updateAuthUIState() {
+        const user = getActiveUser();
+        const authBar = document.getElementById("auth-buttons-bar");
+        const greetingPill = document.getElementById("user-greeting-pill");
+        const displayName = document.getElementById("user-display-name");
+
+        if (user) {
+            if (authBar) authBar.classList.add("hidden");
+            if (greetingPill) {
+                greetingPill.classList.remove("hidden");
+                if (displayName) displayName.textContent = `Hello, ${user.name} (${user.blood || 'O+'})`;
+            }
+        } else {
+            if (authBar) authBar.classList.remove("hidden");
+            if (greetingPill) greetingPill.classList.add("hidden");
+        }
+    }
+
     window.navigateToTab = function(tabName) {
+        const user = getActiveUser();
+        // Route Guard: enforce authentication for clinical modules
+        if (!user && PROTECTED_TABS.includes(tabName)) {
+            console.warn(`[RouteGuard] Protected route '${tabName}' requires login. Redirecting to landing gate.`);
+            tabName = "landing";
+        }
+
         // Find button
         navItems.forEach(btn => {
             if (btn.getAttribute("data-tab") === tabName) {
@@ -888,6 +1020,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
         
+        updateAuthUIState();
         triggerPageGuidance(tabName);
         if (tabName === "vaccines" && typeof renderVaccinesList === "function") {
             renderVaccinesList();
@@ -1288,7 +1421,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     tag.style.padding = "2px 6px";
                     tag.style.fontSize = "0.62rem";
                     tag.style.marginRight = "4px";
-                    tag.innerText = sym.replace("_", " ").title();
+                    tag.innerText = toTitleCase(sym);
                     xaiSymptomsMapped.appendChild(tag);
                 });
             } else {
@@ -1307,7 +1440,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     bar.style.marginBottom = "5px";
                     bar.innerHTML = `
                         <div style="display:flex; justify-content:space-between; font-size:0.62rem; color:var(--text-secondary);">
-                            <span>${sym.replace("_", " ").title()}</span>
+                            <span>${toTitleCase(sym)}</span>
                             <span>${weight}% Weight</span>
                         </div>
                         <div style="background:rgba(0,0,0,0.05); height:4px; border-radius:2px; overflow:hidden;">
@@ -2068,7 +2201,9 @@ document.addEventListener("DOMContentLoaded", () => {
         logoutBtn.addEventListener("click", () => {
             currentUser = null;
             localStorage.removeItem("aura_active_user");
-            renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
+            if (typeof updateAuthUIState === "function") updateAuthUIState();
+            if (typeof renderCurrentUserBadge === "function") renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
+            if (typeof navigateToTab === "function") navigateToTab("landing");
         });
     }
 
@@ -2366,7 +2501,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         {
             selector: ".features-grid",
-            title: "34-Disease Offline Intelligence",
+            title: "Offline Clinical Intelligence",
             desc: "Explore clinical diagnostic modules, vision skin lesion scanner, and cardiovascular health tracking.",
             tab: "home"
         },
@@ -2575,9 +2710,25 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // STRICT LOGIN HANDLER
+        // Local-only offline demo authentication (SHA-256 hashed localStorage). Not production-grade backend security; designed for offline hackathon demonstration.
+    const DEMO_PW_HASH = "bd4efad903df700dbe8ca80d3b3c569ff7f6fb4a0d4d7e8838cd35b9fb0dacff"; // SHA-256 of "Aura@2026!"
+
+    function getLocalUsersDb() {
+        let users = [];
+        try { users = JSON.parse(localStorage.getItem("aura_users_db") || "[]"); } catch (err) {}
+        if (users.length === 0) {
+            users = [
+                { name: "S. Pallavi", age: "21", blood: "O+", identifier: "2461783993", password_hash: DEMO_PW_HASH, registeredAt: new Date().toISOString() },
+                { name: "Pallavi Sowreddi", age: "21", blood: "O+", identifier: "pallavi@aura.health", password_hash: DEMO_PW_HASH, registeredAt: new Date().toISOString() }
+            ];
+            localStorage.setItem("aura_users_db", JSON.stringify(users));
+        }
+        return users;
+    }
+
+    // STRICT LOGIN HANDLER WITH SHA-256 HASH VERIFICATION
     if (pageLoginForm) {
-        pageLoginForm.addEventListener("submit", (e) => {
+        pageLoginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const idEl = document.getElementById("page-login-identifier");
             const pwEl = document.getElementById("page-login-password");
@@ -2589,18 +2740,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            let users = [];
-            try { users = JSON.parse(localStorage.getItem("aura_users_db") || "[]"); } catch (err) {}
-
-            // Pre-seed demo student profiles if empty
-            if (users.length === 0) {
-                users = [
-                    { name: "S. Pallavi", age: "21", blood: "O+", identifier: "2461783993", password: "Aura@2026!", registeredAt: new Date().toISOString() },
-                    { name: "Pallavi Sowreddi", age: "21", blood: "O+", identifier: "pallavi@aura.health", password: "Aura@2026!", registeredAt: new Date().toISOString() }
-                ];
-                localStorage.setItem("aura_users_db", JSON.stringify(users));
-            }
-
+            const users = getLocalUsersDb();
             const existingUser = users.find(u => u.identifier.toLowerCase() === id.toLowerCase());
 
             if (!existingUser) {
@@ -2608,7 +2748,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            if (existingUser.password !== pw) {
+            const inputHash = await hashPasswordSHA256(pw);
+            const isMatch = (existingUser.password_hash && existingUser.password_hash === inputHash) ||
+                            (existingUser.password && (existingUser.password === inputHash || existingUser.password === pw));
+
+            if (!isMatch) {
                 showAuthAlert("page-login-alert", "❌ Incorrect password. Please check your credentials and try again.", "error");
                 return;
             }
@@ -2616,6 +2760,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Credentials verified
             currentUser = existingUser;
             localStorage.setItem("aura_active_user", JSON.stringify(currentUser));
+            updateAuthUIState();
             renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
             showAuthAlert("page-login-alert", `✓ Welcome back, ${existingUser.name}! Logging you in...`, "success");
             setTimeout(() => {
@@ -2625,9 +2770,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // SIGNUP HANDLER (Safely handles age, blood group, strong password, duplicates)
+    // SIGNUP HANDLER WITH SHA-256 HASH ENCRYPTION
     if (pageSignupForm) {
-        pageSignupForm.addEventListener("submit", (e) => {
+        pageSignupForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const nameEl = document.getElementById("page-signup-name");
             const ageEl = document.getElementById("page-signup-age");
@@ -2663,8 +2808,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            let users = [];
-            try { users = JSON.parse(localStorage.getItem("aura_users_db") || "[]"); } catch (err) {}
+            const users = getLocalUsersDb();
 
             // Check if user already exists
             const duplicate = users.find(u => u.identifier.toLowerCase() === id.toLowerCase());
@@ -2673,12 +2817,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            const pwHash = await hashPasswordSHA256(pw);
+
             const newUser = {
                 name,
                 age: age || "21",
                 blood: blood || "O+",
                 identifier: id,
-                password: pw,
+                password_hash: pwHash,
                 registeredAt: new Date().toISOString()
             };
 
@@ -2687,6 +2833,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             currentUser = newUser;
             localStorage.setItem("aura_active_user", JSON.stringify(currentUser));
+            updateAuthUIState();
             renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
 
             showAuthAlert("page-signup-alert", `✓ Patient Profile created successfully! Welcome, <strong>${name}</strong>!`, "success");
@@ -2702,18 +2849,48 @@ document.addEventListener("DOMContentLoaded", () => {
         pageGuestBtn.addEventListener("click", () => {
             currentUser = { name: "Guest Patient", age: 24, blood: "O+", identifier: "guest" };
             localStorage.setItem("aura_active_user", JSON.stringify(currentUser));
+            updateAuthUIState();
             renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
             navigateToTab("home");
         });
     }
 
-    // Check URL parameters for tab navigation (e.g. ?tab=login or ?tab=signup)
-    const urlParams = new URLSearchParams(window.location.search);
-    const tabParam = urlParams.get("tab");
-    if (tabParam) {
-        setTimeout(() => navigateToTab(tabParam), 150);
+    // 1-Click Hackathon Demo Login Button on Landing Gate
+    const landingDemoBtn = document.getElementById("landing-demo-login-btn");
+    if (landingDemoBtn) {
+        landingDemoBtn.addEventListener("click", () => {
+            const users = getLocalUsersDb();
+            currentUser = users[0] || { name: "S. Pallavi", age: "21", blood: "O+", identifier: "2461783993" };
+            localStorage.setItem("aura_active_user", JSON.stringify(currentUser));
+            updateAuthUIState();
+            renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
+            navigateToTab("home");
+            speakAura(`Welcome, ${currentUser.name}. Demo workspace activated.`);
+        });
     }
 
+
+    // Initialize application route on startup
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get("tab");
+    const activeUser = getActiveUser();
+
+    if (activeUser) {
+        currentUser = activeUser;
+        updateAuthUIState();
+        if (tabParam && !tabParam.startsWith("login") && !tabParam.startsWith("signup")) {
+            setTimeout(() => navigateToTab(tabParam), 100);
+        } else {
+            setTimeout(() => navigateToTab("home"), 100);
+        }
+    } else {
+        updateAuthUIState();
+        if (tabParam === "login" || tabParam === "signup" || tabParam === "about") {
+            setTimeout(() => navigateToTab(tabParam), 100);
+        } else {
+            setTimeout(() => navigateToTab("landing"), 100);
+        }
+    }
 
     // ========================================================================
     // HEALTH TIP OF THE MOMENT (8 MULTILINGUAL TIPS CAROUSEL)
@@ -2964,75 +3141,120 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    const LAB_PRESETS_DATA = {
-        dengue: {
-            title: "Dengue Suspect (CBC Workup)",
-            statusBadge: "🚨 Severe Thrombocytopenia Warning",
-            statusColor: "#dc2626",
-            summary: "Severe thrombocytopenia (Platelets 62,000 /µL) and elevated Hematocrit (48%) indicate plasma leakage consistent with Dengue Hemorrhagic Fever warning signs. Immediate IV fluid resuscitation and platelet monitoring required.",
-            biomarkers: [
-                { test: "Platelet Count", val: "62,000", unit: "/µL", range: "150,000 - 450,000", status: "low", triage: "Critical Thrombocytopenia (Dengue risk)" },
-                { test: "Hematocrit (PCV)", val: "48.2", unit: "%", range: "36.0 - 46.0", status: "high", triage: "Hemoconcentration (Plasma leakage)" },
-                { test: "Total Leukocyte (WBC)", val: "3,200", unit: "/µL", range: "4,500 - 11,000", status: "low", triage: "Leukopenia (Viral marrow suppression)" },
-                { test: "Hemoglobin", val: "15.4", unit: "g/dL", range: "12.0 - 16.0", status: "normal", triage: "Normal circulating hemoglobin" },
-                { test: "Serum Creatinine", val: "0.9", unit: "mg/dL", range: "0.6 - 1.2", status: "normal", triage: "Adequate renal perfusion" }
-            ]
-        },
-        diabetes: {
-            title: "Diabetes Mellitus Metabolic Workup",
-            statusBadge: "🚨 Hyperglycemia Crisis",
-            statusColor: "#d97706",
-            summary: "Significantly elevated Fasting Blood Glucose (210 mg/dL) and HbA1c (9.2%) indicate chronic unmanaged hyperglycemia. Patient is at high risk for diabetic microvascular complications.",
-            biomarkers: [
-                { test: "Fasting Blood Glucose", val: "210", unit: "mg/dL", range: "70 - 99", status: "high", triage: "Marked Fasting Hyperglycemia" },
-                { test: "HbA1c (Glycated Hb)", val: "9.2", unit: "%", range: "< 5.7", status: "high", triage: "Poor 3-month glycemic control (>8%)" },
-                { test: "Serum Creatinine", val: "1.1", unit: "mg/dL", range: "0.6 - 1.2", status: "normal", triage: "Renal baseline acceptable" },
-                { test: "Total Cholesterol", val: "235", unit: "mg/dL", range: "< 200", status: "high", triage: "Concomitant Dyslipidemia" },
-                { test: "Hemoglobin", val: "13.8", unit: "g/dL", range: "12.0 - 16.0", status: "normal", triage: "Normal" }
-            ]
-        },
-        jaundice: {
-            title: "Liver Function Test (Hepatitis / Jaundice)",
-            statusBadge: "🚨 Acute Hepatic Cytolysis",
-            statusColor: "#dc2626",
-            summary: "Total Bilirubin (4.2 mg/dL) and severe ALT/AST transaminase spikes (>160 U/L) indicate hepatocellular inflammation. Strongly indicative of acute viral hepatitis or toxic liver insult.",
-            biomarkers: [
-                { test: "Total Bilirubin", val: "4.2", unit: "mg/dL", range: "0.2 - 1.2", status: "high", triage: "Overt Hyperbilirubinemia (Jaundice)" },
-                { test: "Direct (Conjugated) Bilirubin", val: "2.8", unit: "mg/dL", range: "< 0.3", status: "high", triage: "Hepatic / Post-hepatic jaundice" },
-                { test: "SGPT (ALT)", val: "180", unit: "U/L", range: "7 - 56", status: "high", triage: "Severe Hepatocyte Necrosis" },
-                { test: "SGOT (AST)", val: "165", unit: "U/L", range: "10 - 40", status: "high", triage: "Elevated liver parenchymal enzymes" },
-                { test: "Serum Albumin", val: "3.4", unit: "g/dL", range: "3.5 - 5.5", status: "low", triage: "Mild hepatic synthetic decrease" }
-            ]
-        },
-        anemia: {
-            title: "Severe Iron Deficiency Anemia",
-            statusBadge: "🚨 Severe Anemia",
-            statusColor: "#dc2626",
-            summary: "Critically depressed Hemoglobin (7.4 g/dL) and Serum Ferritin (8 ng/mL). Patient requires oral/parenteral iron repletion and immediate clinical evaluation for occult blood loss.",
-            biomarkers: [
-                { test: "Hemoglobin (Hb)", val: "7.4", unit: "g/dL", range: "12.0 - 16.0", status: "low", triage: "Severe Anemia (<8 g/dL)" },
-                { test: "Serum Ferritin", val: "8.0", unit: "ng/mL", range: "15 - 200", status: "low", triage: "Exhausted Iron Stores" },
-                { test: "Mean Corpuscular Volume (MCV)", val: "68.0", unit: "fL", range: "80 - 100", status: "low", triage: "Microcytic Red Blood Cells" },
-                { test: "Total Platelet Count", val: "310,000", unit: "/µL", range: "150,000 - 450,000", status: "normal", triage: "Normal platelet count" },
-                { test: "Total Leukocyte (WBC)", val: "6,500", unit: "/µL", range: "4,500 - 11,000", status: "normal", triage: "Normal leukocyte count" }
-            ]
-        },
-        normal: {
-            title: "Normative Health Baseline Panel",
-            statusBadge: "✅ Normative Baseline",
-            statusColor: "#059669",
-            summary: "All 5 core biomarkers reside safely within internationally standardized clinical reference intervals. No pathologic deviations detected.",
-            biomarkers: [
-                { test: "Hemoglobin", val: "14.2", unit: "g/dL", range: "12.0 - 16.0", status: "normal", triage: "Optimal oxygen carrying capacity" },
-                { test: "Platelet Count", val: "245,000", unit: "/µL", range: "150,000 - 450,000", status: "normal", triage: "Healthy hemostatic capacity" },
-                { test: "Fasting Blood Glucose", val: "88", unit: "mg/dL", range: "70 - 99", status: "normal", triage: "Normal euglycemia" },
-                { test: "Total Bilirubin", val: "0.8", unit: "mg/dL", range: "0.2 - 1.2", status: "normal", triage: "Clear hepatic clearance" },
-                { test: "Serum Creatinine", val: "0.9", unit: "mg/dL", range: "0.6 - 1.2", status: "normal", triage: "Optimal glomerular filtration" }
-            ]
-        }
-    };
+    function evaluateBiomarkerStatus(valStr, rangeStr) {
+    if (!valStr || !rangeStr) return { status: "normal", label: "NORMAL", triage: "Normal range observation" };
+    // Blood pressure handling (e.g. 118/76)
+    if (valStr.includes("/")) {
+        const parts = valStr.split("/");
+        const sys = parseFloat(parts[0]);
+        const dia = parseFloat(parts[1]);
+        if (sys >= 140 || dia >= 90) return { status: "high", label: "HIGH", triage: "Stage-2 hypertension threshold" };
+        if (sys >= 120 || dia >= 80) return { status: "high", label: "ELEVATED", triage: "Pre-hypertension reading" };
+        return { status: "normal", label: "NORMAL", triage: "Optimal arterial hemodynamic pressure" };
+    }
 
-    window.applyLabPreset = function(presetKey) {
+    const numVal = parseFloat(valStr.replace(/,/g, ""));
+    if (isNaN(numVal)) return { status: "normal", label: "NORMAL", triage: "Clinical parameter verified" };
+
+    let minRef = null;
+    let maxRef = null;
+
+    if (rangeStr.includes("-")) {
+        const parts = rangeStr.split("-");
+        minRef = parseFloat(parts[0].replace(/,/g, "").trim());
+        maxRef = parseFloat(parts[1].replace(/,/g, "").trim());
+    } else if (rangeStr.startsWith("<")) {
+        maxRef = parseFloat(rangeStr.replace("<", "").replace(/,/g, "").trim());
+    } else if (rangeStr.startsWith(">")) {
+        minRef = parseFloat(rangeStr.replace(">", "").replace(/,/g, "").trim());
+    }
+
+    if (minRef !== null && numVal < minRef) {
+        const ratio = numVal / minRef;
+        if (ratio < 0.6) {
+            return { status: "low", label: "CRITICAL LOW", triage: `Severely depressed below lower reference threshold (${minRef})` };
+        }
+        return { status: "low", label: "LOW", triage: `Below reference limit (${minRef} - ${maxRef})` };
+    }
+    if (maxRef !== null && numVal > maxRef) {
+        const ratio = numVal / maxRef;
+        if (ratio > 1.4) {
+            return { status: "high", label: "CRITICAL HIGH", triage: `Significantly elevated above reference threshold (${maxRef})` };
+        }
+        return { status: "high", label: "HIGH", triage: `Above reference limit (${maxRef})` };
+    }
+    return { status: "normal", label: "NORMAL", triage: "Safely within international clinical reference intervals" };
+}
+
+const LAB_PRESETS_DATA = {
+    dengue: {
+        title: "Dengue Suspect (CBC Workup)",
+        statusBadge: "🚨 Severe Thrombocytopenia Warning",
+        statusColor: "#dc2626",
+        summary: "Critical thrombocytopenia (Platelets 45,000 /µL) with elevated Hematocrit (48.5%) and Leukopenia (3,200 /µL) indicates hemoconcentration and vascular leakage consistent with Dengue infection. Urgent clinical hydration required.",
+        biomarkers: [
+            { test: "Platelet Count", val: "45,000", unit: "/µL", range: "150,000 - 450,000" },
+            { test: "Hematocrit (HCT)", val: "48.5", unit: "%", range: "36.0 - 48.0" },
+            { test: "Total Leukocyte (WBC)", val: "3,200", unit: "/µL", range: "4,000 - 11,000" },
+            { test: "Hemoglobin", val: "14.8", unit: "g/dL", range: "12.0 - 17.5" },
+            { test: "Serum Creatinine", val: "0.9", unit: "mg/dL", range: "0.6 - 1.2" }
+        ]
+    },
+    diabetes: {
+        title: "Diabetes Mellitus Metabolic Workup",
+        statusBadge: "🚨 Hyperglycemia Alert",
+        statusColor: "#d97706",
+        summary: "Significantly elevated Fasting Blood Sugar (188 mg/dL), Postprandial Glucose (260 mg/dL), and HbA1c (9.4%) confirm chronic unmanaged hyperglycemia requiring endocrinology review.",
+        biomarkers: [
+            { test: "Fasting Blood Sugar", val: "188", unit: "mg/dL", range: "70 - 99" },
+            { test: "Postprandial Glucose", val: "260", unit: "mg/dL", range: "< 140" },
+            { test: "HbA1c (Glycated Hb)", val: "9.4", unit: "%", range: "< 5.7" },
+            { test: "Total Cholesterol", val: "210", unit: "mg/dL", range: "< 200" },
+            { test: "Serum Creatinine", val: "1.0", unit: "mg/dL", range: "0.6 - 1.2" }
+        ]
+    },
+    jaundice: {
+        title: "Liver Function Test (LFT)",
+        statusBadge: "🚨 Acute Hepatic Inflammation",
+        statusColor: "#dc2626",
+        summary: "Marked elevation of Total Bilirubin (3.8 mg/dL) alongside severe transaminase elevations (ALT 142 U/L, AST 128 U/L) indicates hepatocellular parenchymal injury requiring immediate medical workup.",
+        biomarkers: [
+            { test: "Total Bilirubin", val: "3.8", unit: "mg/dL", range: "0.2 - 1.2" },
+            { test: "SGPT / ALT", val: "142", unit: "U/L", range: "7 - 56" },
+            { test: "SGOT / AST", val: "128", unit: "U/L", range: "10 - 40" },
+            { test: "Direct Bilirubin", val: "2.4", unit: "mg/dL", range: "< 0.3" },
+            { test: "Serum Albumin", val: "3.6", unit: "g/dL", range: "3.5 - 5.5" }
+        ]
+    },
+    anemia: {
+        title: "Severe Iron Deficiency Anemia",
+        statusBadge: "🚨 Severe Anemia Alert",
+        statusColor: "#dc2626",
+        summary: "Severely depressed Hemoglobin (6.2 g/dL), depleted RBC count (2.1 M/µL), and exhausted Ferritin (8.0 ng/mL) confirm severe microcytic anemia requiring therapeutic iron management.",
+        biomarkers: [
+            { test: "Hemoglobin", val: "6.2", unit: "g/dL", range: "12.0 - 17.5" },
+            { test: "RBC Count", val: "2.1", unit: "M/µL", range: "4.2 - 5.9" },
+            { test: "Serum Ferritin", val: "8.0", unit: "ng/mL", range: "15 - 200" },
+            { test: "Mean Corpuscular Volume (MCV)", val: "64.0", unit: "fL", range: "80.0 - 100.0" },
+            { test: "Platelet Count", val: "280,000", unit: "/µL", range: "150,000 - 450,000" }
+        ]
+    },
+    normal: {
+        title: "Healthy Clinical Baseline Panel",
+        statusBadge: "✅ Normative Baseline",
+        statusColor: "#059669",
+        summary: "All physiological parameters including Hemoglobin (14.2 g/dL), Fasting Sugar (84 mg/dL), Platelets (240k /µL), and Blood Pressure (118/76 mmHg) reside safely within healthy limits.",
+        biomarkers: [
+            { test: "Hemoglobin", val: "14.2", unit: "g/dL", range: "12.0 - 17.5" },
+            { test: "Fasting Sugar", val: "84", unit: "mg/dL", range: "70 - 99" },
+            { test: "Platelet Count", val: "240,000", unit: "/µL", range: "150,000 - 450,000" },
+            { test: "Blood Pressure (BP)", val: "118/76", unit: "mmHg", range: "< 120/80" },
+            { test: "Total Bilirubin", val: "0.8", unit: "mg/dL", range: "0.2 - 1.2" }
+        ]
+    }
+};
+
+window.applyLabPreset = function(presetKey) {
         const data = LAB_PRESETS_DATA[presetKey];
         if (!data) return;
 

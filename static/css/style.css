@@ -3163,3 +3163,237 @@ body.dark-theme .auth-divider span {
     transform: scale(1.03);
     opacity: 0.92;
 }
+
+/* ==========================================================================
+   ORIGINAL AURA CLINICAL PRE-LOGIN LANDING GATE
+   ========================================================================== */
+.landing-hero-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 36px 20px 50px 20px;
+    text-align: center;
+}
+
+.landing-badge-pulse {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    background: rgba(2, 132, 199, 0.08);
+    border: 1px solid rgba(2, 132, 199, 0.25);
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--accent-teal);
+    letter-spacing: 0.6px;
+    margin-bottom: 18px;
+}
+
+.landing-title {
+    font-size: clamp(2rem, 4.2vw, 3rem);
+    font-weight: 900;
+    line-height: 1.18;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+}
+
+.landing-subtitle {
+    font-size: clamp(0.92rem, 1.8vw, 1.08rem);
+    color: var(--text-secondary);
+    max-width: 800px;
+    margin: 0 auto 32px auto;
+    line-height: 1.6;
+}
+
+.landing-cta-row {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 44px;
+}
+
+.btn-cta-main {
+    padding: 13px 28px !important;
+    font-size: 0.94rem !important;
+    font-weight: 700 !important;
+    border-radius: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+    background: linear-gradient(135deg, var(--accent-teal), #0369a1) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 18px rgba(2, 132, 199, 0.35) !important;
+    cursor: pointer;
+    transition: all 0.2s ease !important;
+    border: none !important;
+}
+.btn-cta-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(2, 132, 199, 0.45) !important;
+}
+
+.btn-cta-sub {
+    padding: 13px 26px !important;
+    font-size: 0.94rem !important;
+    font-weight: 700 !important;
+    border-radius: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+    background: var(--bg-card) !important;
+    border: 1.5px solid var(--border-glass) !important;
+    color: var(--text-primary) !important;
+    cursor: pointer;
+    transition: all 0.2s ease !important;
+}
+.btn-cta-sub:hover {
+    border-color: var(--accent-teal) !important;
+    background: rgba(2, 132, 199, 0.05) !important;
+    transform: translateY(-2px);
+}
+
+.btn-demo-quick {
+    padding: 13px 22px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1.5px solid rgba(245, 158, 11, 0.35);
+    color: #b45309;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+body.dark-theme .btn-demo-quick {
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.4);
+}
+.btn-demo-quick:hover {
+    background: rgba(245, 158, 11, 0.2);
+    transform: translateY(-2px);
+}
+
+.landing-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 22px;
+    text-align: left;
+    margin-bottom: 40px;
+}
+
+.landing-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    padding: 26px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+.landing-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    border-color: rgba(2, 132, 199, 0.35);
+}
+
+.landing-card-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.landing-card h3 {
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.landing-card p {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin-bottom: 18px;
+    flex: 1;
+}
+
+.landing-card-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-muted);
+    width: fit-content;
+}
+body.dark-theme .landing-card-tag {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+}
+
+.landing-academic-strip {
+    display: flex;
+    justify-content: center;
+}
+
+.landing-attribution-box {
+    padding: 16px 28px;
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px dashed var(--border-glass);
+    text-align: center;
+}
+body.dark-theme .landing-attribution-box {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* ==========================================================================
+   PRINT MEDIA STYLING (FOR 1-CLICK PRINT CLINICAL SUMMARY)
+   ========================================================================== */
+@media print {
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+    .main-navbar, .side-drawer, .bg-network-canvas, .bg-floating-elements,
+    .aura-floating-widget, .sos-overlay, .btn-back-home, .lab-presets-row,
+    .top-lang-pill, .auth-buttons-bar, .user-greeting-pill, .btn, #aura-footer,
+    .aura-tour-backdrop, .auth-modal-backdrop, #relax-btn, #live-reading-btn {
+        display: none !important;
+    }
+    .app-container, .app-content-wrapper, .section-view, .widget-card {
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        display: block !important;
+    }
+    #section-reports, #rep-subview-lab {
+        display: block !important;
+    }
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin-top: 15px !important;
+    }
+    th, td {
+        border: 1px solid #ccc !important;
+        padding: 8px !important;
+        color: #000 !important;
+        font-size: 11pt !important;
+    }
+}
+
