@@ -5,6 +5,8 @@ import warnings
 import numpy as np
 import cv2
 from PIL import Image
+import sklearn
+import sklearn.ensemble
 try:
     from rapidocr_onnxruntime import RapidOCR
     _ocr_engine = RapidOCR()
