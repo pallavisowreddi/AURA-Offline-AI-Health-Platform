@@ -54,6 +54,22 @@
         <h2 style="font-family: 'Poppins', sans-serif; font-size: 1.35rem; color: #f8fafc; font-weight: 700; letter-spacing: 1px; margin-bottom: 5px;">AURA AI PLATFORM</h2>
         <p style="font-family: 'Inter', sans-serif; font-size: 0.78rem; color: #94a3b8; font-weight: 500; letter-spacing: 0.5px;">Initializing Local Clinical Diagnostic Engines...</p>
     </div>
+    <!-- FAILSAFE LOADER DISMISSAL SCRIPT (Guarantees loader never hangs) -->
+    <script>
+        (function() {
+            function dismissLoader() {
+                var l = document.getElementById("loader-screen");
+                if (l && l.style.display !== "none") {
+                    l.style.opacity = "0";
+                    setTimeout(function() { l.style.display = "none"; }, 500);
+                }
+            }
+            window.addEventListener("DOMContentLoaded", function() { setTimeout(dismissLoader, 1200); });
+            window.addEventListener("load", function() { setTimeout(dismissLoader, 800); });
+            setTimeout(dismissLoader, 2500); // Absolute safety timeout
+        })();
+    </script>
+
 
     <!-- VIBRANT GLOWING NEON GUIDED TOUR COMPONENT -->
     <div id="aura-guided-tour" class="aura-tour-backdrop hidden">

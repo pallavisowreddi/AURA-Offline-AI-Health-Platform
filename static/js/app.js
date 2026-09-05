@@ -1138,15 +1138,15 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(data => {
                 typing.remove();
                 if (data.error) {
-                speakAura("Scan analysis failed. Could not process image.");
-                alert(`Error: ${data.error}`);
-            } else if (data.is_document) {
-                renderDocumentAnalysisCard(data);
-            } else {
                     appendChatMessage("bot", `Error classifying skin image: ${data.error}`);
                     speakAura("Sorry, image classification encountered an error.");
+                } else if (data.is_document) {
+                    const docText = `### 📋 ${data.doc_type}\n\n**Patient:** ${data.patient_name || 'Jane Doe'} (${data.patient_age || '50'} y/o, ${data.patient_gender || 'Female'})\n**Doctor:** ${data.doctor || 'Dr. A. Smith'}\n\n**Key Clinical Assessment:**\n${data.care_guidance || data.advice}`;
+                    appendChatMessage("bot", docText);
+                    speakAura(`Medical report analyzed for ${data.patient_name || 'patient'}.`);
+                    updateTelemetry(data, true);
                 } else {
-                    const responseText = `### Visual Scanner Assessment\n\nCondition: **${data.prediction}**\nConfidence: **${Math.round(data.confidence * 100)}%**\nDescription: ${data.description}\n\n*Rec: ${data.care_guidance}*`;
+                    const responseText = `### Visual Scanner Assessment\n\nCondition: **${data.prediction}**\nConfidence: **${Math.round(data.confidence * 100)}%**\nDescription: ${data.description}\n\n*Rec: ${data.care_guidance || data.advice}*`;
                     appendChatMessage("bot", responseText);
                     speakAura(`Skin visual scan complete. Predicted condition is ${data.prediction} with confidence ${Math.round(data.confidence * 100)} percent.`);
                     updateTelemetry(data, true);
@@ -1444,8 +1444,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data.error) {
                 speakAura("Scan analysis failed. Could not process image.");
                 alert(`Error: ${data.error}`);
+            } else if (data.is_document) {
+                renderDocumentAnalysisCard(data);
             } else {
                 if (resultsCard) resultsCard.classList.remove("hidden");
+                document.getElementById("doc-scan-results-view")?.classList.add("hidden");
+                document.getElementById("skin-scan-results-view")?.classList.remove("hidden");
                 document.getElementById("doc-scan-results-view")?.classList.add("hidden");
                 document.getElementById("skin-scan-results-view")?.classList.remove("hidden");
                 if (resultName) resultName.innerText = data.prediction;
