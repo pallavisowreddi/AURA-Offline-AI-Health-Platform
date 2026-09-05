@@ -159,6 +159,49 @@ def predict_image():
         return jsonify({"error": f"Failed to process image: {str(e)}"}), 500
 
 
+@app.route("/api/predict/document", methods=["POST"])
+def predict_document():
+    """
+    Parses an uploaded medical lab report, prescription, or clinical check-up document.
+    Accepts raw text via JSON, multipart form data, or uploaded .txt/.json files.
+    Extracts dynamic patient vitals, diagnoses, medications, and clinical recommendations.
+    """
+    text = ""
+    lang = "en"
+
+    # Check for JSON payload
+    if request.is_json:
+        data = request.get_json(silent=True) or {}
+        text = data.get("text_report") or data.get("text") or ""
+        lang = data.get("lang", "en")
+    
+    # Check for file upload (e.g. from file input)
+    if not text and "file" in request.files:
+        f = request.files["file"]
+        if f.filename != "":
+            try:
+                raw_bytes = f.read()
+                text = raw_bytes.decode("utf-8", errors="replace")
+            except Exception as read_err:
+                return jsonify({"error": f"Failed to read document file: {str(read_err)}"}), 400
+        lang = request.form.get("lang", "en")
+
+    # Check for form fields
+    if not text:
+        text = request.form.get("text_report") or request.form.get("text", "")
+        lang = request.form.get("lang", lang or "en")
+
+    if not text or len(text.strip()) == 0:
+        return jsonify({"error": "No report text or file provided for analysis."}), 400
+
+    try:
+        parsed = model_helper.parse_clinical_document(text, lang)
+        return jsonify(parsed)
+    except Exception as parse_err:
+        return jsonify({"error": f"Document parsing error: {str(parse_err)}"}), 500
+
+
+
 @app.route("/api/chat", methods=["POST"])
 def chat():
     """

@@ -2367,6 +2367,26 @@ body.dark-theme .auth-divider span {
     padding: 16px 20px;
 }
 
+body.dark-theme .about-attribution-card {
+    background: linear-gradient(135deg, rgba(30, 27, 24, 0.95), rgba(45, 34, 18, 0.85));
+    border-color: #f59e0b;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+}
+
+body.dark-theme .about-attribution-details {
+    background: rgba(20, 20, 25, 0.7);
+    border-color: rgba(245, 158, 11, 0.35);
+}
+
+body.dark-theme .footer-brand-name {
+    color: #f59e0b !important;
+}
+
+body.dark-theme .footer-credit-name {
+    color: #f59e0b !important;
+}
+
+
 
 /* ==========================================================================
    VACCINATION SCHEDULES MODULE STYLES

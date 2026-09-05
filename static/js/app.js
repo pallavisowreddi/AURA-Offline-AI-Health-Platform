@@ -1642,6 +1642,50 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function processDocumentFile(file) {
+        if (!file) return;
+        const statusEl = document.getElementById("report-analysis-results");
+        if (statusEl) statusEl.innerHTML = `<span style="color: #0284c7; font-weight: 600;">⏳ Analyzing ${file.name}...</span>`;
+        
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            const content = evt.target.result;
+            const lang = languageSelector ? languageSelector.value : "en";
+            fetch("/api/predict/document", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text_report: content, lang: lang })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    if (statusEl) statusEl.innerHTML = `<span style="color: #ef4444;">Error: ${data.error}</span>`;
+                    alert(`Document Analysis Error: ${data.error}`);
+                } else {
+                    renderDocumentAnalysisCard(data);
+                    if (statusEl) {
+                        statusEl.innerHTML = `<span style="color: #10b981; font-weight: 700;">✓ Successfully parsed: ${file.name}</span>`;
+                    }
+                }
+            })
+            .catch(err => {
+                console.error("Document analysis error:", err);
+                if (statusEl) statusEl.innerHTML = `<span style="color: #ef4444;">Failed to analyze document.</span>`;
+            });
+        };
+        reader.readAsText(file);
+    }
+
+    const reportFileUpload = document.getElementById("report-file-upload");
+    if (reportFileUpload) {
+        reportFileUpload.addEventListener("change", function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                processDocumentFile(file);
+            }
+        });
+    }
+
     if (dropZone) {
         dropZone.addEventListener("click", () => imageUpload.click());
         dropZone.addEventListener("dragover", (e) => {
@@ -1658,11 +1702,15 @@ document.addEventListener("DOMContentLoaded", () => {
             dropZone.style.borderColor = "var(--accent-teal)";
             dropZone.style.background = "transparent";
             const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith("image/")) {
+            if (!file) return;
+            if (file.type.startsWith("image/")) {
                 processImageScan(file);
+            } else if (file.name.endsWith(".txt") || file.name.endsWith(".json") || file.type.includes("text")) {
+                processDocumentFile(file);
             }
         });
     }
+
 
     // Sample diagnostic clicks
     document.querySelectorAll(".sample-pill").forEach(pill => {
