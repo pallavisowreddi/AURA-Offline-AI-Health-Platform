@@ -2386,6 +2386,15 @@ body.dark-theme .footer-credit-name {
     color: #f59e0b !important;
 }
 
+body.dark-theme .aura-footer {
+    border-top-color: rgba(245, 158, 11, 0.25) !important;
+}
+
+body.dark-theme .footer-divider {
+    background: rgba(245, 158, 11, 0.2) !important;
+}
+
+
 
 
 /* ==========================================================================
