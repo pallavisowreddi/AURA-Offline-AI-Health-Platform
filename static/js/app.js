@@ -1003,8 +1003,8 @@ document.addEventListener("DOMContentLoaded", () => {
             tabName = "landing";
         }
 
-        // Find button
-        navItems.forEach(btn => {
+        // Find button (both desktop and mobile)
+        document.querySelectorAll(".nav-item, .mobile-nav-item").forEach(btn => {
             if (btn.getAttribute("data-tab") === tabName) {
                 btn.classList.add("active");
             } else {
@@ -1020,6 +1020,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 sec.classList.add("hidden");
             }
         });
+
+        // Reset scroll position to top
+        const wrapper = document.querySelector(".app-content-wrapper");
+        if (wrapper) wrapper.scrollTop = 0;
         
         updateAuthUIState();
         triggerPageGuidance(tabName);
@@ -2905,18 +2909,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (activeUser) {
         currentUser = activeUser;
         updateAuthUIState();
-        if (tabParam && !tabParam.startsWith("login") && !tabParam.startsWith("signup")) {
-            setTimeout(() => navigateToTab(tabParam), 100);
-        } else {
-            setTimeout(() => navigateToTab("home"), 100);
-        }
+        const initialTab = (tabParam && !tabParam.startsWith("login") && !tabParam.startsWith("signup")) ? tabParam : "home";
+        navigateToTab(initialTab);
     } else {
         updateAuthUIState();
-        if (tabParam === "login" || tabParam === "signup" || tabParam === "about") {
-            setTimeout(() => navigateToTab(tabParam), 100);
-        } else {
-            setTimeout(() => navigateToTab("landing"), 100);
-        }
+        const initialTab = (tabParam === "login" || tabParam === "signup" || tabParam === "about") ? tabParam : "landing";
+        navigateToTab(initialTab);
     }
 
     // ========================================================================
