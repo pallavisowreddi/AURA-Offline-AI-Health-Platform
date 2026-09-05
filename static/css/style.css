@@ -2639,6 +2639,16 @@ body.dark-theme .footer-credit-name {
     font-size: 0.72rem;
 }
 
+.lab-badge-critical {
+    background: rgba(220, 38, 38, 0.22);
+    color: #b91c1c;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    border: 1px solid rgba(220, 38, 38, 0.35);
+}
+
 .lab-badge-high {
     background: rgba(245, 158, 11, 0.15);
     color: #d97706;

@@ -902,23 +902,23 @@
                             <div class="lab-presets-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
                                 <button class="lab-preset-btn" onclick="applyLabPreset('dengue')" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); text-align: left; cursor: pointer;">
                                     <strong style="display: block; font-size: 0.82rem; color: #ef4444;">🩸 Dengue Suspect (CBC)</strong>
-                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Platelets: 45k (Critical Low), Hct: 48.5%</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Platelets: 62k (Critical Low), Hct: 52%</span>
                                 </button>
                                 <button class="lab-preset-btn" onclick="applyLabPreset('diabetes')" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); text-align: left; cursor: pointer;">
                                     <strong style="display: block; font-size: 0.82rem; color: #f59e0b;">🩺 Diabetes Workup</strong>
-                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Fasting: 188 mg/dL, HbA1c: 9.4%</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Fasting: 210 mg/dL, HbA1c: 9.2%</span>
                                 </button>
                                 <button class="lab-preset-btn" onclick="applyLabPreset('jaundice')" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); text-align: left; cursor: pointer;">
                                     <strong style="display: block; font-size: 0.82rem; color: #eab308;">🧬 Liver Function (LFT)</strong>
-                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Bilirubin: 3.8 mg/dL, ALT: 142 U/L</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Bilirubin: 4.2 mg/dL, ALT: 180 U/L</span>
                                 </button>
                                 <button class="lab-preset-btn" onclick="applyLabPreset('anemia')" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); text-align: left; cursor: pointer;">
                                     <strong style="display: block; font-size: 0.82rem; color: #dc2626;">🩸 Severe Anemia</strong>
-                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Hemoglobin: 6.2 g/dL, RBC: 2.1M</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Hemoglobin: 7.4 g/dL, Ferritin: 8 ng/mL</span>
                                 </button>
                                 <button class="lab-preset-btn" onclick="applyLabPreset('normal')" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); text-align: left; cursor: pointer;">
                                     <strong style="display: block; font-size: 0.82rem; color: #10b981;">💚 Healthy Baseline</strong>
-                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Hemoglobin: 14.2 g/dL, BP: 118/76</span>
+                                    <span style="font-size: 0.7rem; color: var(--text-secondary);">Hemoglobin: 14.2 g/dL, Platelets: 245k</span>
                                 </button>
                             </div>
                         </div>
@@ -1595,8 +1595,8 @@
                                 <button class="btn btn-secondary" onclick="alert('Offline System: Local diagnostic matrix verified intact. Zero remote telemetry active.')">
                                     🛡️ Verify Privacy Sandbox
                                 </button>
-                                <button class="btn" id="clear-db-btn" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 0.8rem; padding: 7px 14px;">
-                                    🗑️ Reset All Local Data
+                                <button class="btn" id="clear-db-btn" title="Restore clean default demo accounts and factory state for presentation" style="background: rgba(239, 68, 68, 0.1); color: #dc2626; border: 1.5px solid rgba(239, 68, 68, 0.4); font-size: 0.82rem; font-weight: 700; padding: 7px 16px; border-radius: 8px; cursor: pointer;">
+                                    🔄 Reset Demo Database
                                 </button>
                             </div>
                         </div>

@@ -646,10 +646,10 @@ function renderCurrentUserBadge(lang) {
         if (authButtonsBar) authButtonsBar.classList.add("hidden");
         if (greetingPill) greetingPill.classList.remove("hidden");
         if (displayName) {
-            const name = currentUser.name || "Guest";
-            if (lang === "hi") displayName.textContent = `नमस्ते, ${name} 👋`;
-            else if (lang === "te") displayName.textContent = `నమస్తే, ${name} 👋`;
-            else displayName.textContent = `Welcome, ${name} 👋`;
+            const cleanName = (currentUser.name || "Guest").replace(/\s*\([A-Za-z0-9\+\-]+\)\s*$/, "").trim();
+            if (lang === "hi") displayName.textContent = `नमस्ते, ${cleanName}`;
+            else if (lang === "te") displayName.textContent = `నమస్తే, ${cleanName}`;
+            else displayName.textContent = `Hello, ${cleanName}`;
         }
     } else {
         if (openAuthBtn) openAuthBtn.classList.remove("hidden");
@@ -986,7 +986,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (authBar) authBar.classList.add("hidden");
             if (greetingPill) {
                 greetingPill.classList.remove("hidden");
-                if (displayName) displayName.textContent = `Hello, ${user.name} (${user.blood || 'O+'})`;
+                const cleanName = (user.name || "Pallavi Sowreddi").replace(/\s*\([A-Za-z0-9\+\-]+\)\s*$/, "").trim();
+                if (displayName) displayName.textContent = `Hello, ${cleanName}`;
             }
         } else {
             if (authBar) authBar.classList.remove("hidden");
@@ -1642,50 +1643,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function processDocumentFile(file) {
-        if (!file) return;
-        const statusEl = document.getElementById("report-analysis-results");
-        if (statusEl) statusEl.innerHTML = `<span style="color: #0284c7; font-weight: 600;">⏳ Analyzing ${file.name}...</span>`;
-        
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            const content = evt.target.result;
-            const lang = languageSelector ? languageSelector.value : "en";
-            fetch("/api/predict/document", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text_report: content, lang: lang })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.error) {
-                    if (statusEl) statusEl.innerHTML = `<span style="color: #ef4444;">Error: ${data.error}</span>`;
-                    alert(`Document Analysis Error: ${data.error}`);
-                } else {
-                    renderDocumentAnalysisCard(data);
-                    if (statusEl) {
-                        statusEl.innerHTML = `<span style="color: #10b981; font-weight: 700;">✓ Successfully parsed: ${file.name}</span>`;
-                    }
-                }
-            })
-            .catch(err => {
-                console.error("Document analysis error:", err);
-                if (statusEl) statusEl.innerHTML = `<span style="color: #ef4444;">Failed to analyze document.</span>`;
-            });
-        };
-        reader.readAsText(file);
-    }
-
-    const reportFileUpload = document.getElementById("report-file-upload");
-    if (reportFileUpload) {
-        reportFileUpload.addEventListener("change", function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                processDocumentFile(file);
-            }
-        });
-    }
-
     if (dropZone) {
         dropZone.addEventListener("click", () => imageUpload.click());
         dropZone.addEventListener("dragover", (e) => {
@@ -1702,11 +1659,8 @@ document.addEventListener("DOMContentLoaded", () => {
             dropZone.style.borderColor = "var(--accent-teal)";
             dropZone.style.background = "transparent";
             const file = e.dataTransfer.files[0];
-            if (!file) return;
-            if (file.type.startsWith("image/")) {
+            if (file && file.type.startsWith("image/")) {
                 processImageScan(file);
-            } else if (file.name.endsWith(".txt") || file.name.endsWith(".json") || file.type.includes("text")) {
-                processDocumentFile(file);
             }
         });
     }
@@ -2032,13 +1986,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (clearDbBtn) {
         clearDbBtn.addEventListener("click", () => {
+            const confirmed = confirm("Are you sure you want to reset the demo database? This will restore clean factory defaults, default accounts, and clear transient testing data.");
+            if (!confirmed) return;
+
             localStorage.clear();
+
+            // Re-seed default demo accounts
+            const defaultUsers = [
+                { name: "S. Pallavi", age: "21", blood: "O+", identifier: "2461783993", password_hash: DEMO_PW_HASH, registeredAt: new Date().toISOString() },
+                { name: "Pallavi Sowreddi", age: "21", blood: "O+", identifier: "pallavi@aura.health", password_hash: DEMO_PW_HASH, registeredAt: new Date().toISOString() }
+            ];
+            localStorage.setItem("aura_users_db", JSON.stringify(defaultUsers));
+
+            // Set clean demo patient
+            const demoPatient = { name: "Pallavi Sowreddi", age: "21", blood: "O+", identifier: "pallavi@aura.health" };
+            localStorage.setItem("aura_active_user", JSON.stringify(demoPatient));
+            currentUser = demoPatient;
+
+            // Reset state arrays
             vitalsHistory = [];
             medicationsList = [];
             renderMedications();
             drawVitalsTrendChart();
-            speakAura("Database reset successfully.");
-            setTimeout(() => location.reload(), 1000);
+
+            updateAuthUIState();
+            renderCurrentUserBadge("en");
+
+            speakAura("Demo database restored to factory state.");
+            alert("✅ Demo Database Reset: Clean factory state restored with default presentation accounts (pallavi@aura.health / 2461783993).");
+            setTimeout(() => {
+                navigateToTab("home");
+                location.reload();
+            }, 600);
         });
     }
 
@@ -3236,68 +3215,60 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const LAB_PRESETS_DATA = {
     dengue: {
-        title: "Dengue Suspect (CBC Workup)",
+        title: "Dengue Suspect (CBC)",
         statusBadge: "🚨 Severe Thrombocytopenia Warning",
         statusColor: "#dc2626",
-        summary: "Critical thrombocytopenia (Platelets 45,000 /µL) with elevated Hematocrit (48.5%) and Leukopenia (3,200 /µL) indicates hemoconcentration and vascular leakage consistent with Dengue infection. Urgent clinical hydration required.",
+        summary: "Dengue Suspect (CBC): Critical low Platelets (62,000 /µL), elevated Hematocrit (52%), and Leukopenia (WBC 2,800 /µL) with Hemoglobin at 15.1 g/dL indicate acute hemoconcentration and plasma leakage. Urgent clinical hydration required.",
         biomarkers: [
-            { test: "Platelet Count", val: "45,000", unit: "/µL", range: "150,000 - 450,000" },
-            { test: "Hematocrit (HCT)", val: "48.5", unit: "%", range: "36.0 - 48.0" },
-            { test: "Total Leukocyte (WBC)", val: "3,200", unit: "/µL", range: "4,000 - 11,000" },
-            { test: "Hemoglobin", val: "14.8", unit: "g/dL", range: "12.0 - 17.5" },
-            { test: "Serum Creatinine", val: "0.9", unit: "mg/dL", range: "0.6 - 1.2" }
+            { test: "Platelets", val: "62,000", unit: "/µL", range: "150,000-450,000", status: "low", label: "CRITICAL LOW", triage: "Severe thrombocytopenia (critical bleeding risk, urgent fluid resuscitation)" },
+            { test: "Hematocrit", val: "52", unit: "%", range: "36-46% F / 41-53% M", status: "high", label: "HIGH", triage: "Hemoconcentration indicating significant vascular plasma leakage" },
+            { test: "Hemoglobin", val: "15.1", unit: "g/dL", range: "12.0-16.0", status: "normal", label: "NORMAL", triage: "Within standard physiological reference interval" },
+            { test: "WBC", val: "2,800", unit: "/µL", range: "4,500-11,000", status: "low", label: "LOW", triage: "Leukopenia consistent with acute viral bone marrow suppression" }
         ]
     },
     diabetes: {
-        title: "Diabetes Mellitus Metabolic Workup",
+        title: "Diabetes Workup",
         statusBadge: "🚨 Hyperglycemia Alert",
         statusColor: "#d97706",
-        summary: "Significantly elevated Fasting Blood Sugar (188 mg/dL), Postprandial Glucose (260 mg/dL), and HbA1c (9.4%) confirm chronic unmanaged hyperglycemia requiring endocrinology review.",
+        summary: "Diabetes Workup: Marked Fasting Glucose (210 mg/dL), Random Glucose (260 mg/dL), and HbA1c (9.2%) confirm uncontrolled Type 2 Diabetes Mellitus requiring clinical endocrinological intervention.",
         biomarkers: [
-            { test: "Fasting Blood Sugar", val: "188", unit: "mg/dL", range: "70 - 99" },
-            { test: "Postprandial Glucose", val: "260", unit: "mg/dL", range: "< 140" },
-            { test: "HbA1c (Glycated Hb)", val: "9.4", unit: "%", range: "< 5.7" },
-            { test: "Total Cholesterol", val: "210", unit: "mg/dL", range: "< 200" },
-            { test: "Serum Creatinine", val: "1.0", unit: "mg/dL", range: "0.6 - 1.2" }
+            { test: "Fasting Glucose", val: "210", unit: "mg/dL", range: "70-99", status: "high", label: "HIGH", triage: "Marked fasting hyperglycemia well above diabetic threshold" },
+            { test: "HbA1c", val: "9.2", unit: "%", range: "<5.7%", status: "high", label: "HIGH", triage: "Significantly elevated glycated hemoglobin indicating poor long-term glycemic control" },
+            { test: "Random Glucose", val: "260", unit: "mg/dL", range: "<140", status: "high", label: "HIGH", triage: "Severe post-glucose elevation confirming diabetic metabolic state" }
         ]
     },
     jaundice: {
-        title: "Liver Function Test (LFT)",
+        title: "Liver Function (LFT)",
         statusBadge: "🚨 Acute Hepatic Inflammation",
         statusColor: "#dc2626",
-        summary: "Marked elevation of Total Bilirubin (3.8 mg/dL) alongside severe transaminase elevations (ALT 142 U/L, AST 128 U/L) indicates hepatocellular parenchymal injury requiring immediate medical workup.",
+        summary: "Liver Function (LFT): Hyperbilirubinemia (Total Bilirubin 4.2 mg/dL) and marked transaminitis (ALT 180 U/L, AST 165 U/L) demonstrate acute hepatocellular injury / hepatitis requiring clinical evaluation.",
         biomarkers: [
-            { test: "Total Bilirubin", val: "3.8", unit: "mg/dL", range: "0.2 - 1.2" },
-            { test: "SGPT / ALT", val: "142", unit: "U/L", range: "7 - 56" },
-            { test: "SGOT / AST", val: "128", unit: "U/L", range: "10 - 40" },
-            { test: "Direct Bilirubin", val: "2.4", unit: "mg/dL", range: "< 0.3" },
-            { test: "Serum Albumin", val: "3.6", unit: "g/dL", range: "3.5 - 5.5" }
+            { test: "Total Bilirubin", val: "4.2", unit: "mg/dL", range: "0.1-1.2", status: "high", label: "HIGH", triage: "Marked Jaundice / Hyperbilirubinemia" },
+            { test: "ALT", val: "180", unit: "U/L", range: "7-56", status: "high", label: "HIGH", triage: "Marked alanine aminotransferase elevation (acute hepatocellular damage)" },
+            { test: "AST", val: "165", unit: "U/L", range: "8-48", status: "high", label: "HIGH", triage: "Significant aspartate aminotransferase elevation" }
         ]
     },
     anemia: {
-        title: "Severe Iron Deficiency Anemia",
+        title: "Severe Anemia",
         statusBadge: "🚨 Severe Anemia Alert",
         statusColor: "#dc2626",
-        summary: "Severely depressed Hemoglobin (6.2 g/dL), depleted RBC count (2.1 M/µL), and exhausted Ferritin (8.0 ng/mL) confirm severe microcytic anemia requiring therapeutic iron management.",
+        summary: "Severe Anemia: Critically depressed Hemoglobin (7.4 g/dL), depleted Serum Ferritin (8 ng/mL), and reduced RBC (3.1 million/µL) indicate profound microcytic hypochromic iron-deficiency anemia.",
         biomarkers: [
-            { test: "Hemoglobin", val: "6.2", unit: "g/dL", range: "12.0 - 17.5" },
-            { test: "RBC Count", val: "2.1", unit: "M/µL", range: "4.2 - 5.9" },
-            { test: "Serum Ferritin", val: "8.0", unit: "ng/mL", range: "15 - 200" },
-            { test: "Mean Corpuscular Volume (MCV)", val: "64.0", unit: "fL", range: "80.0 - 100.0" },
-            { test: "Platelet Count", val: "280,000", unit: "/µL", range: "150,000 - 450,000" }
+            { test: "Hemoglobin", val: "7.4", unit: "g/dL", range: "12.0-16.0", status: "low", label: "CRITICAL LOW", triage: "Severe Anemia near transfusion threshold (Critical threshold < 8.0 g/dL)" },
+            { test: "Ferritin", val: "8", unit: "ng/mL", range: "12-150 F / 12-300 M", status: "low", label: "LOW", triage: "Exhausted iron storage reserves (Profound iron deficiency)" },
+            { test: "RBC", val: "3.1", unit: "million/µL", range: "4.2-5.4", status: "low", label: "LOW", triage: "Depleted circulating erythrocytes" }
         ]
     },
     normal: {
-        title: "Healthy Clinical Baseline Panel",
+        title: "Healthy Baseline",
         statusBadge: "✅ Normative Baseline",
         statusColor: "#059669",
-        summary: "All physiological parameters including Hemoglobin (14.2 g/dL), Fasting Sugar (84 mg/dL), Platelets (240k /µL), and Blood Pressure (118/76 mmHg) reside safely within healthy limits.",
+        summary: "Healthy Baseline: All biomarker parameters (Hemoglobin 14.2 g/dL, Platelet Count 245,000 /µL, Fasting Glucose 88 mg/dL, and ALT 24 U/L) fall squarely within healthy normative clinical intervals.",
         biomarkers: [
-            { test: "Hemoglobin", val: "14.2", unit: "g/dL", range: "12.0 - 17.5" },
-            { test: "Fasting Sugar", val: "84", unit: "mg/dL", range: "70 - 99" },
-            { test: "Platelet Count", val: "240,000", unit: "/µL", range: "150,000 - 450,000" },
-            { test: "Blood Pressure (BP)", val: "118/76", unit: "mmHg", range: "< 120/80" },
-            { test: "Total Bilirubin", val: "0.8", unit: "mg/dL", range: "0.2 - 1.2" }
+            { test: "Hemoglobin", val: "14.2", unit: "g/dL", range: "12.0-16.0", status: "normal", label: "NORMAL", triage: "Optimal red blood cell oxygen carrying capacity" },
+            { test: "Platelet Count", val: "245,000", unit: "/µL", range: "150,000-450,000", status: "normal", label: "NORMAL", triage: "Optimal hemostatic thrombocyte count" },
+            { test: "Fasting Glucose", val: "88", unit: "mg/dL", range: "70-99", status: "normal", label: "NORMAL", triage: "Euglycemic fasting blood glucose level" },
+            { test: "ALT", val: "24", unit: "U/L", range: "7-56", status: "normal", label: "NORMAL", triage: "Normal baseline hepatic transaminase activity" }
         ]
     }
 };
@@ -3320,14 +3291,16 @@ window.applyLabPreset = function(presetKey) {
             tbody.innerHTML = "";
             data.biomarkers.forEach(b => {
                 const tr = document.createElement("tr");
-                const badgeClass = b.status === "normal" ? "lab-badge-normal" : (b.status === "low" ? "lab-badge-low" : "lab-badge-high");
-                const badgeLabel = b.status.toUpperCase();
+                const label = b.label || (b.status === "normal" ? "NORMAL" : b.status.toUpperCase());
+                const badgeClass = b.status === "normal" 
+                    ? "lab-badge-normal" 
+                    : ((label.includes("CRITICAL")) ? "lab-badge-critical" : (b.status === "low" ? "lab-badge-low" : "lab-badge-high"));
                 tr.innerHTML = `
                     <td><strong>${b.test}</strong></td>
                     <td style="font-weight: 800; font-family: 'IBM Plex Mono', monospace;">${b.val}</td>
                     <td style="color: var(--text-muted);">${b.unit}</td>
                     <td style="color: var(--text-secondary);">${b.range}</td>
-                    <td><span class="${badgeClass}">${badgeLabel}</span></td>
+                    <td><span class="${badgeClass}">${label}</span></td>
                     <td style="font-size: 0.74rem; color: var(--text-secondary);">${b.triage}</td>
                 `;
                 tbody.appendChild(tr);
