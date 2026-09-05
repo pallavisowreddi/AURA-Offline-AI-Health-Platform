@@ -1141,7 +1141,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     appendChatMessage("bot", `Error classifying skin image: ${data.error}`);
                     speakAura("Sorry, image classification encountered an error.");
                 } else if (data.is_document) {
-                    const docText = `### 📋 ${data.doc_type}\n\n**Patient:** ${data.patient_name || 'Jane Doe'} (${data.patient_age || '50'} y/o, ${data.patient_gender || 'Female'})\n**Doctor:** ${data.doctor || 'Dr. A. Smith'}\n\n**Key Clinical Assessment:**\n${data.care_guidance || data.advice}`;
+                    const docText = `### 📋 ${data.doc_type}\n\n**Patient:** ${data.patient_name || 'Patient (from report)'} (${data.patient_age ? data.patient_age + ' y/o' : 'Age not specified'}, ${data.patient_gender || 'Clinical Record'})\n**Doctor:** ${data.doctor || 'Attending Clinician'}\n\n**Key Clinical Assessment:**\n${data.care_guidance || data.advice}`;
                     appendChatMessage("bot", docText);
                     speakAura(`Medical report analyzed for ${data.patient_name || 'patient'}.`);
                     updateTelemetry(data, true);
@@ -2482,44 +2482,219 @@ document.addEventListener("DOMContentLoaded", () => {
         quickSignupBtn.addEventListener("click", () => navigateToTab("signup"));
     }
 
-    if (pageLoginForm) {
-        pageLoginForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const id = document.getElementById("page-login-identifier").value.trim();
-            const pw = document.getElementById("page-login-password").value;
-            let users = [];
-            try { users = JSON.parse(localStorage.getItem("aura_users_db") || "[]"); } catch (err) {}
-            const matched = users.find(u => u.identifier.toLowerCase() === id.toLowerCase() && u.password === pw);
-            if (matched) {
-                currentUser = matched;
-            } else {
-                const userName = id.includes("@") ? id.split("@")[0] : id;
-                currentUser = { name: userName, identifier: id };
-            }
-            localStorage.setItem("aura_active_user", JSON.stringify(currentUser));
-            renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
-            navigateToTab("home");
+    // Helper function to show notifications on auth forms
+    function showAuthAlert(elemId, message, type = "error") {
+        const alertEl = document.getElementById(elemId);
+        if (!alertEl) return;
+        alertEl.innerHTML = message;
+        alertEl.style.display = "block";
+        if (type === "error") {
+            alertEl.style.background = "#fef2f2";
+            alertEl.style.color = "#dc2626";
+            alertEl.style.border = "1px solid #f87171";
+        } else {
+            alertEl.style.background = "#ecfdf5";
+            alertEl.style.color = "#059669";
+            alertEl.style.border = "1px solid #34d399";
+        }
+    }
+
+    // Password strength evaluation
+    function evaluatePasswordStrength(pw) {
+        if (!pw || pw.length === 0) return { score: 0, text: "Empty", color: "#94a3b8", width: "0%" };
+        let score = 0;
+        if (pw.length >= 6) score += 1;
+        if (pw.length >= 8) score += 1;
+        if (/[A-Z]/.test(pw)) score += 1;
+        if (/[0-9]/.test(pw)) score += 1;
+        if (/[^A-Za-z0-9]/.test(pw)) score += 1;
+
+        if (score <= 2) {
+            return { score, text: "Weak", color: "#ef4444", width: "25%" };
+        } else if (score === 3 || score === 4) {
+            return { score, text: "Medium / Moderate", color: "#f59e0b", width: "65%" };
+        } else {
+            return { score, text: "Strong & Secure ✓", color: "#10b981", width: "100%" };
+        }
+    }
+
+    function updatePasswordStrengthMeter(val) {
+        const res = evaluatePasswordStrength(val);
+        const bar = document.getElementById("pw-strength-bar");
+        const label = document.getElementById("pw-strength-label");
+        if (bar) {
+            bar.style.width = res.width;
+            bar.style.background = res.color;
+        }
+        if (label) {
+            label.textContent = res.text;
+            label.style.color = res.color;
+        }
+    }
+
+    const signupPwInput = document.getElementById("page-signup-password");
+    if (signupPwInput) {
+        signupPwInput.addEventListener("input", (e) => {
+            updatePasswordStrengthMeter(e.target.value);
         });
     }
 
+    // Suggest strong password button
+    const suggestPwBtn = document.getElementById("btn-suggest-pw");
+    if (suggestPwBtn) {
+        suggestPwBtn.addEventListener("click", () => {
+            const uppers = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+            const lowers = "abcdefghijkmnpqrstuvwxyz";
+            const nums = "23456789";
+            const syms = "@#$%&*!";
+
+            let p = "";
+            p += uppers[Math.floor(Math.random() * uppers.length)];
+            p += lowers[Math.floor(Math.random() * lowers.length)];
+            p += lowers[Math.floor(Math.random() * lowers.length)];
+            p += lowers[Math.floor(Math.random() * lowers.length)];
+            p += nums[Math.floor(Math.random() * nums.length)];
+            p += nums[Math.floor(Math.random() * nums.length)];
+            p += syms[Math.floor(Math.random() * syms.length)];
+            p += uppers[Math.floor(Math.random() * uppers.length)];
+
+            const pwField = document.getElementById("page-signup-password");
+            const confField = document.getElementById("page-signup-confirm-pw");
+            if (pwField && confField) {
+                pwField.value = p;
+                confField.value = p;
+                pwField.type = "text";
+                confField.type = "text";
+                const toggle1 = document.getElementById("toggle-page-signup-pw");
+                const toggle2 = document.getElementById("toggle-page-confirm-pw");
+                if (toggle1) toggle1.textContent = "Hide";
+                if (toggle2) toggle2.textContent = "Hide";
+                updatePasswordStrengthMeter(p);
+                showAuthAlert("page-signup-alert", `✨ Suggested strong password applied: <strong>${p}</strong>`, "success");
+            }
+        });
+    }
+
+    // STRICT LOGIN HANDLER
+    if (pageLoginForm) {
+        pageLoginForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const idEl = document.getElementById("page-login-identifier");
+            const pwEl = document.getElementById("page-login-password");
+            const id = idEl ? idEl.value.trim() : "";
+            const pw = pwEl ? pwEl.value : "";
+
+            if (!id || !pw) {
+                showAuthAlert("page-login-alert", "Please enter your Email / Roll Number and Password.", "error");
+                return;
+            }
+
+            let users = [];
+            try { users = JSON.parse(localStorage.getItem("aura_users_db") || "[]"); } catch (err) {}
+
+            // Pre-seed demo student profiles if empty
+            if (users.length === 0) {
+                users = [
+                    { name: "S. Pallavi", age: "21", blood: "O+", identifier: "2461783993", password: "Aura@2026!", registeredAt: new Date().toISOString() },
+                    { name: "Pallavi Sowreddi", age: "21", blood: "O+", identifier: "pallavi@aura.health", password: "Aura@2026!", registeredAt: new Date().toISOString() }
+                ];
+                localStorage.setItem("aura_users_db", JSON.stringify(users));
+            }
+
+            const existingUser = users.find(u => u.identifier.toLowerCase() === id.toLowerCase());
+
+            if (!existingUser) {
+                showAuthAlert("page-login-alert", `❌ Account <strong>${id}</strong> not found. You must create your profile first by clicking <a onclick="navigateToTab('signup')" style="text-decoration: underline; cursor: pointer; color: #b45309; font-weight: bold;">Sign Up</a>.`, "error");
+                return;
+            }
+
+            if (existingUser.password !== pw) {
+                showAuthAlert("page-login-alert", "❌ Incorrect password. Please check your credentials and try again.", "error");
+                return;
+            }
+
+            // Credentials verified
+            currentUser = existingUser;
+            localStorage.setItem("aura_active_user", JSON.stringify(currentUser));
+            renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
+            showAuthAlert("page-login-alert", `✓ Welcome back, ${existingUser.name}! Logging you in...`, "success");
+            setTimeout(() => {
+                navigateToTab("home");
+                speakAura(`Welcome back, ${existingUser.name}.`);
+            }, 600);
+        });
+    }
+
+    // SIGNUP HANDLER (Safely handles age, blood group, strong password, duplicates)
     if (pageSignupForm) {
         pageSignupForm.addEventListener("submit", (e) => {
             e.preventDefault();
-            const name = document.getElementById("page-signup-name").value.trim();
-            const age = document.getElementById("page-signup-age").value;
-            const blood = document.getElementById("page-signup-blood").value;
-            const id = document.getElementById("page-signup-identifier").value.trim();
-            const pw = document.getElementById("page-signup-password").value;
+            const nameEl = document.getElementById("page-signup-name");
+            const ageEl = document.getElementById("page-signup-age");
+            const bloodEl = document.getElementById("page-signup-blood");
+            const idEl = document.getElementById("page-signup-identifier");
+            const pwEl = document.getElementById("page-signup-password");
+            const confirmEl = document.getElementById("page-signup-confirm-pw");
 
-            const newUser = { name, age, blood, identifier: id, password: pw };
+            const name = nameEl ? nameEl.value.trim() : "";
+            const age = ageEl ? ageEl.value.trim() : "21";
+            const blood = bloodEl ? bloodEl.value : "O+";
+            const id = idEl ? idEl.value.trim() : "";
+            const pw = pwEl ? pwEl.value : "";
+            const confirm = confirmEl ? confirmEl.value : "";
+
+            if (!name || !id || !pw) {
+                showAuthAlert("page-signup-alert", "Please fill in your name, email/roll number, and password.", "error");
+                return;
+            }
+
+            if (pw !== confirm) {
+                const mismatch = document.getElementById("page-pw-mismatch");
+                if (mismatch) mismatch.style.display = "block";
+                showAuthAlert("page-signup-alert", "⚠️ Passwords do not match. Please verify both fields.", "error");
+                return;
+            } else {
+                const mismatch = document.getElementById("page-pw-mismatch");
+                if (mismatch) mismatch.style.display = "none";
+            }
+
+            if (pw.length < 6) {
+                showAuthAlert("page-signup-alert", "Password must be at least 6 characters long. Click 'Suggest Strong Password' for a secure password.", "error");
+                return;
+            }
+
             let users = [];
             try { users = JSON.parse(localStorage.getItem("aura_users_db") || "[]"); } catch (err) {}
+
+            // Check if user already exists
+            const duplicate = users.find(u => u.identifier.toLowerCase() === id.toLowerCase());
+            if (duplicate) {
+                showAuthAlert("page-signup-alert", `An account with ID <strong>${id}</strong> already exists. Please <a onclick="navigateToTab('login')" style="text-decoration: underline; cursor: pointer; color: #b45309; font-weight: bold;">Log In here</a>.`, "error");
+                return;
+            }
+
+            const newUser = {
+                name,
+                age: age || "21",
+                blood: blood || "O+",
+                identifier: id,
+                password: pw,
+                registeredAt: new Date().toISOString()
+            };
+
             users.push(newUser);
             localStorage.setItem("aura_users_db", JSON.stringify(users));
+
             currentUser = newUser;
             localStorage.setItem("aura_active_user", JSON.stringify(currentUser));
             renderCurrentUserBadge(languageSelector ? languageSelector.value : "en");
-            navigateToTab("home");
+
+            showAuthAlert("page-signup-alert", `✓ Patient Profile created successfully! Welcome, <strong>${name}</strong>!`, "success");
+
+            setTimeout(() => {
+                navigateToTab("home");
+                speakAura(`Welcome, ${name}. Your patient profile has been created successfully.`);
+            }, 1000);
         });
     }
 
@@ -2668,20 +2843,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupPwToggle("toggle-page-signup-pw", "page-signup-password");
     setupPwToggle("toggle-page-confirm-pw", "page-signup-confirm-pw");
 
-    const pageSignupFormEl = document.getElementById("page-signup-form");
-    if (pageSignupFormEl) {
-        pageSignupFormEl.addEventListener("submit", (e) => {
-            const pw = document.getElementById("page-signup-password").value;
-            const confirm = document.getElementById("page-signup-confirm-pw").value;
-            const mismatch = document.getElementById("page-pw-mismatch");
-            if (pw !== confirm) {
-                e.preventDefault();
-                if (mismatch) mismatch.style.display = "block";
-                return;
-            }
-            if (mismatch) mismatch.style.display = "none";
-        });
-    }
+// Redundant listener removed - unified in main pageSignupForm submit handler
 
 
     // ========================================================================
@@ -3124,11 +3286,15 @@ window.quickFillDemo = function(name, roll, pass) {
         if (confBadge) confBadge.innerText = `${Math.round((data.confidence || 0.98) * 100)}% OCR Match`;
 
         // Patient Strip
-        if (document.getElementById("doc-patient-name")) document.getElementById("doc-patient-name").innerText = data.patient_name || "Jane Doe";
-        if (document.getElementById("doc-patient-age")) document.getElementById("doc-patient-age").innerText = `${data.patient_age || "50"} Yrs (${data.patient_dob || "1975-04-30"})`;
-        if (document.getElementById("doc-patient-gender")) document.getElementById("doc-patient-gender").innerText = data.patient_gender || "Female";
-        if (document.getElementById("doc-doctor-name")) document.getElementById("doc-doctor-name").innerText = data.doctor || "Dr. A. Smith";
-        if (document.getElementById("doc-report-date")) document.getElementById("doc-report-date").innerText = data.date || "2025-06-22";
+        if (document.getElementById("doc-patient-name")) document.getElementById("doc-patient-name").innerText = data.patient_name || "Patient (from report)";
+        if (document.getElementById("doc-patient-age")) {
+            const a = data.patient_age ? `${data.patient_age} Yrs` : "Age unspecified";
+            const d = data.patient_dob ? ` (${data.patient_dob})` : "";
+            document.getElementById("doc-patient-age").innerText = `${a}${d}`;
+        }
+        if (document.getElementById("doc-patient-gender")) document.getElementById("doc-patient-gender").innerText = data.patient_gender || "Clinical Record";
+        if (document.getElementById("doc-doctor-name")) document.getElementById("doc-doctor-name").innerText = data.doctor || "Attending Clinician";
+        if (document.getElementById("doc-report-date")) document.getElementById("doc-report-date").innerText = data.date || new Date().toISOString().split("T")[0];
 
         // Vitals Grid
         const vitalsGrid = document.getElementById("doc-vitals-grid");

@@ -199,7 +199,7 @@
     <!-- STICKY PREMIUM HEADER NAVIGATION -->
     <header class="main-navbar" id="navbar-main">
         <div class="nav-left">
-            <div class="logo">
+            <div class="logo" onclick="navigateToTab(\'home\')" style="cursor: pointer;" title="Return to Home Page">
                 <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="pulse-icon"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
                 <span data-i18n="nav_brand">AURA Platform</span>
             </div>
@@ -267,8 +267,7 @@
     <div class="mobile-drawer-overlay hidden" id="mobile-drawer-overlay"></div>
     <aside class="mobile-nav-drawer" id="mobile-nav-drawer" aria-label="Mobile Navigation">
         <div class="drawer-header">
-            <div class="logo">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+            <div class="logo" onclick="navigateToTab(\'home\'); document.getElementById(\'mobile-drawer-overlay\').classList.add(\'hidden\'); document.getElementById(\'mobile-nav-drawer\').classList.remove(\'open\');" style="cursor: pointer;" title="Return to Home Page"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
                 <span>AURA Platform</span>
             </div>
             <button class="drawer-close-btn" id="drawer-close-btn" aria-label="Close menu">&times;</button>
@@ -475,6 +474,7 @@
             <!-- ================= VIEW 2: DISEASE PREDICTION ================= -->
             <section id="section-prediction" class="section-view hidden" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px;">
                 <div class="chat-layout-panel" style="display: flex; flex-direction: column; height: calc(100vh - 120px);">
+                    <button class="btn-back-home" onclick="navigateToTab('home')">← Back to Home</button>
                     <div class="messages-container" id="chat-messages" style="flex-grow: 1; overflow-y: auto; padding-right: 10px;">
                         <!-- Messages dynamically added by app.js -->
                     </div>
@@ -648,11 +648,11 @@
 
                                 <!-- Patient Profile Strip -->
                                 <div class="doc-patient-strip" id="doc-patient-strip" style="display: flex; gap: 12px; flex-wrap: wrap; background: rgba(0,0,0,0.02); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-glass); margin-bottom: 15px; font-size: 0.78rem;">
-                                    <div><strong>Patient:</strong> <span id="doc-patient-name">Jane Doe</span></div>
-                                    <div><strong>Age/DOB:</strong> <span id="doc-patient-age">50 Yrs (1975-04-30)</span></div>
-                                    <div><strong>Gender:</strong> <span id="doc-patient-gender">Female</span></div>
-                                    <div><strong>Attending Physician:</strong> <span id="doc-doctor-name">Dr. A. Smith</span></div>
-                                    <div><strong>Date:</strong> <span id="doc-report-date">2025-06-22</span></div>
+                                    <div><strong>Patient:</strong> <span id="doc-patient-name">Identified from Report</span></div>
+                                    <div><strong>Age/DOB:</strong> <span id="doc-patient-age">Extracted dynamically</span></div>
+                                    <div><strong>Gender:</strong> <span id="doc-patient-gender">Clinical Record</span></div>
+                                    <div><strong>Attending Physician:</strong> <span id="doc-doctor-name">Attending Clinician</span></div>
+                                    <div><strong>Date:</strong> <span id="doc-report-date">Current</span></div>
                                 </div>
 
                                 <!-- Vitals Grid -->
@@ -1570,6 +1570,7 @@
                         <!-- ================= VIEW 9: DEDICATED LOGIN PAGE ================= -->
             <section id="section-login" class="section-view hidden">
                 <div class="auth-page-container">
+                    <button class="btn-back-home" onclick="navigateToTab('home')">← Back to Home</button>
                     <div class="auth-page-card" style="border-radius: 28px; padding: 40px 36px; max-width: 460px;">
                         <div class="auth-page-header" style="text-align: center; margin-bottom: 24px;">
                             <div class="auth-plus-circle">
@@ -1579,10 +1580,13 @@
                             <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.45;" data-i18n="login_subtitle">Log in to continue your health journey with AURA Platform.</p>
                         </div>
                         
+                        <!-- Inline Login Alert Box -->
+                        <div id="page-login-alert" style="display: none; border-radius: 10px; padding: 10px 14px; font-size: 0.78rem; font-weight: 600; margin-bottom: 14px;"></div>
+
                         <form id="page-login-form" class="auth-form" style="gap: 16px;">
                             <div class="form-group">
-                                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);" data-i18n="auth_lbl_email">Email</label>
-                                <input type="text" id="page-login-identifier" placeholder="you@example.com" required autocomplete="username" style="border-radius: 12px; padding: 11px 14px;">
+                                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);">Email or Roll Number</label>
+                                <input type="text" id="page-login-identifier" placeholder="e.g. 2461783993 or you@example.com" required autocomplete="username" style="border-radius: 12px; padding: 11px 14px;">
                             </div>
                             <div class="form-group">
                                 <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);" data-i18n="auth_lbl_password">Password</label>
@@ -1603,9 +1607,9 @@
                             <button type="submit" class="btn-auth-gold" data-i18n="auth_btn_login">Login</button>
                         </form>
 
-                        <div class="auth-footer-links" style="margin-top: 22px; font-size: 0.82rem;">
+                        <div class="auth-footer-links" style="margin-top: 22px; font-size: 0.82rem; text-align: center;">
                             <span data-i18n="auth_no_account">Don't have an account?</span> 
-                            <a class="auth-link" onclick="navigateToTab('signup')" style="color: #b45309; font-weight: 700; text-decoration: none; margin-left: 4px;" data-i18n="auth_link_signup">Sign Up</a>
+                            <a class="auth-link" onclick="navigateToTab('signup')" style="color: #b45309; font-weight: 700; text-decoration: none; margin-left: 4px; cursor: pointer;" data-i18n="auth_link_signup">Sign Up here →</a>
                         </div>
                     </div>
                 </div>
@@ -1614,49 +1618,86 @@
             <!-- ================= VIEW 10: DEDICATED SIGN UP PAGE ================= -->
             <section id="section-signup" class="section-view hidden">
                 <div class="auth-page-container">
-                    <div class="auth-page-card" style="border-radius: 28px; padding: 40px 36px; max-width: 480px;">
-                        <div class="auth-page-header" style="text-align: center; margin-bottom: 24px;">
+                    <button class="btn-back-home" onclick="navigateToTab('home')">← Back to Home</button>
+                    <div class="auth-page-card" style="border-radius: 28px; padding: 36px 34px; max-width: 480px;">
+                        <div class="auth-page-header" style="text-align: center; margin-bottom: 20px;">
                             <div class="auth-plus-circle">
                                 <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#fff" stroke-width="2.8"><circle cx="12" cy="12" r="9.5"/><path d="M12 7v10M7 12h10"/></svg>
                             </div>
-                            <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--text-primary); margin-bottom: 8px;" data-i18n="signup_welcome">Create your account</h2>
-                            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.45;" data-i18n="signup_subtitle">Join AURA Platform for personalized health awareness and prevention guidance.</p>
+                            <h2 style="font-size: 1.65rem; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;" data-i18n="signup_welcome">Create your account</h2>
+                            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.45;" data-i18n="signup_subtitle">Join AURA Platform for personalized health awareness and clinical prevention guidance.</p>
                         </div>
                         
-                        <form id="page-signup-form" class="auth-form" style="gap: 15px;">
+                        <!-- Inline Sign Up Alert Box -->
+                        <div id="page-signup-alert" style="display: none; border-radius: 10px; padding: 10px 14px; font-size: 0.78rem; font-weight: 600; margin-bottom: 14px;"></div>
+
+                        <form id="page-signup-form" class="auth-form" style="gap: 13px;">
                             <div class="form-group">
                                 <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);" data-i18n="auth_lbl_name">Full Name</label>
-                                <input type="text" id="page-signup-name" placeholder="Your full name" required style="border-radius: 12px; padding: 11px 14px;">
+                                <input type="text" id="page-signup-name" placeholder="e.g. Jennnie" required style="border-radius: 12px; padding: 10px 14px;">
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div class="form-group">
+                                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);" data-i18n="auth_lbl_age">Age</label>
+                                    <input type="number" id="page-signup-age" placeholder="21" min="1" max="120" value="21" required style="border-radius: 12px; padding: 10px 14px;">
+                                </div>
+                                <div class="form-group">
+                                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);" data-i18n="auth_lbl_blood">Blood Group</label>
+                                    <select id="page-signup-blood" style="border-radius: 12px; padding: 10px 14px; border: 1px solid var(--border-glass); background: var(--bg-card); color: var(--text-primary); font-size: 0.85rem;">
+                                        <option value="O+">O+</option>
+                                        <option value="A+">A+</option>
+                                        <option value="B+">B+</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="O-">O-</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB-">AB-</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="form-group">
-                                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);" data-i18n="auth_lbl_email">Email</label>
-                                <input type="text" id="page-signup-identifier" placeholder="you@example.com" required style="border-radius: 12px; padding: 11px 14px;">
+                                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);">Email / Roll Number</label>
+                                <input type="text" id="page-signup-identifier" placeholder="e.g. 2461783993 or you@example.com" required style="border-radius: 12px; padding: 10px 14px;">
                             </div>
 
                             <div class="form-group">
-                                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);" data-i18n="auth_lbl_password">Password</label>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                                    <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);" data-i18n="auth_lbl_password">Password</label>
+                                    <button type="button" id="btn-suggest-pw" style="background: none; border: none; color: #0284c7; font-size: 0.73rem; font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0;" title="Click to auto-generate a secure strong password">✨ Suggest Strong Password</button>
+                                </div>
                                 <div class="password-input-wrap">
-                                    <input type="password" id="page-signup-password" placeholder="At least 6 characters" required style="border-radius: 12px; padding: 11px 14px;">
+                                    <input type="password" id="page-signup-password" placeholder="At least 6 characters" required style="border-radius: 12px; padding: 10px 14px;">
                                     <button type="button" class="btn-toggle-pw" id="toggle-page-signup-pw">Show</button>
+                                </div>
+                                <!-- Password Strength Meter -->
+                                <div id="pw-strength-wrap" style="margin-top: 4px;">
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.68rem; margin-bottom: 2px;">
+                                        <span style="color: var(--text-secondary);">Strength:</span>
+                                        <span id="pw-strength-label" style="font-weight: 700; color: #94a3b8;">Empty</span>
+                                    </div>
+                                    <div style="height: 4px; width: 100%; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
+                                        <div id="pw-strength-bar" style="height: 100%; width: 0%; background: #ef4444; transition: width 0.25s ease, background 0.25s ease;"></div>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);" data-i18n="auth_lbl_confirm_pw">Confirm Password</label>
                                 <div class="password-input-wrap">
-                                    <input type="password" id="page-signup-confirm-pw" placeholder="Re-enter your password" required style="border-radius: 12px; padding: 11px 14px;">
+                                    <input type="password" id="page-signup-confirm-pw" placeholder="Re-enter your password" required style="border-radius: 12px; padding: 10px 14px;">
                                     <button type="button" class="btn-toggle-pw" id="toggle-page-confirm-pw">Show</button>
                                 </div>
-                                <span id="page-pw-mismatch" style="color: #dc2626; font-size: 0.72rem; display: none;">Passwords do not match</span>
+                                <span id="page-pw-mismatch" style="color: #dc2626; font-size: 0.72rem; display: none; margin-top: 2px;">⚠️ Passwords do not match</span>
                             </div>
 
-                            <button type="submit" class="btn-auth-gold" data-i18n="auth_btn_signup">Create Account</button>
+                            <button type="submit" id="btn-submit-signup" class="btn-auth-gold" data-i18n="auth_btn_signup">Create Patient Profile</button>
                         </form>
 
-                        <div class="auth-footer-links" style="margin-top: 22px; font-size: 0.82rem;">
+                        <div class="auth-footer-links" style="margin-top: 20px; font-size: 0.82rem; text-align: center;">
                             <span data-i18n="auth_have_account">Already have an account?</span> 
-                            <a class="auth-link" onclick="navigateToTab('login')" style="color: #b45309; font-weight: 700; text-decoration: none; margin-left: 4px;" data-i18n="auth_link_login">Log In</a>
+                            <a class="auth-link" onclick="navigateToTab('login')" style="color: #b45309; font-weight: 700; text-decoration: none; margin-left: 4px; cursor: pointer;" data-i18n="auth_link_login">Sign In here →</a>
                         </div>
                     </div>
                 </div>

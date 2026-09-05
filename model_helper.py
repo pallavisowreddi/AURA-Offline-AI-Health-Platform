@@ -1,4 +1,5 @@
 import os
+import datetime
 import pickle
 import re
 import warnings
@@ -1350,69 +1351,300 @@ def predict_disease(symptom_keys, lang="en"):
 def parse_clinical_document(text, lang="en"):
     """
     Intelligently parses extracted text from clinical check-up reports,
-    laboratory pathology sheets, and medical prescriptions.
+    laboratory pathology sheets, CBC blood counts, diabetic workups, and prescriptions.
+    Completely dynamic: never falls back to static hardcoded patient or doctor names.
     """
     findings = {
         "is_document": True,
-        "doc_type": "General Clinical Check-up Report",
-        "patient_name": "Jane Doe",
-        "patient_age": "50",
-        "patient_gender": "Female",
-        "patient_dob": "1975-04-30",
-        "doctor": "Dr. A. Smith",
-        "date": "2025-06-22",
+        "doc_type": "Diagnostic Clinical Report",
+        "patient_name": "Patient (from report)",
+        "patient_age": "",
+        "patient_gender": "Unspecified",
+        "patient_dob": "",
+        "doctor": "Attending Clinician",
+        "date": datetime.date.today().strftime("%Y-%m-%d"),
         "vitals": [],
         "diagnoses": [],
         "medications": [],
         "observations": [],
         "care_guidance": "",
-        "urgency": "Moderate",
+        "urgency": "Normal",
         "raw_text": text
     }
 
-    # Document type detection
-    if re.search(r'CHECK-?UP', text, re.I):
+    # 1. Document Type Detection
+    if re.search(r'CHECK-?UP|GENERAL\s*EXAM', text, re.I):
         findings["doc_type"] = "General Clinical Check-up Report"
-    elif re.search(r'LABORATORY|PATHOLOGY|HAEMATOLOGY|CBC|DENGUE|LIVER FUNCTION|LFT|KFT', text, re.I):
+    elif re.search(r'CBC|HAEMATOLOGY|HEMATOLOGY|COMPLETE BLOOD COUNT', text, re.I):
+        findings["doc_type"] = "Complete Blood Count (CBC) Laboratory Report"
+    elif re.search(r'LIVER|LFT|HEPATIC', text, re.I):
+        findings["doc_type"] = "Liver Function Test (LFT) Report"
+    elif re.search(r'KIDNEY|RENAL|KFT|RFT', text, re.I):
+        findings["doc_type"] = "Renal Function Test (KFT) Report"
+    elif re.search(r'DIABET|GLUCOSE|HBA1C|SUGAR', text, re.I):
+        findings["doc_type"] = "Diabetic & Metabolic Workup Report"
+    elif re.search(r'LIPID|CHOLESTEROL', text, re.I):
+        findings["doc_type"] = "Lipid Profile Diagnostic Report"
+    elif re.search(r'LABORATORY|PATHOLOGY', text, re.I):
         findings["doc_type"] = "Diagnostic Pathology Laboratory Report"
     elif re.search(r'PRESCRIPTION|RX', text, re.I):
         findings["doc_type"] = "Clinical Prescription & Treatment Chart"
 
-    # Patient Name
-    m_name = re.search(r'Name:?\s*([A-Za-z\s]+?)(?:\n|DOB|Age|Gender|\d|$)', text, re.I)
+    # 2. Patient Name Extraction
+    m_name = re.search(r'(?:Patient\s*(?:Name)?|Pt(?:\s*Name)?|Name)\s*[:\-\s]+\s*([A-Za-z\.\s]{2,30}?)(?:\n|\r|Age|DOB|Date of Birth|Gender|Sex|Date|Ref|Dr|\d{2,}|$|\s{3,})', text, re.I)
     if m_name:
         n = m_name.group(1).strip()
-        # Clean up concatenated words if any
-        if len(n) >= 2:
-            findings["patient_name"] = re.sub(r'([a-z])([A-Z])', r'\1 \2', n)
+        n = re.sub(r'^(?:Mr\.|Mrs\.|Ms\.|Miss|Master)\s*', '', n, flags=re.I)
+        n = re.sub(r'([a-z])([A-Z])', r'\1 \2', n).strip()
+        if len(n) >= 2 and not re.search(r'^(Report|General|Checkup|Date|Blood|Test)$', n, re.I):
+            findings["patient_name"] = n
 
-    # Dates: differentiate DOB (19xx) vs Report Date (20xx)
-    dates_found = re.findall(r'\b((?:19|20)\d{2}-\d{2}-\d{2})\b', text)
+    # 3. Dates: differentiate DOB (19xx) vs Report Date (20xx)
+    dates_found = re.findall(r'\b((?:19|20)\d{2}[-/.]\d{2}[-/.]\d{2})\b', text)
     for d in dates_found:
-        if d.startswith("19"):
-            findings["patient_dob"] = d
-        elif d.startswith("20"):
-            findings["date"] = d
+        standard_d = d.replace('/', '-').replace('.', '-')
+        if standard_d.startswith("19"):
+            findings["patient_dob"] = standard_d
+        elif standard_d.startswith("20"):
+            findings["date"] = standard_d
 
-    # Age & Gender
-    m_age = re.search(r'(?:DOB|Age):?\s*(\d{1,3})(?!\d|-)', text, re.I)
+    # 4. Age & Gender
+    m_age = re.search(r'(?:Age|DOB)[:\-\s]*(\d{1,3})\s*(?:Yrs?|Years?)?(?!\d|-)', text, re.I)
     if m_age:
         findings["patient_age"] = m_age.group(1)
 
-    if re.search(r'\bFemale\b', text, re.I):
+    if re.search(r'\b(?:Female|Woman)\b', text, re.I):
         findings["patient_gender"] = "Female"
-    elif re.search(r'\bMale\b', text, re.I):
+    elif re.search(r'\b(?:Male|Man)\b', text, re.I):
         findings["patient_gender"] = "Male"
 
-    # Doctor
-    m_doc = re.search(r'Dr[.,\s]+([A-Za-z.\s]+?)(?:\n|\d{4}|$)', text, re.I)
+    # 5. Doctor / Physician
+    m_doc = re.search(r'(?:Dr\.|Doctor|Physician|Consultant|Attending)\s*[:\-\s]*([A-Za-z\.\s]{2,30}?)(?:\n|\r|\d{4}|$|\s{3,})', text, re.I)
     if m_doc:
-        doc_name = m_doc.group(1).strip()
-        doc_clean = re.sub(r'([a-z])([A-Z])', r'\1 \2', doc_name)
-        findings["doctor"] = f"Dr. {doc_clean}"
+        d = m_doc.group(1).strip()
+        d = re.sub(r'([a-z])([A-Z])', r'\1 \2', d).strip()
+        if len(d) >= 2:
+            findings["doctor"] = f"Dr. {d}" if not d.lower().startswith("dr") else d
 
-    # Vitals: Blood Pressure
-    m_bp = re.search(r'Blood\s*pressure\s*[:\s]*(\d{2,3})(?:\s*/\s*(\d{2,3})|\s*/?\s*mmHg)?', text, re.I)
+    abnormalities = []
+
+    # =========================================================================
+    # 6. DYNAMIC MULTI-BIOMARKER EXTRACTION
+    # =========================================================================
+    
+    # A. Hemoglobin (Hb)
+    m_hb = re.search(r'(?:Hemoglobin|Haemoglobin|Hb)\s*[:\-\s]*([\d\.]+)\s*(?:g/d[lL]|gm/d[lL]|g%)?', text, re.I)
+    if m_hb:
+        hb_val = float(m_hb.group(1))
+        if hb_val < 8.0:
+            status, b_type = "Severe Anemia (Critical Low)", "danger"
+            findings["urgency"] = "Critical"
+            abnormalities.append(f"Severe Anemia with Hemoglobin {hb_val} g/dL (normal: 12-16 g/dL)")
+        elif hb_val < 11.5:
+            status, b_type = "Mild/Moderate Anemia (Low)", "warning"
+            abnormalities.append(f"Subnormal Hemoglobin at {hb_val} g/dL")
+        elif hb_val > 18.0:
+            status, b_type = "Elevated (Polycythemia Risk)", "warning"
+            abnormalities.append(f"High Hemoglobin {hb_val} g/dL")
+        else:
+            status, b_type = "Normal Normocytic", "success"
+        findings["vitals"].append({
+            "name": "Hemoglobin (Hb)",
+            "value": f"{hb_val} g/dL",
+            "status": status,
+            "type": b_type,
+            "icon": "🩸"
+        })
+
+    # B. Platelet Count (PLT)
+    m_plt = re.search(r'(?:Platelet\s*Count|Platelets?|PLT)\s*[:\-\s]*([\d,]+(?:\.\d+)?)\s*(?:/u[lL]|/cumm|cumm|k|K)?', text, re.I)
+    if m_plt:
+        raw_plt = m_plt.group(1).replace(',', '')
+        try:
+            plt_val = float(raw_plt)
+            if plt_val < 1000: # given in thousands (e.g. 62k or 150)
+                plt_num = int(plt_val * 1000)
+            else:
+                plt_num = int(plt_val)
+
+            if plt_num < 50000:
+                status, b_type = "Critical Thrombocytopenia (High Bleed Risk)", "danger"
+                findings["urgency"] = "Critical"
+                abnormalities.append(f"Critical Low Platelets at {plt_num:,} /uL (Dengue / Hemorrhagic Alert)")
+            elif plt_num < 100000:
+                status, b_type = "Thrombocytopenia (Low - Viral/Dengue Risk)", "danger"
+                abnormalities.append(f"Low Platelet count {plt_num:,} /uL (Viral / Dengue suspect)")
+            elif plt_num < 150000:
+                status, b_type = "Mild Thrombocytopenia (Below Ref)", "warning"
+                abnormalities.append(f"Mildly Low Platelets {plt_num:,} /uL")
+            elif plt_num > 450000:
+                status, b_type = "Thrombocytosis (Elevated)", "warning"
+                abnormalities.append(f"Elevated Platelet count {plt_num:,} /uL")
+            else:
+                status, b_type = "Optimal Hemostatic Count", "success"
+
+            findings["vitals"].append({
+                "name": "Platelet Count",
+                "value": f"{plt_num:,} /uL",
+                "status": status,
+                "type": b_type,
+                "icon": "🩸"
+            })
+        except Exception:
+            pass
+
+    # C. Total Leucocyte Count (WBC / TLC)
+    m_wbc = re.search(r'(?:Total\s*Leucocyte\s*Count|Total\s*WBC|WBC(?:\s*Count)?|TLC)\s*[:\-\s]*([\d,]+(?:\.\d+)?)\s*(?:/cumm|/u[lL]|cells/cumm)?', text, re.I)
+    if m_wbc:
+        try:
+            wbc_val = float(m_wbc.group(1).replace(',', ''))
+            wbc_num = int(wbc_val * 1000) if wbc_val < 50 else int(wbc_val)
+            if wbc_num > 11500:
+                status, b_type = "Leukocytosis (Infection / Inflammation)", "warning"
+                abnormalities.append(f"High White Blood Cells {wbc_num:,} /cumm indicating active infection")
+            elif wbc_num < 4000:
+                status, b_type = "Leukopenia (Immunocompromised)", "warning"
+                abnormalities.append(f"Low White Blood Cells {wbc_num:,} /cumm")
+            else:
+                status, b_type = "Normal Immune Cell Count", "success"
+            findings["vitals"].append({
+                "name": "Total Leucocytes (WBC)",
+                "value": f"{wbc_num:,} /cumm",
+                "status": status,
+                "type": b_type,
+                "icon": "🛡️"
+            })
+        except Exception:
+            pass
+
+    # D. Blood Glucose / Blood Sugar (FBS / PPBS / RBS)
+    m_glu = re.search(r'(?:Fasting\s*Blood\s*Sugar|FBS|Post\s*Prandial|PPBS|Random\s*Blood\s*Sugar|RBS|Blood\s*Sugar|Glucose)\s*[:\-\s]*([\d\.]+)\s*(?:mg/d[lL])?', text, re.I)
+    if m_glu:
+        glu_val = float(m_glu.group(1))
+        if glu_val >= 200:
+            status, b_type = "Critical Hyperglycemia (Diabetic Range)", "danger"
+            findings["urgency"] = "Critical"
+            abnormalities.append(f"Marked Hyperglycemia {glu_val} mg/dL")
+        elif glu_val >= 126:
+            status, b_type = "Elevated Blood Glucose (Diabetes Threshold)", "warning"
+            abnormalities.append(f"Elevated Blood Sugar {glu_val} mg/dL")
+        elif glu_val >= 100:
+            status, b_type = "Impaired Fasting Glucose (Pre-diabetes)", "info"
+            abnormalities.append(f"Borderline Fasting Sugar {glu_val} mg/dL")
+        elif glu_val < 70:
+            status, b_type = "Hypoglycemia (Low Blood Sugar Alert)", "danger"
+            abnormalities.append(f"Low Blood Sugar {glu_val} mg/dL")
+        else:
+            status, b_type = "Normal Euglycemic", "success"
+        findings["vitals"].append({
+            "name": "Blood Glucose",
+            "value": f"{glu_val} mg/dL",
+            "status": status,
+            "type": b_type,
+            "icon": "🧪"
+        })
+
+    # E. HbA1c (Glycated Hemoglobin)
+    m_a1c = re.search(r'(?:HbA1c|Glycated\s*Hemoglobin)\s*[:\-\s]*([\d\.]+)\s*%?', text, re.I)
+    if m_a1c:
+        a1c_val = float(m_a1c.group(1))
+        if a1c_val >= 8.0:
+            status, b_type = "Uncontrolled Diabetes", "danger"
+            abnormalities.append(f"High HbA1c {a1c_val}% (Uncontrolled Glycemic Index)")
+        elif a1c_val >= 6.5:
+            status, b_type = "Diabetic Range (Needs Lifestyle/Meds)", "warning"
+            abnormalities.append(f"Diabetic HbA1c {a1c_val}%")
+        elif a1c_val >= 5.7:
+            status, b_type = "Pre-diabetic Range", "info"
+        else:
+            status, b_type = "Normal Glycemic Control (< 5.7%)", "success"
+        findings["vitals"].append({
+            "name": "HbA1c",
+            "value": f"{a1c_val} %",
+            "status": status,
+            "type": b_type,
+            "icon": "📊"
+        })
+
+    # F. Serum Creatinine (Kidney Function)
+    m_cr = re.search(r'(?:Serum\s*Creatinine|Creatinine)\s*[:\-\s]*([\d\.]+)\s*(?:mg/d[lL])?', text, re.I)
+    if m_cr:
+        cr_val = float(m_cr.group(1))
+        if cr_val > 2.0:
+            status, b_type = "Significant Renal Impairment", "danger"
+            abnormalities.append(f"Elevated Serum Creatinine {cr_val} mg/dL")
+        elif cr_val > 1.3:
+            status, b_type = "Mildly Elevated Creatinine", "warning"
+            abnormalities.append(f"Sub-optimal Creatinine {cr_val} mg/dL")
+        else:
+            status, b_type = "Normal Renal Clearance (0.6-1.2)", "success"
+        findings["vitals"].append({
+            "name": "Serum Creatinine",
+            "value": f"{cr_val} mg/dL",
+            "status": status,
+            "type": b_type,
+            "icon": "🫘"
+        })
+
+    # G. Total Bilirubin (Liver Function)
+    m_bili = re.search(r'(?:Total\s*Bilirubin|Bilirubin\s*Total|Bilirubin)\s*[:\-\s]*([\d\.]+)\s*(?:mg/d[lL])?', text, re.I)
+    if m_bili:
+        bili_val = float(m_bili.group(1))
+        if bili_val > 2.5:
+            status, b_type = "Hyperbilirubinemia (Jaundice)", "danger"
+            abnormalities.append(f"High Bilirubin {bili_val} mg/dL indicating jaundice")
+        elif bili_val > 1.2:
+            status, b_type = "Mild Bilirubin Elevation", "warning"
+        else:
+            status, b_type = "Normal Hepatic Bilirubin (< 1.2)", "success"
+        findings["vitals"].append({
+            "name": "Total Bilirubin",
+            "value": f"{bili_val} mg/dL",
+            "status": status,
+            "type": b_type,
+            "icon": "🧪"
+        })
+
+    # H. SGPT / ALT (Liver Enzyme)
+    m_alt = re.search(r'(?:SGPT|ALT)\s*[:\-\s]*([\d\.]+)\s*(?:U/L|IU/L)?', text, re.I)
+    if m_alt:
+        alt_val = float(m_alt.group(1))
+        if alt_val > 100:
+            status, b_type = "Marked Hepatic Enzyme Surge", "danger"
+            abnormalities.append(f"High ALT/SGPT {alt_val} U/L")
+        elif alt_val > 55:
+            status, b_type = "Mild Liver Stress", "warning"
+        else:
+            status, b_type = "Normal Hepatic Enzyme", "success"
+        findings["vitals"].append({
+            "name": "SGPT / ALT",
+            "value": f"{alt_val} U/L",
+            "status": status,
+            "type": b_type,
+            "icon": "🧬"
+        })
+
+    # I. Total Cholesterol (Lipid)
+    m_chol = re.search(r'(?:Total\s*Cholesterol|Cholesterol)\s*[:\-\s]*([\d\.]+)\s*(?:mg/d[lL])?', text, re.I)
+    if m_chol:
+        chol_val = float(m_chol.group(1))
+        if chol_val > 240:
+            status, b_type = "High Hypercholesterolemia", "danger"
+            abnormalities.append(f"High Total Cholesterol {chol_val} mg/dL")
+        elif chol_val > 200:
+            status, b_type = "Borderline High", "warning"
+        else:
+            status, b_type = "Desirable Level (< 200)", "success"
+        findings["vitals"].append({
+            "name": "Total Cholesterol",
+            "value": f"{chol_val} mg/dL",
+            "status": status,
+            "type": b_type,
+            "icon": "🫀"
+        })
+
+    # J. Blood Pressure (BP)
+    m_bp = re.search(r'(?:Blood\s*Pressure|BP)\s*[:\-\s]*(\d{2,3})(?:\s*[/x]\s*(\d{2,3}))?\s*(?:mmHg)?', text, re.I)
     if m_bp:
         sys = int(m_bp.group(1))
         dia = int(m_bp.group(2)) if m_bp.group(2) else None
@@ -1420,12 +1652,14 @@ def parse_clinical_document(text, lang="en"):
         if sys >= 180:
             status, b_type = "Critical Hypertensive Crisis", "danger"
             findings["urgency"] = "Critical"
+            abnormalities.append(f"Hypertensive Crisis BP {bp_val}")
         elif sys >= 140 or (dia and dia >= 90):
             status, b_type = "Stage 1 Hypertension (Elevated)", "warning"
+            abnormalities.append(f"Elevated Blood Pressure {bp_val}")
         elif sys >= 120:
             status, b_type = "Pre-Hypertension (Borderline)", "info"
         else:
-            status, b_type = "Normal Normotensive", "success"
+            status, b_type = "Normal Normotensive (< 120/80)", "success"
         findings["vitals"].append({
             "name": "Blood Pressure",
             "value": bp_val,
@@ -1434,11 +1668,11 @@ def parse_clinical_document(text, lang="en"):
             "icon": "💓"
         })
 
-    # Vitals: Pulse / Heart Rate
-    m_pulse = re.search(r'Pulse:?\s*(\d{2,3})\s*(?:bpm)?', text, re.I)
+    # K. Pulse / Heart Rate
+    m_pulse = re.search(r'(?:Pulse|Heart\s*Rate|HR)\s*[:\-\s]*(\d{2,3})\s*(?:bpm)?', text, re.I)
     if m_pulse:
         hr = int(m_pulse.group(1))
-        status = "Normal (60-100 bpm)" if 60 <= hr <= 100 else ("Tachycardia" if hr > 100 else "Bradycardia")
+        status = "Normal (60-100 bpm)" if 60 <= hr <= 100 else ("Tachycardia (>100 bpm)" if hr > 100 else "Bradycardia (<60 bpm)")
         b_type = "success" if 60 <= hr <= 100 else "warning"
         findings["vitals"].append({
             "name": "Pulse / Heart Rate",
@@ -1448,87 +1682,97 @@ def parse_clinical_document(text, lang="en"):
             "icon": "🫀"
         })
 
-    # Vitals: Body Temperature
-    m_temp = re.search(r'Temperature\s*[:\s]*([\d,.]+)\s*C', text, re.I)
+    # L. Oxygen Saturation (SpO2)
+    m_spo2 = re.search(r'(?:SpO2|Oxygen\s*Saturation|Pulse\s*Oximetry)\s*[:\-\s]*(\d{2,3})\s*%?', text, re.I)
+    if m_spo2:
+        sp_val = int(m_spo2.group(1))
+        if sp_val < 92:
+            status, b_type = "Hypoxemia (Critical Oxygen Low)", "danger"
+            abnormalities.append(f"Low Oxygen Saturation {sp_val}%")
+        elif sp_val < 95:
+            status, b_type = "Sub-optimal SpO2", "warning"
+        else:
+            status, b_type = "Normal Optimal (95-100%)", "success"
+        findings["vitals"].append({
+            "name": "Oxygen Saturation (SpO2)",
+            "value": f"{sp_val} %",
+            "status": status,
+            "type": b_type,
+            "icon": "🫁"
+        })
+
+    # M. Body Temperature
+    m_temp = re.search(r'(?:Temperature|Temp)\s*[:\-\s]*([\d,.]+)\s*(?:°?\s*([CF]))?', text, re.I)
     if m_temp:
         t_val = float(m_temp.group(1).replace(',', '.'))
-        status = "Normal (Afebrile 36-37.5°C)" if 36.0 <= t_val <= 37.5 else ("Fever / Pyrexia" if t_val > 37.5 else "Hypothermia")
-        b_type = "success" if 36.0 <= t_val <= 37.5 else "danger"
+        scale = (m_temp.group(2) or "C").upper()
+        if scale == "F" and t_val > 99.5:
+            status, b_type = "Febrile (Fever)", "danger"
+            abnormalities.append(f"Elevated Temperature {t_val}°F")
+        elif scale == "C" and t_val > 37.5:
+            status, b_type = "Febrile (Fever)", "danger"
+            abnormalities.append(f"Elevated Temperature {t_val}°C")
+        else:
+            status, b_type = "Afebrile (Normal)", "success"
         findings["vitals"].append({
             "name": "Body Temperature",
-            "value": f"{t_val} °C",
+            "value": f"{t_val} °{scale}",
             "status": status,
             "type": b_type,
             "icon": "🌡️"
         })
 
-    # Vitals: Respiratory Rate
-    m_rr = re.search(r'Respiratory\s*(?:rt)?[:\s]*(\d{1,2})\s*(?:/min)?', text, re.I)
-    if m_rr:
-        rr = int(m_rr.group(1))
-        findings["vitals"].append({
-            "name": "Respiratory Rate",
-            "value": f"{rr} /min",
-            "status": "Normal (12-20 /min)",
-            "type": "success",
-            "icon": "🫁"
-        })
+    # 7. Diagnoses & Medical History
+    if re.search(r'hypertension', text, re.I): findings["diagnoses"].append("Essential Hypertension")
+    if re.search(r'diabetes', text, re.I): findings["diagnoses"].append("Diabetes Mellitus")
+    if re.search(r'asthma', text, re.I): findings["diagnoses"].append("Bronchial Asthma")
+    if re.search(r'dengue', text, re.I): findings["diagnoses"].append("Dengue Suspect (Viral Infection)")
+    if re.search(r'anemia', text, re.I): findings["diagnoses"].append("Anemia")
+    if re.search(r'appendectomy', text, re.I): findings["diagnoses"].append("Surgical History: Appendectomy")
 
-    # Diagnoses / Medical History
-    if re.search(r'hypertension', text, re.I):
-        findings["diagnoses"].append("Essential Hypertension (Chronic - Managed)")
-    if re.search(r'appendectomy', text, re.I):
-        findings["diagnoses"].append("Surgical History: Appendectomy (Healed)")
-    if re.search(r'diabetes', text, re.I):
-        findings["diagnoses"].append("Type 2 Diabetes Mellitus")
-    if re.search(r'asthma', text, re.I):
-        findings["diagnoses"].append("Bronchial Asthma")
+    # 8. Medications
+    if re.search(r'hydrochlor\w+', text, re.I): findings["medications"].append("Hydrochlorothiazide 25 mg daily")
+    if re.search(r'metformin', text, re.I): findings["medications"].append("Metformin 500mg")
+    if re.search(r'amlodipine', text, re.I): findings["medications"].append("Amlodipine 5mg")
+    if re.search(r'paracetamol', text, re.I): findings["medications"].append("Paracetamol 650mg SOS")
+    if re.search(r'atorvastatin', text, re.I): findings["medications"].append("Atorvastatin 10mg")
 
-    # Medications
-    if re.search(r'hydrochlor\w+', text, re.I):
-        findings["medications"].append("Hydrochlorothiazide 25 mg daily (Thiazide Antihypertensive Diuretic)")
-    if re.search(r'metformin', text, re.I):
-        findings["medications"].append("Metformin 500mg (Oral Antidiabetic)")
-    if re.search(r'amlodipine', text, re.I):
-        findings["medications"].append("Amlodipine 5mg (Calcium Channel Blocker)")
+    # 9. Dynamic Intelligent Clinical Care Guidance
+    p_name = findings["patient_name"]
+    doc_type = findings["doc_type"]
 
-    # Observations
-    if re.search(r'alert', text, re.I):
-        findings["observations"].append("Patient is alert, cooperative, and in no acute distress.")
-    if re.search(r'regular\s*heart', text, re.I):
-        findings["observations"].append("Cardiovascular: Regular heart sounds without audible murmur.")
-
-    # Multilingual Care Guidance
-    if lang == "hi":
-        findings["doc_type"] = "सामान्य स्वास्थ्य जांच रिपोर्ट (General Medical Check-up Report)"
-        findings["prediction"] = findings["doc_type"]
-        findings["care_guidance"] = (
-            f"मरीज {findings['patient_name']} की जांच रिपोर्ट का विश्लेषण: रक्तचाप 140 mmHg स्टेज 1 सिस्टोलिक वृद्धि दर्शाता है। "
-            "डॉ. ए. स्मिथ के निर्देशानुसार हाइड्रोक्लोरोथियाजाइड (25 मिलीग्राम) की दैनिक खुराक जारी रखें। "
-            "कम नमक वाले आहार (DASH diet, 2300 मिलीग्राम से कम सोडियम) का पालन करें, दैनिक 30 मिनट मध्यम व्यायाम करें, "
-            "और साप्ताहिक बीपी लॉग बनाए रखकर अनुवर्ती परामर्श में प्रस्तुत करें।"
-        )
-    elif lang == "te":
-        findings["doc_type"] = "సాధారణ ఆరోగ్య పరీక్ష నివేదిక (General Medical Check-up Report)"
-        findings["prediction"] = findings["doc_type"]
-        findings["care_guidance"] = (
-            f"రోగి {findings['patient_name']} ఆరోగ్య నివేదిక విశ్లేషణ: రక్తపోటు 140 mmHg స్టేజ్ 1 సిస్టోలిక్ పెరుగుదలను సూచిస్తుంది. "
-            "డాక్టర్ ఎ. స్మిత్ సూచించిన హైడ్రోక్లోరోథియాజైడ్ (25 mg) ఔషధాన్ని రోజువారీగా కొనసాగించండి. "
-            "తక్కువ ఉప్పుతో కూడిన DASH ఆహారాన్ని తీసుకోవాలి, రోజుకు 30 నిమిషాలు నడక లేదా తేలికపాటి వ్యాయామం చేయాలి, "
-            "మరియు ప్రతివారం రక్తపోటును రికార్డ్ చేసి తదుపరి చెకప్‌లో వైద్యుడికి చూపించండి."
-        )
+    if abnormalities:
+        issues_summary = "; ".join(abnormalities)
+        if lang == "hi":
+            guidance = f"{doc_type} विश्लेषण ({p_name}): मुख्य असामान्य निष्कर्ष: {issues_summary}। चिकित्सक ({findings['doctor']}) से तुरंत अनुवर्ती परामर्श लें। निर्धारित आहार व दवाओं का समय पर सेवन करें।"
+        elif lang == "te":
+            guidance = f"{doc_type} విశ్లేషణ ({p_name}): గుర్తించబడిన మార్పులు: {issues_summary}. డాక్టర్ ({findings['doctor']}) సలహా మేరకు వెంటనే తదుపరి పరీక్షలు మరియు ఆహార నియమాలు పాటించండి."
+        else:
+            guidance = (
+                f"Clinical Analysis for {p_name}: Key identified findings include: {issues_summary}. "
+                "Consult the attending physician for definitive clinical management. Maintain hydration, follow prescribed dietary modifications, and avoid self-medication."
+            )
     else:
-        findings["care_guidance"] = (
-            f"Clinical Check-up Assessment for {findings['patient_name']} ({findings['patient_age']} y/o, {findings['patient_gender']}): "
-            "Blood pressure reading of 140 mmHg indicates Stage 1 systolic elevation under active treatment. "
-            "Continue daily Hydrochlorothiazide 25 mg as directed by Dr. A. Smith. "
-            "Implement heart-healthy lifestyle modifications: adhere to a low-sodium DASH dietary protocol (< 2,300 mg daily sodium), "
-            "engage in 30 minutes of daily moderate aerobic activity, maintain hydration, and record weekly home BP logs for follow-up review."
-        )
+        if findings["vitals"]:
+            vitals_names = ", ".join([v["name"] for v in findings["vitals"][:3]])
+            if lang == "hi":
+                guidance = f"मरीज {p_name} की सभी परीक्षण रिपोर्ट सामान्य हैं ({vitals_names})। स्वस्थ जीवन शैली और संतुलित आहार जारी रखें।"
+            elif lang == "te":
+                guidance = f"రోగి {p_name} నివేదికలో అన్ని పరీక్షలు సాధారణ పరిధిలోనే ఉన్నాయి ({vitals_names}). ఆరోగ్యకరమైన జీవనశైలిని కొనసాగించండి."
+            else:
+                guidance = (
+                    f"Laboratory evaluation for {p_name}: All extracted parameters ({vitals_names}) are within normal reference limits. "
+                    "Continue regular healthy hydration, balanced nutrition, and scheduled periodic health screenings."
+                )
+        else:
+            guidance = (
+                f"Document review completed for {p_name}. Follow attending clinician instructions and routine wellness protocols."
+            )
 
-    findings["advice"] = findings["care_guidance"]
-    findings["description"] = f"{findings['doc_type']} for {findings['patient_name']}. Blood Pressure: 140 mmHg (Stage 1 Elevation), Pulse: 76 bpm (Normal). Active Hydrochlorothiazide medication."
-    findings["prediction"] = findings["doc_type"]
+    findings["care_guidance"] = guidance
+    findings["advice"] = guidance
+    findings["description"] = f"{doc_type} for {p_name}. {len(findings['vitals'])} biomarkers analyzed."
+    findings["prediction"] = doc_type
     findings["confidence"] = 0.98
 
     return findings
