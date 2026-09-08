@@ -1,108 +1,186 @@
-# AURA: Offline AI-Driven Public Health Chatbot
+<div align="center">
 
-AURA (AI-Driven Public Health Assistant) is a premium, fully local, and offline machine learning application built for predictive disease awareness. It analyzes symptoms (text/voice) and skin conditions (visual images) using local classifiers, requiring **no WiFi, no internet connection, and no external API keys**.
+# 🥼 AURA AI Platform
+### **AI-Driven Public Health Chatbot for Disease Awareness & Predictive Screening**
 
-## 🌟 Key Features
-- **100% Offline Capability**: Runs entirely on your local machine using lightweight, fast-loading `scikit-learn` models.
-- **Predictive Symptom Analysis**: Processes colloquial descriptions of symptoms using a rule-based NLP parser, then runs a Random Forest Classifier to identify potential conditions.
-- **Visual Skin Analysis**: Extracts RGB/HSV channel metrics and spatial gradient variance (texture index) to predict conditions like Skin Rash, Acne, and Eczema.
-- **Voice Assistance (Speech-to-Text & Text-to-Speech)**: Allows speaking to the chatbot via browser-native Speech Recognition, and reads out care instructions using the Web Speech Synthesis engine.
-- **Interactive Telemetry Dashboard**: Displays real-time feature breakdowns, class probability distributions, and animated confidence gauges.
-- **Premium Glassmorphic UI**: High-fidelity dark mode with neon accents, responsive layouts, hover zoom cards, and vertical micro-animation waves.
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://python.org)
+[![Framework - Flask](https://img.shields.io/badge/Framework-Flask_2.x-lightgrey.svg?logo=flask)](https://flask.palletsprojects.com/)
+[![ML - Scikit--Learn](https://img.shields.io/badge/ML-Scikit--Learn-orange.svg?logo=scikit-learn)](https://scikit-learn.org/)
+[![Edge AI - 100% Offline](https://img.shields.io/badge/Architecture-100%25_Offline_Zero--Cloud-emerald.svg)](#)
+[![Languages - EN | HI | TE](https://img.shields.io/badge/Multilingual-English_%7C_हिन्दी_%7C_తెలుగు-teal.svg)](#)
+[![Smart India Hackathon 2026](https://img.shields.io/badge/Initiative-Smart_India_Hackathon_2026-amber.svg)](#)
 
----
+<p align="center">
+  <strong>Developed by Pallavi Sowreddi</strong> (B.Tech Student)<br>
+  <em>Smart India Hackathon (SIH) 2026 Edition • Project Expo</em>
+</p>
 
-## 🛠️ Tech Stack & Architecture
-1. **Backend**: Python (Flask)
-2. **Predictive Analytics**: `scikit-learn` (Random Forest Classifiers), `numpy`, `pandas`
-3. **Image Analytics**: `Pillow` (PIL) & `numpy` (for pixel parameter extraction)
-4. **Voice Engines**: Browser Web Speech API (STT & TTS)
-5. **Frontend**: HTML5, Vanilla CSS3 (Custom Glassmorphism), JavaScript (ES6)
+</div>
 
 ---
 
-## 📂 Project Structure
-Open this project folder in **VS Code** to explore the codebase:
+## 📖 Executive Summary
+
+**AURA (Automated Universal Relief & Assessment)** is a clinical-grade, offline-first public health platform engineered to deliver rapid disease screening, preventative awareness, digital lab report biomarker analysis, and emergency triage to populations in remote, rural, disaster-struck, or air-gapped environments without any cloud dependency, WiFi, or external APIs.
+
+By coupling calibrated **Random Forest decision models** with **clinical hallmark heuristics**, **edge computer vision**, and **OCR biomarker parsing**, AURA empowers patients and primary healthcare workers (PHCs / ASHA workers) with instant clinical guidance in their regional languages (**English**, **हिन्दी**, and **తెలుగు**).
+
+---
+
+## 🏛️ Project Expo: 4-Part Architectural Framework
+
+For jury evaluation and project demonstrations, AURA's innovations are structured into **four distinct engineering pillars**:
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           AURA AI PLATFORM                              │
+├────────────────────├────────────────────├───────────────────────├──────────┐
+│      PART 1        │      PART 2        │      PART 3       │  PART 4   │
+│   Multilingual     │   Edge Vision &    │ Preventive Health │ Zero-Cloud│
+│   Hybrid Clinical  │   Lab Biomarker    │  Telemetry & NIS  │ Privacy & │
+│      AI & XAI      │     Analyzer       │ Vaccine Schedules │  SOS Fast │
+└────────────────────┴────────────────────┴───────────────────────┴──────────┘
+```
+
+### 🔹 PART 1: Multilingual Hybrid Clinical AI & Explainable Telemetry
+* **Core Problem**: Cloud LLMs require high-bandwidth connectivity, suffer from clinical hallucination, and fail in rural network dark-zones.
+* **Our Solution**:
+  * Dual-layer diagnostic engine: Scikit-learn **Random Forest Classifier** blended with clinical hallmark heuristics, symptom specificity weighting, and dynamic threshold safeguards.
+  * Native tri-lingual NLP tokenization for **English**, **Hindi (हिन्दी)**, and **Telugu (తెలుగు)**.
+  * **Explainable AI (XAI)** telemetry sidebar featuring live circular progress gauges, differential diagnostics HTML5 canvas charts, decoded symptom tag clouds, and feature importance weight distributions.
+  * Built-in red-flag emergency detection (e.g. stroke F.A.S.T protocol, heart attack pain, cholera crisis).
+
+### 🔹 PART 2: Edge Vision Pathology Scanner & Digital Lab Report Analyzer
+* **Core Problem**: Patients in rural areas cannot interpret complex pathological laboratory sheets or access certified dermatologists.
+* **Our Solution**:
+  * **Visual Skin Pathology Scanner**: Fast edge texture and color gradient classifier (RGB/HSV channel variances, redness density profile, surface irregularity) for immediate screening of eczema, psoriasis, acne, and rash.
+  * **Digital Lab Report Biomarker Analyzer**: RapidOCR document entity extractor parsing Complete Blood Counts (CBC), fasting glucose, HbA1c, liver function tests (LFT: Bilirubin, SGPT/ALT, SGOT/AST), and lipid profiles with reference-range color coding.
+
+### 🔹 PART 3: Preventative Health Telemetry, Vitals Simulator & Vaccine Schedules
+* **Core Problem**: Healthcare systems are reactive rather than preventative; citizens lack accessible immunization tracking.
+* **Our Solution**:
+  * **Clinical Telemetry & Vitals Simulator**: Animated real-time SVG ECG waveform monitor, systolic/diastolic blood pressure percentile classification, oxygen saturation (SpO2), and overall Composite Health Score.
+  * **Universal Immunization Life-Course Matrix**: National Immunization Schedule (NIS) & WHO life-course vaccine registry with age-band filtering (Birth, 6-14 Weeks, 9-12 Months, Childhood, Adults) and one-click printable vaccine cards.
+  * **Medication Reminders**: Offline browser scheduling with dosage chimes and persistent local queueing.
+
+### 🔹 PART 4: Zero-Cloud Privacy Sandbox & Acute Emergency SOS Protocols
+* **Core Problem**: Centralized health clouds leak sensitive patient telemetry and fail during network infrastructure outages.
+* **Our Solution**:
+  * **Client-Side Cryptographic Security**: SHA-256 password hashing and on-device private biometric storage. Zero personal data leaves the local sandbox.
+  * **Acute Emergency & Toxicology Triage**: Life-saving protocols for snake bites, animal/rabies bites, burns, and scorpion stings with clear *"DOs and STRICT DO NOTs"*.
+  * **1-Click SOS Dispatch**: Instant direct call triggers for national helplines (**108** Ambulance, **112** Emergency, **102** Maternity, **104** Health Advice, **1098** Childline).
+  * **Mindful 4-7-8 Breathing Overlay**: Interactive parasympathetic nervous system regulator to calm patient anxiety and reduce heart rate during acute distress.
+
+---
+
+## 🛠️ Technology Stack & Edge Specifications
+
+| Layer | Technologies Used |
+| :--- | :--- |
+| **Backend Core** | Python 3.10+, Flask 2.x Microframework |
+| **Machine Learning** | `scikit-learn` (Random Forest Classifiers), `numpy`, `pandas`, `scipy` |
+| **Computer Vision** | `OpenCV` (cv2), `Pillow` (PIL) for epidermal RGB/HSV and texture gradient matrix |
+| **OCR Document Parsing**| `RapidOCR` with ONNX Runtime for edge text recognition |
+| **Frontend Architecture** | Modern Vanilla JavaScript (ES6+), HTML5 Canvas 2D, Responsive CSS3 Glassmorphism |
+| **Voice Interaction** | Web Speech API (Native on-device Speech-to-Text & Speech Synthesis) |
+| **Data & Storage** | LocalStorage sandbox, Cryptographic SHA-256 WebCrypto hashing |
+| **Operating System** | Platform-agnostic (Windows, Linux, macOS, Raspberry Pi edge devices) |
+
+---
+
+## 📂 Repository Directory Structure
+
 ```text
-health-assistant-chatbot/
-├── models/                     # Directory for saved pickle models
-│   ├── symptom_model.pkl       # Trained Random Forest symptom classifier
-│   ├── symptoms_list.pkl       # Serialized list of symptom column headers
-│   └── image_model.pkl         # Trained Random Forest skin classifier
+AURA-Platform/
+├── models/                         # Serialized edge ML decision models
+│   ├── symptom_model.pkl           # Random Forest clinical symptom classifier
+│   ├── symptoms_list.pkl           # Vectorized symptom dictionary headers
+│   └── image_model.pkl             # Skin pathology classifier model
 ├── static/
 │   ├── css/
-│   │   └── style.css           # Premium styling & transitions
+│   │   └── style.css               # Clinical glassmorphic design system
 │   ├── js/
-│   │   └── app.js              # Speech recognition, canvas telemetry, API requests
-│   └── assets/
-│       └── sample_images/      # Synthetic training/testing skin condition photos
-│           ├── healthy_skin.png
-│           ├── skin_rash.png
-│           ├── acne.png
-│           └── eczema.png
+│   │   └── app.js                  # Speech engine, telemetry, canvas charts & state
+│   └── assets/                     # Sample clinical test images & presets
 ├── templates/
-│   └── index.html              # Main dashboard view
-├── app.py                      # Flask backend API & routing
-├── train_models.py             # Script to generate datasets and train ML models
-├── model_helper.py             # Rule matching, preprocessing, and model inference
-├── requirements.txt            # Python dependencies list
-├── run.bat                     # Windows double-click setup & launch script
-└── README.md                   # Project documentation (this file)
+│   ├── index.html                  # Main unified single-page application
+│   ├── login.html                  # Dedicated clinician & patient sign-in portal
+│   └── signup.html                 # Offline digital health card registration
+├── app.py                          # Flask routing, multi-tier NLP & diagnostic endpoints
+├── model_helper.py                 # ML inference, RapidOCR parsing, hallmark clinical rules
+├── train_models.py                 # Synthetic dataset generator & model trainer
+├── requirements.txt                # Python dependencies
+├── run.bat                         # 1-Click Windows launch script
+└── README.md                       # Comprehensive platform documentation
 ```
 
 ---
 
-## 🚀 How to Run the App (Windows)
+## 🚀 Quickstart & Installation
 
-The simplest way to set up and run the app is using the provided automation script:
+### Option 1: One-Click Launch (Windows)
+Double-click `run.bat`. The script will automatically:
+1. Initialize a Python virtual environment (`.venv`).
+2. Install all required dependencies.
+3. Verify or train edge ML models.
+4. Launch the local Flask server on `http://127.0.0.1:5000/`.
+5. Open your default web browser automatically.
 
-1. **Double-click the `run.bat` file** in the project directory.
-2. The script will automatically:
-   - Create a local virtual environment (`.venv`).
-   - Upgrade `pip` and install all required libraries.
-   - Run `train_models.py` to create the training data and save the models.
-   - Start the Flask backend.
-   - Open `http://127.0.0.1:5000/` in your default web browser.
-
-### Manual Setup (Optional)
-If you prefer to run the commands manually:
+### Option 2: Manual Terminal Setup
 ```bash
-# 1. Create a virtual environment
+# 1. Clone the repository
+git clone https://github.com/pallavisowreddi/AURA-Offline-AI-Health-Platform.git
+cd AURA-Offline-AI-Health-Platform
+
+# 2. Create and activate a virtual environment
 python -m venv .venv
-
-# 2. Activate the virtual environment
+# On Windows:
 .venv\Scripts\activate
+# On Linux/macOS:
+source .venv/bin/activate
 
-# 3. Install requirements
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Train the models
+# 4. Train or verify edge models (takes < 10 seconds)
 python train_models.py
 
-# 5. Start the web server
+# 5. Start the AURA application
 python app.py
 ```
+Open **`http://127.0.0.1:5000`** in any web browser.
 
 ---
 
-## 🧪 Verification & Testing Guide
+## 🧪 Demonstration & Jury Evaluation Guide
 
-Once the browser loads the dashboard, you can verify its offline functions using the built-in elements:
+To test AURA's offline capabilities during an evaluation or expo:
 
-1. **Symptom Analytics**:
-   - In the chat box, type: *"I am experiencing a high fever, body aches, a severe headache, and joint pain."*
-   - Press **Send**.
-   - Verify that **Dengue Fever** is predicted on the left telemetry panel, displaying the confidence rate and classification breakdown.
-   - Try clicking one of the text sample buttons (e.g. `🧴 Eczema Symptoms` or `🤢 Stomach Infection`) to test other paths.
+1. **Disconnect Internet**: Turn off Wi-Fi or unplug your ethernet cable. Notice that AURA continues operating seamlessly.
+2. **Clinical Symptom Query**:
+   * Navigate to **Disease Prediction**.
+   * Type or speak: *"I have high fever, joint pain, and red skin rashes."*
+   * Observe **Dengue Fever** identified with calibrated confidence, clinical care directives, and animated Differential Diagnostics canvas.
+3. **Regional Language Switching**:
+   * Switch the top navbar language pill to **हिन्दी** or **తెలుగు**.
+   * Notice immediate UI translation and clinical response generation in regional scripts.
+4. **Digital Lab Report Analysis**:
+   * Navigate to **Medical Reports** → **Digital Lab Report Biomarker Analyzer**.
+   * Click **Load Dengue Suspect Preset** or upload a clinical CBC sheet.
+   * Observe instant extraction of Platelets (62,000 /µL CRITICAL LOW), Hematocrit (52% HIGH), and WBC (2,800 /µL LOW) with clinical interpretation.
+5. **Visual Skin Lesion Scanner**:
+   * In **Medical Reports**, drag and drop a skin image or select a preset.
+   * Observe the visual laser scanning effect and edge classification breakdown.
 
-2. **Visual Image Analytics**:
-   - Scroll to the **Sample Skin Images** section on the right side.
-   - Click one of the cards (e.g., `Acne` or `Skin Rash`).
-   - The app will fetch the image, generate a bubble in the chat, run the visual metrics on the backend, and return the predicted classification.
-   - Observe the **Extracted Features** bar charts update with redness averages and roughness coefficients.
+---
 
-3. **Voice Assistance**:
-   - Click the microphone button in the input bar.
-   - Grant permission (if prompted) and say: *"I have dry itchy skin and dry patches."*
-   - The text will transcribe into the box and automatically submit, returning the diagnosis.
-   - Enable **Voice Assistance (TTS)** to hear the bot speak the response.
+## ⚖️ Clinical Safety & Disclaimer
+
+AURA is an educational public health screening tool designed for initial triage and awareness. It is engineered to adhere to public health safety guidelines by highlighting conservative recommendations, red-flag urgent warnings, and advising consultation with certified medical professionals. It does not replace definitive clinical pathology or physician diagnoses.
+
+---
+
+<div align="center">
+  <strong>© 2026 AURA Platform • Smart India Hackathon Edition</strong><br>
+  <em>Developed by Pallavi Sowreddi (B.Tech Student)</em>
+</div>
