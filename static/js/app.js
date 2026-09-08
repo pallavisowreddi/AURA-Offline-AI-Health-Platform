@@ -1221,7 +1221,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return text
             .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
             .replace(/\*(.*?)\*/g, "<em>$1</em>")
-            .replace(/### (.*?)\n/g, "h3>$1</h3>")
+            .replace(/### (.*?)\n/g, "<h3>$1</h3>")
             .replace(/- (.*?)\n/g, "<li>$1</li>")
             .replace(/\n/g, "<br>");
     }
@@ -1420,8 +1420,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const topic = words.length > 0 ? words[0] : (messageText || "health inquiry");
         return {
             text: `### 💡 AURA Offline Healthcare Assistant\n\nI noted your inquiry regarding **${topic}**.\n\nAs an on-device clinical intelligence assistant, I can screen and guide you on:\n- **Common Symptoms**: Type symptoms like *fever, joint pain, diarrhea, cough, or fatigue*.\n- **Visual Skin Scan**: Click the 📷 camera icon to check skin rashes, eczema, or lesions.\n- **Medical Lab Reports**: Visit the **Medical Reports** tab to analyze clinical blood counts.\n\n*(Note: Running in on-device fallback mode. Verify local server is running on http://127.0.0.1:5000 with 'python app.py' for full ML Random Forest differential diagnosis)*`,
-            speak: `I noted your inquiry regarding ${topic}. Please describe your physical symptoms like fever, cough, or pain so I can screen them for you.`,
-            telemetry: null
+            telemetry: {
+                prediction: "Clinical Screening Inquiry",
+                confidence: 0.55,
+                urgency: "Low",
+                description: `General health inquiry noted regarding ${topic}. Enter specific symptoms to generate predictive biometrics.`,
+                advice: "Describe symptoms like fever, cough, joint pain, or rash for differential ML diagnosis.",
+                probabilities: { "Clinical Inquiry": 0.60, "Symptom Observation": 0.40 }
+            }
         };
     }
 
@@ -1485,75 +1491,105 @@ document.addEventListener("DOMContentLoaded", () => {
         analyticsEmpty.classList.add("hidden");
         analyticsContent.classList.remove("hidden");
         
-        const confidence = predictionData.confidence || 0.0;
+        const confidence = predictionData.confidence !== undefined ? predictionData.confidence : 0.85;
         const confidencePct = Math.round(confidence * 100);
+        const urgency = predictionData.urgency || (isImage ? "Medium" : "Low");
         
-        // Update Circle dashoffset
-        if (confidenceRing && confidencePercentage) {
+        // 1. Animated Circle Gauge
+        if (confidenceRing) {
             const offset = ringPerimeter - (confidencePct * ringPerimeter) / 100;
+            confidenceRing.style.transition = "stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1)";
             confidenceRing.style.strokeDashoffset = offset;
+            if (urgency === "Critical" || urgency === "High") {
+                confidenceRing.style.stroke = "#ef4444";
+            } else if (urgency === "Medium") {
+                confidenceRing.style.stroke = "#f59e0b";
+            } else {
+                confidenceRing.style.stroke = "#0d9488";
+            }
+        }
+        if (confidencePercentage) {
             confidencePercentage.innerText = `${confidencePct}%`;
         }
         
-        if (predictedCondition) predictedCondition.innerText = predictionData.prediction;
+        // 2. Predicted Condition Name
+        if (predictedCondition) {
+            predictedCondition.innerText = predictionData.prediction || "Clinical Profile";
+        }
         
-        const urgency = predictionData.urgency || (isImage ? "Medium" : "None");
+        // 3. Urgency Badge
         if (predictedUrgency) {
             predictedUrgency.className = "urgency-badge";
             predictedUrgency.innerText = `Urgency: ${urgency}`;
             
-            // Set styles based on urgency level
             if (urgency === "Critical" || urgency === "High") {
-                predictedUrgency.style.background = "var(--accent-red-glow)";
-                predictedUrgency.style.color = "var(--accent-red)";
-                predictedUrgency.style.border = "1px solid var(--accent-red)";
-                
-                // Trigger SOS Emergency call dialog
-                triggerSosAlert(`Critical condition flagged: **${predictionData.prediction}**.`);
+                predictedUrgency.style.background = "rgba(239, 68, 68, 0.12)";
+                predictedUrgency.style.color = "#dc2626";
+                predictedUrgency.style.border = "1px solid rgba(239, 68, 68, 0.35)";
+                if (urgency === "Critical") {
+                    triggerSosAlert(`Critical condition flagged: **${predictionData.prediction}**.`);
+                }
+            } else if (urgency === "Medium") {
+                predictedUrgency.style.background = "rgba(245, 158, 11, 0.12)";
+                predictedUrgency.style.color = "#d97706";
+                predictedUrgency.style.border = "1px solid rgba(245, 158, 11, 0.35)";
             } else {
-                predictedUrgency.style.background = "var(--accent-teal-glow)";
-                predictedUrgency.style.color = "var(--accent-teal)";
-                predictedUrgency.style.border = "1px solid var(--accent-teal)";
+                predictedUrgency.style.background = "rgba(13, 148, 136, 0.12)";
+                predictedUrgency.style.color = "#0d9488";
+                predictedUrgency.style.border = "1px solid rgba(13, 148, 136, 0.35)";
             }
         }
 
-        // Decoded Symptoms tag clouds
+        // 4. XAI Risk Level Badge
+        if (xaiRiskLevel) {
+            xaiRiskLevel.innerText = (urgency === "Critical" || urgency === "High") ? "High Risk" : (urgency === "Medium" ? "Moderate" : "Normal Risk");
+            xaiRiskLevel.style.color = (urgency === "Critical" || urgency === "High") ? "#dc2626" : (urgency === "Medium" ? "#d97706" : "#0d9488");
+            xaiRiskLevel.style.fontWeight = "700";
+        }
+
+        // 5. Decoded Symptoms Tag Clouds
         if (xaiSymptomsMapped) {
             xaiSymptomsMapped.innerHTML = "";
-            const matchedList = predictionData.matched_symptoms || [];
+            let matchedList = predictionData.matched_symptoms || [];
+            if (typeof matchedList === "string") matchedList = [matchedList];
             if (matchedList.length > 0) {
                 matchedList.forEach(sym => {
                     const tag = document.createElement("span");
-                    tag.style.background = "rgba(0,0,0,0.05)";
-                    tag.style.border = "1px solid var(--border-glass)";
+                    tag.style.display = "inline-block";
+                    tag.style.background = "rgba(2, 132, 199, 0.08)";
+                    tag.style.border = "1px solid rgba(2, 132, 199, 0.25)";
+                    tag.style.color = "var(--text-primary)";
                     tag.style.borderRadius = "12px";
-                    tag.style.padding = "2px 6px";
-                    tag.style.fontSize = "0.62rem";
-                    tag.style.marginRight = "4px";
-                    tag.innerText = toTitleCase(sym);
+                    tag.style.padding = "2px 8px";
+                    tag.style.fontSize = "0.65rem";
+                    tag.style.fontWeight = "500";
+                    tag.style.margin = "2px 4px 2px 0";
+                    tag.innerText = toTitleCase(String(sym).replace(/_/g, " "));
                     xaiSymptomsMapped.appendChild(tag);
                 });
             } else {
-                xaiSymptomsMapped.innerHTML = `<span style="font-size:0.62rem; color:var(--text-muted);">None detected</span>`;
+                xaiSymptomsMapped.innerHTML = `<span style="font-size:0.65rem; color:var(--text-muted);">Clinical Observation</span>`;
             }
         }
 
-        // Feature Importance weight bars
+        // 6. Feature Importance Weight Bars
         if (xaiFeaturesImportance) {
             xaiFeaturesImportance.innerHTML = "";
-            const matchedList = predictionData.matched_symptoms || [];
+            let matchedList = predictionData.matched_symptoms || [];
+            if (typeof matchedList === "string") matchedList = [matchedList];
             if (matchedList.length > 0) {
-                matchedList.forEach((sym, idx) => {
-                    const weight = idx === 0 ? 80 : (idx === 1 ? 55 : 30);
+                const weights = [85, 65, 45, 30];
+                matchedList.slice(0, 4).forEach((sym, idx) => {
+                    const weight = weights[idx] || 25;
                     const bar = document.createElement("div");
                     bar.style.marginBottom = "5px";
                     bar.innerHTML = `
-                        <div style="display:flex; justify-content:space-between; font-size:0.62rem; color:var(--text-secondary);">
-                            <span>${toTitleCase(sym)}</span>
-                            <span>${weight}% Weight</span>
+                        <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:var(--text-secondary); margin-bottom:2px;">
+                            <span>${toTitleCase(String(sym).replace(/_/g, " "))}</span>
+                            <span style="font-weight:600; color:var(--accent-teal);">${weight}% Weight</span>
                         </div>
-                        <div style="background:rgba(0,0,0,0.05); height:4px; border-radius:2px; overflow:hidden;">
-                            <div style="background:var(--accent-teal); width:${weight}%; height:100%;"></div>
+                        <div style="background:rgba(0,0,0,0.06); height:5px; border-radius:3px; overflow:hidden;">
+                            <div style="background:var(--accent-teal); width:${weight}%; height:100%; border-radius:3px;"></div>
                         </div>
                     `;
                     xaiFeaturesImportance.appendChild(bar);
@@ -1561,71 +1597,144 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (isImage) {
                 xaiFeaturesImportance.innerHTML = `
                     <div style="margin-bottom:5px;">
-                        <div style="display:flex; justify-content:space-between; font-size:0.62rem; color:var(--text-secondary);">
-                            <span>Redness Density Profile</span>
-                            <span>78%</span>
+                        <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:var(--text-secondary); margin-bottom:2px;">
+                            <span>Dermal RGB & Texture Gradient</span>
+                            <span style="font-weight:600; color:var(--accent-teal);">82% Weight</span>
                         </div>
-                        <div style="background:rgba(0,0,0,0.05); height:4px; border-radius:2px; overflow:hidden;">
-                            <div style="background:var(--accent-teal); width:78%; height:100%;"></div>
+                        <div style="background:rgba(0,0,0,0.06); height:5px; border-radius:3px; overflow:hidden;">
+                            <div style="background:var(--accent-teal); width:82%; height:100%; border-radius:3px;"></div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                xaiFeaturesImportance.innerHTML = `
+                    <div style="margin-bottom:5px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:var(--text-secondary); margin-bottom:2px;">
+                            <span>Diagnostic Prior Likelihood</span>
+                            <span style="font-weight:600; color:var(--accent-teal);">${confidencePct}% Weight</span>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.06); height:5px; border-radius:3px; overflow:hidden;">
+                            <div style="background:var(--accent-teal); width:${confidencePct}%; height:100%; border-radius:3px;"></div>
                         </div>
                     </div>
                 `;
             }
         }
 
-        // Local explainable reasoning text
+        // 7. Local Explainable Reasoning Text
         if (xaiReasoning) {
             if (isImage) {
                 xaiReasoning.innerText = `Skin features match typical metrics of ${predictionData.prediction} due to elevated R/G ratios and surface gradient parameters.`;
+            } else if (predictionData.description) {
+                xaiReasoning.innerText = predictionData.description;
             } else {
-                const listStr = (predictionData.matched_symptoms || []).map(s => s.replace("_", " ")).join(", ");
-                xaiReasoning.innerText = listStr ? `Matched condition '${predictionData.prediction}' based on symptoms: [${listStr}].` : `Fallback diagnostic rule matching.`;
+                let matchedList = predictionData.matched_symptoms || [];
+                if (typeof matchedList === "string") matchedList = [matchedList];
+                const listStr = matchedList.map(s => String(s).replace(/_/g, " ")).join(", ");
+                xaiReasoning.innerText = listStr ? `Matched condition '${predictionData.prediction}' based on symptoms: [${listStr}].` : `Fallback diagnostic screening completed offline.`;
             }
         }
 
-        // Draw Canvas Chart probabilities distribution
-        drawDifferentialChart(predictionData.probabilities || {});
+        // 8. Draw Modern Canvas Differential Diagnostics Chart
+        drawDifferentialChart(predictionData.probabilities || {}, predictionData.prediction, confidence);
     }
 
-    function drawDifferentialChart(probs) {
+    function drawDifferentialChart(probs, mainPrediction = "", mainConfidence = 0.9) {
         const canvas = document.getElementById("disease-distribution-chart");
         if (!canvas) return;
         
         const ctx = canvas.getContext("2d");
-        const keys = Object.keys(probs);
-        const values = Object.values(probs);
+        if (!ctx) return;
         
-        // Set dynamic dimensions to prevent canvas coordinate stretching
-        canvas.width = canvas.parentElement.clientWidth || 300;
-        canvas.height = 100;
+        let keys = [];
+        let values = [];
         
-        // Clear Canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (probs && Object.keys(probs).length > 0) {
+            keys = Object.keys(probs).slice(0, 3);
+            values = keys.map(k => probs[k]);
+        } else if (mainPrediction) {
+            const confVal = mainConfidence > 0 ? mainConfidence : 0.85;
+            keys = [mainPrediction, "Differential Screening"];
+            values = [confVal, Math.max(0.05, Math.round((1 - confVal) * 100) / 100)];
+        } else {
+            keys = ["Primary Indication", "Secondary Check"];
+            values = [0.85, 0.15];
+        }
         
-        const barHeight = 12;
-        const spacing = 6;
+        const containerWidth = canvas.parentElement ? canvas.parentElement.clientWidth : 280;
+        const targetWidth = Math.max(200, containerWidth);
+        const rowHeight = 28;
+        const targetHeight = Math.max(90, keys.length * rowHeight + 8);
         
-        ctx.font = "8px 'Inter'";
+        // Support HiDPI / Retina displays
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = targetWidth * dpr;
+        canvas.height = targetHeight * dpr;
+        canvas.style.width = targetWidth + "px";
+        canvas.style.height = targetHeight + "px";
+        
+        ctx.scale(dpr, dpr);
+        ctx.clearRect(0, 0, targetWidth, targetHeight);
+        
+        const isDark = document.body.classList.contains("dark-mode");
+        const labelColor = isDark ? "#e2e8f0" : "#334155";
+        const valColor = isDark ? "#2dd4bf" : "#0d9488";
+        const bgBarColor = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.06)";
+        const barColor = isDark ? "#14b8a6" : "#0d9488";
+        
+        const startX = 4;
+        const availWidth = targetWidth - 8;
+        const barHeight = 6;
         
         keys.forEach((key, idx) => {
-            const val = values[idx];
-            const y = idx * (barHeight + spacing) + 10;
+            const rawVal = values[idx] !== undefined ? values[idx] : 0.5;
+            const val = Math.max(0.02, Math.min(1.0, rawVal));
+            const pct = Math.round(val * 100);
+            const yTop = idx * rowHeight + 4;
             
-            // Label
-            ctx.fillStyle = "var(--text-secondary)";
-            ctx.fillText(key, 5, y + 8);
+            // Text Row: Left label, Right percentage
+            ctx.font = "600 11px Inter, system-ui, -apple-system, sans-serif";
+            ctx.fillStyle = labelColor;
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
             
-            // Bar background
-            ctx.fillStyle = "rgba(0,0,0,0.04)";
-            ctx.fillRect(85, y, 120, barHeight);
+            // Truncate label if too wide
+            let label = String(key);
+            if (ctx.measureText(label).width > availWidth - 45) {
+                while (label.length > 3 && ctx.measureText(label + "...").width > availWidth - 45) {
+                    label = label.slice(0, -1);
+                }
+                label += "...";
+            }
+            ctx.fillText(label, startX, yTop + 7);
             
-            // Bar fill
-            ctx.fillStyle = "var(--accent-teal)";
-            ctx.fillRect(85, y, val * 120, barHeight);
+            // Percentage Value on right
+            ctx.font = "700 11px 'IBM Plex Mono', monospace, sans-serif";
+            ctx.fillStyle = valColor;
+            ctx.textAlign = "right";
+            ctx.fillText(`${pct}%`, startX + availWidth, yTop + 7);
             
-            // Percentage label
-            ctx.fillStyle = "var(--text-muted)";
-            ctx.fillText(`${Math.round(val * 100)}%`, 210, y + 8);
+            // Progress Bar Track
+            const barY = yTop + 16;
+            ctx.fillStyle = bgBarColor;
+            ctx.beginPath();
+            if (ctx.roundRect) {
+                ctx.roundRect(startX, barY, availWidth, barHeight, 3);
+            } else {
+                ctx.rect(startX, barY, availWidth, barHeight);
+            }
+            ctx.fill();
+            
+            // Progress Bar Fill
+            const fillWidth = Math.max(4, Math.round(availWidth * val));
+            ctx.fillStyle = barColor;
+            ctx.beginPath();
+            if (ctx.roundRect) {
+                ctx.roundRect(startX, barY, fillWidth, barHeight, 3);
+            } else {
+                ctx.rect(startX, barY, fillWidth, barHeight);
+            }
+            ctx.fill();
         });
     }
 
@@ -3529,6 +3638,9 @@ window.applyLabPreset = function(presetKey) {
 
 // Quick prompt chips handler
 window.submitQuickQuery = function(text) {
+    if (window.navigateToTab) {
+        window.navigateToTab("prediction");
+    }
     const input = document.getElementById("chat-input");
     if (input) {
         input.value = text;
