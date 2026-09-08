@@ -1424,7 +1424,7 @@ def parse_clinical_document(text, lang="en"):
             findings["date"] = standard_d
 
     # 4. Age & Gender
-    m_age = re.search(r'(?:Age|DOB)[:\-\s]*(\d{1,3})\s*(?:Yrs?|Years?)?(?!\d|-)', text, re.I)
+    m_age = re.search(r'(?:Age(?:\s*/\s*Gender)?|DOB)[:\-\s]*(\d{1,3})\s*(?:Yrs?|Years?)?(?!\d|-)', text, re.I)
     if m_age:
         findings["patient_age"] = m_age.group(1)
 
@@ -1434,7 +1434,7 @@ def parse_clinical_document(text, lang="en"):
         findings["patient_gender"] = "Male"
 
     # 5. Doctor / Physician
-    m_doc = re.search(r'(?:Dr\.|Doctor|Physician|Consultant|Attending)\s*[:\-\s]*([A-Za-z\.\s]{2,30}?)(?:\n|\r|\d{4}|$|\s{3,})', text, re.I)
+    m_doc = re.search(r'(?:Attending\s*(?:Doctor|Physician)|Dr\.|Doctor|Physician|Consultant)\s*[:\-\s]*([A-Za-z\.,\s]{2,40}?)(?:\n|\r|$|\s{3,})', text, re.I)
     if m_doc:
         d = m_doc.group(1).strip()
         d = re.sub(r'([a-z])([A-Z])', r'\1 \2', d).strip()
@@ -1488,6 +1488,8 @@ def parse_clinical_document(text, lang="en"):
                 abnormalities.append(f"Critical Low Platelets at {plt_num:,} /uL (Dengue / Hemorrhagic Alert)")
             elif plt_num < 100000:
                 status, b_type = "Thrombocytopenia (Low - Viral/Dengue Risk)", "danger"
+                if findings["urgency"] != "Critical":
+                    findings["urgency"] = "Urgent"
                 abnormalities.append(f"Low Platelet count {plt_num:,} /uL (Viral / Dengue suspect)")
             elif plt_num < 150000:
                 status, b_type = "Mild Thrombocytopenia (Below Ref)", "warning"
@@ -1509,7 +1511,7 @@ def parse_clinical_document(text, lang="en"):
             pass
 
     # C. Total Leucocyte Count (WBC / TLC)
-    m_wbc = re.search(r'(?:Total\s*Leucocyte\s*Count|Total\s*WBC|WBC(?:\s*Count)?|TLC)\s*[:\-\s]*([\d,]+(?:\.\d+)?)\s*(?:/cumm|/u[lL]|cells/cumm)?', text, re.I)
+    m_wbc = re.search(r'(?:Total\s*(?:Leucocyte|Leukocyte|WBC)\s*Count(?:\s*\(WBC\))?|Total\s*WBC|WBC(?:\s*Count)?|TLC)\s*[:\-\s]*([\d,]+(?:\.\d+)?)\s*(?:/cumm|/u[lL]|cells/cumm)?', text, re.I)
     if m_wbc:
         try:
             wbc_val = float(m_wbc.group(1).replace(',', ''))
@@ -1720,7 +1722,7 @@ def parse_clinical_document(text, lang="en"):
     m_temp = re.search(r'(?:Temperature|Temp)\s*[:\-\s]*([\d,.]+)\s*(?:°?\s*([CF]))?', text, re.I)
     if m_temp:
         t_val = float(m_temp.group(1).replace(',', '.'))
-        scale = (m_temp.group(2) or "C").upper()
+        scale = m_temp.group(2).upper() if m_temp.group(2) else ("F" if t_val > 45 else "C")
         if scale == "F" and t_val > 99.5:
             status, b_type = "Febrile (Fever)", "danger"
             abnormalities.append(f"Elevated Temperature {t_val}°F")
@@ -1736,6 +1738,28 @@ def parse_clinical_document(text, lang="en"):
             "type": b_type,
             "icon": "🌡️"
         })
+
+    # N. Hematocrit (PCV)
+    m_hct = re.search(r'(?:Hematocrit|Haematocrit|PCV)(?:\s*\(PCV\))?\s*[:\-\s]*(\d+(?:\.\d+)?)\s*%?', text, re.I)
+    if m_hct:
+        try:
+            hct_val = float(m_hct.group(1))
+            if hct_val > 50.0:
+                status, b_type = "Elevated (Hemoconcentration - Dengue Risk)", "danger"
+                abnormalities.append(f"Elevated Hematocrit {hct_val}% (Hemoconcentration risk)")
+            elif hct_val < 36.0:
+                status, b_type = "Low Hematocrit (Anemia)", "warning"
+            else:
+                status, b_type = "Normal PCV", "success"
+            findings["vitals"].append({
+                "name": "Hematocrit (PCV)",
+                "value": f"{hct_val} %",
+                "status": status,
+                "type": b_type,
+                "icon": "🩸"
+            })
+        except Exception:
+            pass
 
     # 7. Diagnoses & Medical History
     if re.search(r'hypertension', text, re.I): findings["diagnoses"].append("Essential Hypertension")
