@@ -157,14 +157,15 @@ h1, h2, h3, h4, .hero-eyebrow, .predicted-name {
 .nav-item {
     background: transparent;
     border: none;
-    padding: 6px 9px;
+    padding: 5px 8px;
     border-radius: 6px;
     color: var(--text-secondary);
     font-family: 'Poppins', sans-serif;
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
+    flex-shrink: 0;
     transition: var(--transition-smooth);
 }
 
@@ -3098,13 +3099,22 @@ body.dark-theme .footer-divider {
     }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
+    .nav-extra-btn span:last-child {
+        display: none; /* Show icon only (🎮, 🟢) on standard laptop screens to conserve space */
+    }
     .nav-extra-btn {
-        display: none; /* Move secondary tools to drawer on narrower laptop screens */
+        padding: 4px 8px;
+    }
+}
+
+@media (max-width: 1220px) {
+    .nav-extra-btn {
+        display: none; /* Move secondary tools to drawer on narrower screens */
     }
     .nav-item {
-        padding: 4px 5px;
-        font-size: 0.72rem;
+        padding: 4px 6px;
+        font-size: 0.73rem;
     }
     .main-navbar {
         padding: 0 12px;

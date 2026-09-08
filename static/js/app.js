@@ -1292,7 +1292,8 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch(err => {
                 typing.remove();
-                appendChatMessage("bot", `Network error: ${err.message}`);
+                console.warn("[AURA Client] Visual scanner backend unreachable:", err);
+                appendChatMessage("bot", "⚠️ **Visual Scanner Notice**: Unable to connect to local vision engine (`http://127.0.0.1:5000`). Please ensure `python app.py` is running in your terminal to evaluate image classifications.");
             });
         } else {
             // Submit to Chatbot endpoint
@@ -1316,9 +1317,112 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch(err => {
                 typing.remove();
-                appendChatMessage("bot", `Offline synthesis error: ${err.message}`);
+                console.warn("[AURA Client] Chat backend unreachable, engaging on-device fallback:", err);
+                const localFallback = getClientOfflineFallback(messageText, lang);
+                appendChatMessage("bot", localFallback.text);
+                speakAura(localFallback.speak);
+                if (localFallback.telemetry) {
+                    updateTelemetry(localFallback.telemetry, false);
+                }
             });
         }
+    }
+
+    // =========================================================================
+    // ON-DEVICE CLIENT-SIDE OFFLINE TRIAGE FALLBACK
+    // Ensures the assistant NEVER shows 'Failed to fetch' even during restarts
+    // =========================================================================
+    function getClientOfflineFallback(messageText, lang) {
+        const textLower = (messageText || "").toLowerCase().trim();
+        
+        // 1. Fever / Temperature
+        if (textLower.includes("fever") || textLower.includes("temp") || textLower.includes("बुखार") || textLower.includes("జ్వరం")) {
+            return {
+                text: `### ℹ️ Initial Symptom Noted: **Fever**\n\nEvaluating an isolated symptom is insufficient to form a clinically responsible assessment.\n\n**To provide an accurate screening, please share 1 or 2 additional symptoms** you are experiencing (e.g., headache, cough, fatigue, nausea, chills, body ache, or duration).\n\n*💡 Tip: Rest in a well-ventilated room, stay hydrated with fluids or ORS, and monitor body temperature using a digital thermometer.*`,
+                speak: "Initial symptom noted: Fever. Please share one or two additional symptoms such as cough, headache, or chills to provide an accurate screening.",
+                telemetry: {
+                    prediction: "Febrile Illness Evaluation",
+                    confidence: 0.60,
+                    urgency: "Medium",
+                    description: "Isolated febrile symptom recorded on local triage rules.",
+                    advice: "Monitor oral temperature, maintain hydration, and observe for associated symptoms like rashes or persistent chills.",
+                    probabilities: { "Viral Fever": 0.50, "Bacterial Infection": 0.30, "Other": 0.20 }
+                }
+            };
+        }
+
+        // 2. Skin Disease / Rash / Itching
+        if (textLower.includes("skin") || textLower.includes("rash") || textLower.includes("itch") || textLower.includes("dermat") || textLower.includes("त्वचा") || textLower.includes("चर्म") || textLower.includes("దద్దుర్లు") || textLower.includes("దురద")) {
+            return {
+                text: `### 🩺 Skin Conditions & Dermatological Care\n\nCommon skin diseases and conditions analyzed by AURA include:\n- **Eczema (Atopic Dermatitis)**: Dry, inflamed, itchy patches.\n- **Psoriasis**: Silvery-white scaly plaques on red skin.\n- **Acne Vulgaris**: Blocked pores causing pimples and inflammation.\n- **Fungal Infections / Tinea**: Itchy red ring-like lesions.\n\n#### 📷 On-Device Visual Scanner Recommendation:\n• Click the **📷 camera icon** below to upload an image directly into this chat.\n• Or visit the **Medical Reports** tab to use our dedicated **Visual Skin Pathology Scanner** for immediate on-device CNN vision classification!\n\n*If you also have fever, intense pain, or spreading blisters, please describe those symptoms.*`,
+                speak: "Skin condition screening. You can upload an image using the camera icon or visit the Medical Reports tab for visual skin scanning.",
+                telemetry: {
+                    prediction: "Dermatological Screening",
+                    confidence: 0.85,
+                    urgency: "Low",
+                    description: "Screening for common dermatological conditions.",
+                    advice: "Use the on-device Visual Scanner in Medical Reports or consult a dermatologist for lesions with scaling or irritation.",
+                    probabilities: { "Dermatological Condition": 0.85 }
+                }
+            };
+        }
+
+        // 3. Cough / Cold / Flu
+        if (textLower.includes("cough") || textLower.includes("cold") || textLower.includes("flu") || textLower.includes("खांसी") || textLower.includes("దగ్గు") || textLower.includes("జలుబు")) {
+            return {
+                text: `### 🫁 Respiratory Symptoms (Cough & Cold)\n\nUpper respiratory symptoms are commonly associated with viral infections or environmental allergens.\n\n**Home Care Advice:**\n- Drink warm water, herbal teas, or honey-ginger concoctions to soothe airway irritation.\n- Try steam inhalation 1-2 times daily for nasal decongestion.\n- If you also have fever, breathing difficulty, or chest tightness, please specify.\n\n*Notice: Operating in offline fallback triage mode.*`,
+                speak: "Respiratory symptoms noted. Drink warm fluids and try steam inhalation. Please share if you have fever or breathing difficulty.",
+                telemetry: {
+                    prediction: "Upper Respiratory Infection",
+                    confidence: 0.70,
+                    urgency: "Low",
+                    description: "Mild upper respiratory tract symptoms.",
+                    advice: "Stay hydrated, rest, and monitor if symptoms persist over 5-7 days.",
+                    probabilities: { "Common Cold": 0.60, "Allergic Rhinitis": 0.25, "Bronchitis": 0.15 }
+                }
+            };
+        }
+
+        // 4. Headache / Migraine
+        if (textLower.includes("headache") || textLower.includes("head pain") || textLower.includes("सिरदर्द") || textLower.includes("తలనొప్పి")) {
+            return {
+                text: `### 🧠 Headache / Cephalea Evaluation\n\nHeadaches can stem from dehydration, tension, lack of sleep, or underlying migraine.\n\n**Self-Care Steps:**\n- Rest in a quiet, dimly lit room and drink 2 glasses of water.\n- Apply a cool damp cloth over your forehead.\n- Seek immediate emergency care if the headache is sudden, severe ('worst headache of your life'), or accompanied by stiff neck or numbness.`,
+                speak: "Headache evaluation noted. Rest in a dark quiet room and hydrate with water.",
+                telemetry: {
+                    prediction: "Tension / Cephalea Evaluation",
+                    confidence: 0.65,
+                    urgency: "Low",
+                    description: "Cephalea symptom evaluated on local clinical triage rules.",
+                    advice: "Rest, hydrate, and seek medical care if accompanied by high fever or vision changes.",
+                    probabilities: { "Tension Headache": 0.65, "Migraine": 0.25, "Other": 0.10 }
+                }
+            };
+        }
+
+        // 5. Emergency: Snake Bite / Animal Bite / Severe Chest Pain
+        if (textLower.includes("snake") || textLower.includes("dog bite") || textLower.includes("chest pain") || textLower.includes("heart attack") || textLower.includes("सांप") || textLower.includes("పాము")) {
+            return {
+                text: `### 🚨 EMERGENCY PROTOCOL ADVISORY\n\n**Critical Health Condition Detected!**\n- **Snake Bite**: Keep patient calm and completely still. Immobilize limb below heart level. Rush immediately to nearest hospital for Anti-Snake Venom (ASV). DO NOT apply tourniquets.\n- **Animal/Dog Bite**: Wash wound vigorously under running tap water with soap for 15 full minutes. Rush for Anti-Rabies Vaccine (ARV).\n- **Chest Pain**: Sit down, loosen tight clothing, and seek urgent emergency ambulance dispatch (108 / 112).\n\n*Click the **SOS Emergency Alert** button on the left panel immediately.*`,
+                speak: "Critical health alert. Please follow emergency first-aid and seek immediate medical hospitalization.",
+                telemetry: {
+                    prediction: "Acute Emergency Protocol",
+                    confidence: 1.0,
+                    urgency: "Critical",
+                    description: "Immediate emergency hospitalization criteria detected.",
+                    advice: "Call emergency 108 / 112 and proceed to nearest tertiary healthcare center.",
+                    probabilities: { "Acute Emergency": 1.0 }
+                }
+            };
+        }
+
+        // 6. General / Fallback
+        const words = textLower.split(/\s+/).filter(w => w.length > 3);
+        const topic = words.length > 0 ? words[0] : (messageText || "health inquiry");
+        return {
+            text: `### 💡 AURA Offline Healthcare Assistant\n\nI noted your inquiry regarding **${topic}**.\n\nAs an on-device clinical intelligence assistant, I can screen and guide you on:\n- **Common Symptoms**: Type symptoms like *fever, joint pain, diarrhea, cough, or fatigue*.\n- **Visual Skin Scan**: Click the 📷 camera icon to check skin rashes, eczema, or lesions.\n- **Medical Lab Reports**: Visit the **Medical Reports** tab to analyze clinical blood counts.\n\n*(Note: Running in on-device fallback mode. Verify local server is running on http://127.0.0.1:5000 with 'python app.py' for full ML Random Forest differential diagnosis)*`,
+            speak: `I noted your inquiry regarding ${topic}. Please describe your physical symptoms like fever, cough, or pain so I can screen them for you.`,
+            telemetry: null
+        };
     }
 
     if (chatForm) {

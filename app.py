@@ -67,6 +67,11 @@ INTENT_ANSWERS = {
         "en": "### 🧠 Stress Management & Mental Wellness\nExperiencing stress or anxiety is a very common response to sickness, pressure, or physical fatigue. Here are structured wellness guidelines:\n- **Deep Breathing (4-7-8 Technique)**: Inhale for 4 seconds, hold your breath for 7 seconds, and exhale slowly for 8 seconds. Repeat 4 times to calm your nervous system.\n- **Physical Movement**: Take light walks, do gentle stretching, or practice yoga. Physical activity releases endorphins which reduce stress.\n- **Rest and Sleep**: Ensure 7-8 hours of sound sleep. Disconnect from digital screens at least 30 minutes before bedtime.\n- **Talk to Someone**: Sharing how you feel with a trusted friend, family member, or healthcare professional can significantly relieve mental tension.",
         "hi": "### 🧠 मानसिक तनाव और कल्याण प्रबंधन\nबीमारी, दबाव या शारीरिक थकान के कारण तनाव या चिंता महसूस होना बहुत आम है। राहत के लिए निम्नलिखित नियमों का पालन करें:\n- **गहरी सांस लें (4-7-8 तकनीक)**: 4 सेकंड के लिए सांस लें, 7 सेकंड के लिए सांस रोकें, और 8 सेकंड तक धीरे-धीरे बाहर छोड़ें। यह तंत्रिका तंत्र को शांत करता है।\n- **शारीरिक गतिविधि**: हल्की सैर करें या योग करें। शारीरिक गतिविधि से एंडोर्फिन निकलता है जो तनाव कम करता है।\n- **पर्याप्त आराम**: रोजाना 7-8 घंटे की गहरी नींद लें। सोने से 30 मिनट पहले मोबाइल/टीवी स्क्रीन बंद कर दें।\n- **बातचीत करें**: अपने दोस्तों, परिवार या किसी विशेषज्ञ से अपनी चिंताओं को साझा करने से मन का बोझ बहुत कम हो जाता है।",
         "te": "### 🧠 ఒత్తిడి నివారణ & మానసిక ఆరోగ్యం\nఅనారోగ్యం, ఒత్తిడి లేదా అలసట వల్ల ఆందోళన చెందడం సహజం. దీని నివారణకు ఈ చిట్కాలు పాటించండి:\n- **శ్వాస వ్యాయామం (4-7-8 పద్ధతి)**: 4 సెకన్లు శ్వాస తీసుకోండి, 7 సెకన్లు శ్వాసను ఆపి ఉంచండి, 8 సెకన్ల పాటు నెమ్మదిగా వదలండి. ఇది మనస్సుకు ప్రశాంతతను ఇస్తుంది.\n- **శారీరక శ్రమ**: రోజువారీ వ్యాయామం లేదా యోగా చేయండి. శారీరక శ్రమ వల్ల హ్యాపీ హార్మోన్లు విడుదలవుతాయి.\n- **సరైన నిద్ర**: రోజుకు కనీసం 7-8 గంటలు నిద్రపోండి. నిద్రపోయే ముందు మొబైల్ ఫోన్లు వాడకండి.\n- **భావాలను పంచుకోండి**: మీ మనసులోని మాటలను కుటుంబ సభ్యులతో లేదా స్నేహితులతో పంచుకోవడం వల్ల ఒత్తిడి తగ్గుతుంది."
+    },
+    "skin_disease": {
+        "en": "### 🩺 Skin Conditions & Dermatological Care\nCommon skin diseases and conditions analyzed by AURA include:\n- **Eczema (Atopic Dermatitis)**: Dry, inflamed, itchy red patches often on flexural folds.\n- **Psoriasis**: Silvery-white scaly plaques on erythematous skin (scalp, knees, elbows).\n- **Acne Vulgaris**: Comedones, papules, pustules, or cysts caused by sebum and follicular inflammation.\n- **Fungal Infections / Tinea**: Annular red ring lesions with active margins and intense itching.\n- **Contact Dermatitis / Urticaria**: Acute localized rash, swelling, or hives from allergens.\n\n#### 📷 On-Device Visual Scanner Recommendation:\n• Click the **📷 camera icon** below to upload an image of the affected skin lesion directly to this chat.\n• Or visit the **Medical Reports** tab to use our dedicated **Visual Skin Pathology Scanner** for convolutional vision assessment!\n\n*If you also have high fever, severe pain, rapid swelling, or blisters, please describe those symptoms.*",
+        "hi": "### 🩺 त्वचा रोग एवं स्वास्थ्य मार्गदर्शन (Skin Disease Guidance)\nAURA द्वारा पहचानी जाने वाली मुख्य त्वचा स्थितियां:\n- **एक्जिमा (Eczema)**: त्वचा पर सूखापन, लालिमा और तेज खुजली।\n- **सोरायसिस (Psoriasis)**: चांदी जैसी सफेद पपड़ी और उभरे हुए लाल चकत्ते।\n- **मुंहासे (Acne)**: चेहरे और पीठ पर कील-मुंहासे और फुंसियां।\n- **दाद / फंगल संक्रमण (Ringworm)**: गोल लाल छल्ले और अत्यधिक खुजली।\n- **एलर्जिक डर्मेटाइटिस**: किसी चीज के संपर्क में आने से अचानक लाल चकत्ते और जलन।\n\n#### 📷 विजुअल स्किन स्कैनर का उपयोग करें:\n• नीचे दिए गए **📷 कैमरा आइकन** पर क्लिक करके प्रभावित त्वचा का फोटो अपलोड करें।\n• या **Medical Reports** सेक्शन में जाकर ऑन-डिवाइस **Visual Skin Pathology Scanner** का उपयोग करें।",
+        "te": "### 🩺 చర్మ వ్యాధులు & సంరక్షణ మార్గదర్శకాలు (Skin Disease Guidance)\nAURA ద్వారా విశ్లేషించబడే సాధారణ చర్మ పరిస్థితులు:\n- **ఎగ్జిమా (Eczema)**: చర్మం పొడిబారడం, దురద మరియు ఎర్రటి దద్దుర్లు.\n- **సోరియాసిస్ (Psoriasis)**: వెండి రంగు పొలుసులు మరియు ఎర్రటి మందపాటి మచ్చలు.\n- **మొటిమలు (Acne)**: సెబమ్ గ్రంథులు మూసుకుపోవడం వల్ల వచ్చే గుల్లలు.\n- **తామర / ఫంగల్ రింగ్‌వార్మ్**: గుండ్రటి ఎరుపు రంగు రింగ్ ఆకారపు దురద మచ్చలు.\n- **అలర్జీ డెర్మటైటిస్**: ఆకస్మిక వాపు, ఎరుపు మరియు దద్దుర్లు.\n\n#### 📷 విజువల్ స్కిన్ స్కానర్ సదుపాయం:\n• చర్మ సమస్య ఫోటోను నేరుగా విశ్లేషించడానికి క్రింద ఉన్న **📷 కెమెరా ఐకాన్** నొక్కండి.\n• లేదా **Medical Reports** ట్యాబ్‌లోని మా ఆన్-డివైస్ **Visual Skin Pathology Scanner** ను ఉపయోగించండి."
     }
 }
 
@@ -580,6 +585,21 @@ def chat():
     # Hospital/Clinic locator check
     if any(k in message_lower for k in ["hospital", "clinic", "doctor", "nearby", "map", "अस्पताल", "डॉक्टर", "ఆసుపత్రి", "క్లినిక్"]):
         response_data["response"] = INTENT_ANSWERS["hospital"].get(lang, INTENT_ANSWERS["hospital"]["en"])
+        return jsonify(response_data)
+
+    # Skin Disease & Dermatology check
+    skin_keywords = ["skin", "skin disease", "skin diseases", "skin condition", "skin conditions", "rash", "itching", "dermatitis", "dermatology", "त्वचा", "चकत्ते", "खुजली", "చర్మ", "దద్దుర్లు", "దురద"]
+    if any(k in message_lower for k in skin_keywords) and len(detected_symptoms) <= 1:
+        response_data["response"] = INTENT_ANSWERS["skin_disease"].get(lang, INTENT_ANSWERS["skin_disease"]["en"])
+        response_data["disease_prediction"] = {
+            "prediction": "Dermatological Evaluation",
+            "confidence": 0.85,
+            "description": "Screening for common dermatological conditions (Eczema, Psoriasis, Acne, or Fungal Tinea).",
+            "advice": "Use the on-device Visual Skin Scanner or consult a certified dermatologist for lesions with erythema, scaling, or discharge.",
+            "urgency": "Low",
+            "probabilities": {"Dermatological Condition": 0.85},
+            "prediction_mode": "informational"
+        }
         return jsonify(response_data)
 
     # Step 5: Dynamic context echo fallback (prevents static/generic replies!)
