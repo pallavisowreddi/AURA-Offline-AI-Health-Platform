@@ -3798,3 +3798,44 @@ window.quickFillDemo = function(name, roll, pass) {
         // Audio announcement
         speakAura(`Medical report analyzed. Identified ${data.doc_type} for ${data.patient_name || 'patient'}. Key finding: ${data.vitals && data.vitals.length > 0 ? data.vitals[0].name + ' ' + data.vitals[0].value : 'Vitals recorded'}.`);
     }
+
+    // =========================================================================
+    // OFFLINE REPORT READER (.txt / .json) HANDLER
+    // =========================================================================
+    const reportFileUpload = document.getElementById("report-file-upload");
+    if (reportFileUpload) {
+        reportFileUpload.addEventListener("change", () => {
+            const file = reportFileUpload.files[0];
+            if (!file) return;
+
+            const resDiv = document.getElementById("report-analysis-results");
+            if (resDiv) {
+                resDiv.innerHTML = `<span style="color:var(--accent-teal);">⏳ Analyzing document "${file.name}"...</span>`;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("lang", languageSelector ? languageSelector.value : "en");
+
+            fetch("/api/predict/document", {
+                method: "POST",
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    if (resDiv) resDiv.innerHTML = `<span style="color:#ef4444;">❌ ${data.error}</span>`;
+                } else {
+                    if (resDiv) {
+                        resDiv.innerHTML = `<span style="color:#10b981;">✅ Analyzed: <strong>${data.doc_type}</strong> (${data.vitals ? data.vitals.length : 0} parameters extracted)</span>`;
+                    }
+                    renderDocumentAnalysisCard(data);
+                    document.getElementById("reports-results-card")?.scrollIntoView({ behavior: "smooth" });
+                }
+            })
+            .catch(err => {
+                console.error("Failed to parse report file:", err);
+                if (resDiv) resDiv.innerHTML = `<span style="color:#ef4444;">❌ Failed to parse report file.</span>`;
+            });
+        });
+    }

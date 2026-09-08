@@ -1,0 +1,17 @@
+DIABETIC BIOCHEMISTRY EVALUATION REPORT
+Lab: Metro Clinical Diagnostic Center
+Patient Name: Anitha Reddy
+Age: 52 Years | Gender: Female
+Doctor: Dr. M. K. Verma, MD (Endocrinology)
+Date: 2026-09-08
+
+BIOCHEMICAL PARAMETERS:
+Fasting Blood Sugar: 210 mg/dL (Ref: 70 - 99) [ELEVATED]
+HbA1c (Glycated Hemoglobin): 9.2 % (Ref: < 5.7) [UNCONTROLLED DIABETIC RANGE]
+Blood Pressure: 145/92 mmHg (Ref: 120/80) [STAGE 2 HYPERTENSION]
+Pulse: 84 bpm (Ref: 60 - 100)
+
+CLINICAL IMPRESSION:
+Poorly controlled Type 2 Diabetes Mellitus with Essential Hypertension.
+Active Medications: Metformin 500mg, Hydrochlorothiazide 25mg.
+Advice: Low carbohydrate glycemic control, daily aerobic exercise, clinical follow-up.
