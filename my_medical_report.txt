@@ -1,0 +1,33 @@
+============================================================
+              CITY DIAGNOSTIC HEALTHCARE CENTRE
+              DEPARTMENT OF CLINICAL PATHOLOGY
+============================================================
+PATIENT DETAILS:
+Patient Name: Ramesh Verma
+Age / Gender: 42 Years / Male
+Attending Doctor: Dr. K. S. Murthy, MD
+Date of Report: 2026-09-08
+Sample ID: LAB-2026-90412
+
+HAEMATOLOGY (COMPLETE BLOOD COUNT):
+------------------------------------------------------------
+Test Parameter               Observed Value    Reference Range
+------------------------------------------------------------
+Hemoglobin                   14.2 g/dL         13.0 - 17.0
+Total Leucocyte Count (WBC)  2,800 /cumm       4,000 - 11,000
+Platelet Count               62,000 /uL        150,000 - 450,000
+Hematocrit (PCV)             52.0 %            40.0 - 50.0
+Blood Pressure               120/80 mmHg       120/80
+Pulse / Heart Rate           76 bpm            60 - 100
+Body Temperature             101.4 °F          97.8 - 99.1
+
+CLINICAL OBSERVATIONS & NOTES:
+Marked Thrombocytopenia with Leukopenia and elevated Hematocrit.
+Clinical pattern correlates with acute viral febrile illness / Suspected Dengue.
+
+Rx & RECOMMENDATIONS:
+1. Complete bed rest in a well-ventilated room.
+2. Oral Rehydration Solution (ORS), coconut water, and fluids (> 3 Litres/day).
+3. Paracetamol 500mg as needed for fever (DO NOT take Aspirin or Ibuprofen).
+4. Repeat Platelet Count test within 24 hours.
+============================================================
