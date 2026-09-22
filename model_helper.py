@@ -4,7 +4,10 @@ import pickle
 import re
 import warnings
 import numpy as np
-import cv2
+try:
+    import cv2
+except Exception:
+    cv2 = None
 from PIL import Image
 import sklearn
 import sklearn.ensemble
@@ -1838,7 +1841,7 @@ def predict_image(image_bytes, lang="en"):
     # =========================================================================
     if _ocr_engine is not None:
         try:
-            arr_bgr = cv2.cvtColor(arr_rgb, cv2.COLOR_RGB2BGR)
+            arr_bgr = cv2.cvtColor(arr_rgb, cv2.COLOR_RGB2BGR) if cv2 is not None else arr_rgb[:, :, ::-1]
             ocr_res, _ = _ocr_engine(arr_bgr)
             if ocr_res:
                 lines = [line[1] for line in ocr_res]
