@@ -900,6 +900,21 @@ document.addEventListener("DOMContentLoaded", () => {
             "title": "Technical Information",
             "body": "Learn about AURA's local decision tree algorithms and dictionary match parameters. Not a substitute for clinical advice.",
             "speech": "About AURA. This diagnostic assistant calculates probability profiles locally without sending data to external servers."
+        },
+        "diseases": {
+            "title": "Disease Awareness Library",
+            "body": "Browse verified health awareness profiles for 22+ conditions with symptoms, prevention, warning signs, and FAQs.",
+            "speech": "This is the disease library. Search or filter common conditions to review educational health guidelines."
+        },
+        "symptoms": {
+            "title": "Symptom Explorer",
+            "body": "Select multiple symptoms to explore possible educational associations and critical warning flags without diagnosis.",
+            "speech": "This is the symptom explorer. Select your symptoms to view potential health associations and care advice."
+        },
+        "tips": {
+            "title": "Preventive Health Guidelines",
+            "body": "Evidence-based lifestyle, hydration, mosquito protection, and hygiene recommendations.",
+            "speech": "This is the health tips hub. Explore preventive care and healthy living practices."
         }
     };
 
@@ -974,7 +989,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 2. TABBED VIEWPORT NAVIGATION
     // ==========================================
-    const PROTECTED_TABS = ["home", "prediction", "reports", "vaccines", "reminders", "dashboard", "emergency", "settings"];
+    const PROTECTED_TABS = ["home", "prediction", "reports", "vaccines", "reminders", "dashboard", "emergency", "settings", "diseases", "symptoms", "tips"];
 
     function updateAuthUIState() {
         const user = getActiveUser();
@@ -1300,11 +1315,19 @@ document.addEventListener("DOMContentLoaded", () => {
             fetch("/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: messageText, lang: lang })
+                body: JSON.stringify({ 
+                    message: messageText, 
+                    lang: lang,
+                    conversation_id: window.currentActiveConvId 
+                })
             })
             .then(res => res.json())
             .then(data => {
                 typing.remove();
+                if (data.conversation_id) {
+                    window.currentActiveConvId = data.conversation_id;
+                    localStorage.setItem("aura_active_conv_id", data.conversation_id);
+                }
                 appendChatMessage("bot", data.response || "No response received.");
                 
                 // Read chatbot text response aloud (strip markdown tokens)
@@ -4411,5 +4434,495 @@ window.quickFillDemo = function(name, roll, pass) {
         fetchEmergencyRecommendation({ scenario: "cardiac", city: "hyderabad" });
     });
 
+})();
+
+
+
+
+// ============================================================================
+// MODULE: DISEASE AWARENESS LIBRARY CONTROLLER
+// ============================================================================
+(function() {
+    let currentCategory = "all";
+    let cachedDiseases = [];
+
+    window.filterDiseasesCategory = function(cat) {
+        currentCategory = cat;
+        document.querySelectorAll(".disease-filter-chip").forEach(btn => {
+            btn.classList.toggle("active", btn.getAttribute("data-category") === cat);
+        });
+        const query = document.getElementById("disease-search-bar")?.value || "";
+        loadDiseasesList(cat, query);
+    };
+
+    function loadDiseasesList(category = "all", query = "") {
+        const grid = document.getElementById("disease-cards-grid");
+        if (!grid) return;
+
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">⏳ Loading offline health knowledge base...</div>`;
+
+        let url = `/api/diseases?category=${encodeURIComponent(category)}`;
+        if (query) url += `&q=${encodeURIComponent(query)}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status !== "success" || !data.diseases.length) {
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">No matching diseases found in local knowledge base.</div>`;
+                    return;
+                }
+                cachedDiseases = data.diseases;
+                grid.innerHTML = "";
+                data.diseases.forEach(d => {
+                    const card = document.createElement("div");
+                    card.className = "disease-card-item";
+                    card.onclick = () => window.openDiseaseModal(d.id);
+
+                    const categoryColors = {
+                        "Vector-borne": "#f59e0b",
+                        "Infectious": "#ef4444",
+                        "Respiratory": "#0284c7",
+                        "Chronic": "#8b5cf6",
+                        "Water-borne": "#06b6d4",
+                        "Lifestyle": "#10b981"
+                    };
+                    const badgeColor = categoryColors[d.category] || "#64748b";
+
+                    card.innerHTML = `
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px;">
+                                <h4 style="margin: 0; font-size: 0.98rem; font-weight: 800; color: var(--text-primary);">${d.name}</h4>
+                                <span class="badge" style="background: ${badgeColor}22; color: ${badgeColor}; border: 1px solid ${badgeColor}44; font-size: 0.68rem; font-weight: 700; white-space: nowrap;">${d.category}</span>
+                            </div>
+                            <p style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.45; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                ${d.overview}
+                            </p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-glass); padding-top: 8px; margin-top: 6px;">
+                            <span style="font-size: 0.72rem; color: #0284c7; font-weight: 700;">📖 Read Awareness Guide →</span>
+                            <span style="font-size: 0.68rem; color: var(--text-muted);">Local RAG Verified</span>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            })
+            .catch(err => {
+                console.error("Failed to load diseases:", err);
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #ef4444; padding: 20px;">Failed to load local disease knowledge base.</div>`;
+            });
+    }
+
+    window.openDiseaseModal = function(diseaseId) {
+        const modal = document.getElementById("disease-detail-modal");
+        const titleEl = document.getElementById("modal-disease-title");
+        const catEl = document.getElementById("modal-disease-category");
+        const aliasesEl = document.getElementById("modal-disease-aliases");
+        const bodyEl = document.getElementById("modal-disease-body");
+
+        if (!modal) return;
+        modal.classList.remove("hidden");
+        bodyEl.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--text-muted);">⏳ Loading profile...</div>`;
+
+        fetch(`/api/diseases/${encodeURIComponent(diseaseId)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status !== "success") return;
+                const d = data.disease;
+                const raw = d.raw || {};
+
+                if (titleEl) titleEl.innerText = d.name;
+                if (catEl) catEl.innerText = d.category;
+                if (aliasesEl) aliasesEl.innerText = raw.aliases ? `Also known as: ${raw.aliases.join(", ")}` : "";
+
+                let html = `
+                    <div style="background: rgba(2, 132, 199, 0.05); border-left: 3px solid #0284c7; padding: 10px 12px; border-radius: 6px;">
+                        <strong style="color: #0284c7; display: block; margin-bottom: 2px;">📖 Overview & Clinical Pathology:</strong>
+                        <p style="margin: 0; line-height: 1.5;">${d.overview}</p>
+                    </div>
+
+                    <div>
+                        <strong style="color: var(--text-primary); display: block; margin-bottom: 4px;">🔍 Common Symptoms:</strong>
+                        <ul style="margin-left: 18px; margin-top: 2px; line-height: 1.45;">
+                            ${(raw.common_symptoms || []).map(s => `<li>${s}</li>`).join("")}
+                        </ul>
+                    </div>
+
+                    <div>
+                        <strong style="color: var(--text-primary); display: block; margin-bottom: 4px;">🛡️ Prevention & Environmental Control:</strong>
+                        <ul style="margin-left: 18px; margin-top: 2px; line-height: 1.45;">
+                            ${(raw.prevention || []).map(p => `<li>${p}</li>`).join("")}
+                        </ul>
+                    </div>
+
+                    <div style="background: rgba(239, 68, 68, 0.05); border-left: 3px solid #ef4444; padding: 10px 12px; border-radius: 6px;">
+                        <strong style="color: #ef4444; display: block; margin-bottom: 3px;">⚠️ Critical Warning Signs:</strong>
+                        <ul style="margin-left: 18px; margin-top: 2px; line-height: 1.45; color: #b91c1c;">
+                            ${(raw.warning_signs || []).map(w => `<li><strong>${w}</strong></li>`).join("")}
+                        </ul>
+                        <div style="margin-top: 6px; font-weight: 600; color: #ef4444;">
+                            🏥 When to seek care: ${raw.when_to_seek_medical_help || "Consult a doctor if symptoms persist."}
+                        </div>
+                    </div>
+                `;
+
+                if (raw.faqs && raw.faqs.length) {
+                    html += `
+                        <div style="border-top: 1px solid var(--border-glass); padding-top: 10px;">
+                            <strong style="color: var(--text-primary); display: block; margin-bottom: 6px;">❓ Frequently Asked Questions:</strong>
+                            ${raw.faqs.map(f => `
+                                <div style="margin-bottom: 8px;">
+                                    <div style="font-weight: 700; color: #0284c7;">Q: ${f.q}</div>
+                                    <div style="color: var(--text-secondary); margin-top: 2px;">A: ${f.a}</div>
+                                </div>
+                            `).join("")}
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div style="font-size: 0.7rem; color: var(--text-muted); border-top: 1px solid var(--border-glass); padding-top: 8px; margin-top: 8px;">
+                        🔒 <em>Educational health awareness only. All data retrieved 100% offline from local verified knowledge base. Does not provide medical diagnosis.</em>
+                    </div>
+                `;
+
+                bodyEl.innerHTML = html;
+            })
+            .catch(err => {
+                console.error("Failed to load disease details:", err);
+                bodyEl.innerHTML = `<div style="color: #ef4444; padding: 10px;">Failed to load disease profile.</div>`;
+            });
+    };
+
+    window.closeDiseaseModal = function() {
+        const modal = document.getElementById("disease-detail-modal");
+        if (modal) modal.classList.add("hidden");
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadDiseasesList("all", "");
+        const searchBar = document.getElementById("disease-search-bar");
+        if (searchBar) {
+            let debounceTimer;
+            searchBar.addEventListener("input", (e) => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    loadDiseasesList(currentCategory, e.target.value.trim());
+                }, 250);
+            });
+        }
+    });
+})();
+
+// ============================================================================
+// MODULE: SYMPTOM EXPLORER CONTROLLER
+// ============================================================================
+(function() {
+    let allSymptoms = [];
+    let selectedSymptoms = new Set();
+
+    function loadSymptomsList() {
+        const container = document.getElementById("symptoms-pills-grid");
+        if (!container) return;
+
+        fetch("/api/symptoms")
+            .then(res => res.json())
+            .then(data => {
+                if (data.status !== "success") return;
+                allSymptoms = data.symptoms;
+                container.innerHTML = "";
+                data.symptoms.forEach(s => {
+                    const pill = document.createElement("button");
+                    pill.type = "button";
+                    pill.className = "symptom-selectable-pill";
+                    pill.setAttribute("data-id", s.id);
+                    pill.innerHTML = `<span>${s.name}</span>`;
+                    pill.onclick = () => toggleSymptom(s.id, s.name, pill);
+                    container.appendChild(pill);
+                });
+            })
+            .catch(err => console.error("Failed to load symptoms:", err));
+    }
+
+    function toggleSymptom(id, name, pillEl) {
+        if (selectedSymptoms.has(id)) {
+            selectedSymptoms.delete(id);
+            if (pillEl) pillEl.classList.remove("selected");
+        } else {
+            selectedSymptoms.add(id);
+            if (pillEl) pillEl.classList.add("selected");
+        }
+        renderSelectedTray();
+    }
+
+    function renderSelectedTray() {
+        const tray = document.getElementById("selected-symptoms-tray");
+        if (!tray) return;
+
+        if (selectedSymptoms.size === 0) {
+            tray.innerHTML = `<span style="font-size: 0.74rem; color: var(--text-muted);">No symptoms selected yet. Click any symptom pill below to add it:</span>`;
+            return;
+        }
+
+        tray.innerHTML = "";
+        selectedSymptoms.forEach(id => {
+            const sym = allSymptoms.find(s => s.id === id);
+            const tag = document.createElement("span");
+            tag.style.cssText = "background: #8b5cf6; color: white; border-radius: 14px; padding: 3px 10px; font-size: 0.72rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;";
+            tag.innerHTML = `${sym ? sym.name : id} <span style="cursor: pointer; font-size: 0.8rem;" onclick="removeSymptom('${id}')">✕</span>`;
+            tray.appendChild(tag);
+        });
+    }
+
+    window.removeSymptom = function(id) {
+        selectedSymptoms.delete(id);
+        const pill = document.querySelector(`.symptom-selectable-pill[data-id="${id}"]`);
+        if (pill) pill.classList.remove("selected");
+        renderSelectedTray();
+    };
+
+    window.clearSelectedSymptoms = function() {
+        selectedSymptoms.clear();
+        document.querySelectorAll(".symptom-selectable-pill").forEach(p => p.classList.remove("selected"));
+        renderSelectedTray();
+        const resDiv = document.getElementById("symptom-awareness-results");
+        if (resDiv) resDiv.style.display = "none";
+    };
+
+    window.runSymptomAwarenessAnalysis = function() {
+        const resDiv = document.getElementById("symptom-awareness-results");
+        if (!resDiv) return;
+
+        if (selectedSymptoms.size === 0) {
+            alert("Please select at least one symptom from the directory first.");
+            return;
+        }
+
+        const notes = document.getElementById("symptom-notes-input")?.value || "";
+        resDiv.style.display = "block";
+        resDiv.innerHTML = `<div style="text-align: center; color: #8b5cf6; padding: 20px;">⏳ Correlating symptoms against local verified knowledge base...</div>`;
+
+        fetch("/api/symptom-awareness", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                symptoms: Array.from(selectedSymptoms),
+                notes: notes
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status !== "success" || !data.possible_conditions.length) {
+                resDiv.innerHTML = `<div style="color: var(--text-secondary); padding: 15px;">No specific disease pattern closely matched this symptom set. Consider consulting a doctor for clinical examination.</div>`;
+                return;
+            }
+
+            let html = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(139, 92, 246, 0.2); padding-bottom: 8px;">
+                    <div>
+                        <h4 style="margin: 0; color: #8b5cf6; font-size: 1rem; font-weight: 800;">📋 Symptom Awareness Findings</h4>
+                        <p style="margin: 2px 0 0 0; font-size: 0.74rem; color: var(--text-secondary);">${data.summary}</p>
+                    </div>
+                    <span class="badge" style="background: rgba(139, 92, 246, 0.12); color: #8b5cf6; font-size: 0.72rem; font-weight: 700;">Awareness Only</span>
+                </div>
+
+                <div style="background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 8px 12px; font-size: 0.72rem; color: #ef4444; margin-bottom: 14px;">
+                    <strong>⚠️ Important Clinical Notice:</strong> ${data.disclaimer}
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+            `;
+
+            data.possible_conditions.forEach(c => {
+                html += `
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <strong style="color: var(--text-primary); font-size: 0.92rem;">${c.name}</strong>
+                                <span class="badge" style="background: rgba(2, 132, 199, 0.12); color: #0284c7; font-size: 0.68rem;">${c.match_count} Matched Symptoms</span>
+                            </div>
+                            <p style="font-size: 0.73rem; color: var(--text-secondary); line-height: 1.45; margin-bottom: 8px;">
+                                ${c.overview}
+                            </p>
+                            <div style="font-size: 0.72rem; color: #ef4444; margin-bottom: 6px;">
+                                <strong>⚠️ Warning signs:</strong> ${c.warning_signs ? c.warning_signs.slice(0, 2).join("; ") : "Consult doctor."}
+                            </div>
+                        </div>
+                        <div style="border-top: 1px solid var(--border-glass); padding-top: 6px; margin-top: 4px; display: flex; justify-content: space-between; align-items: center;">
+                            <button type="button" class="btn btn-secondary" onclick="openDiseaseModal('${c.id}')" style="font-size: 0.7rem; padding: 4px 8px; color: #0284c7; border-color: rgba(2, 132, 199, 0.3);">
+                                📖 View Full Guide
+                            </button>
+                            <span style="font-size: 0.68rem; color: var(--text-muted);">When to seek care: ${c.when_to_seek_help ? c.when_to_seek_help.slice(0, 35) + '...' : 'Promptly'}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            resDiv.innerHTML = html;
+        })
+        .catch(err => {
+            console.error("Symptom correlation error:", err);
+            resDiv.innerHTML = `<div style="color: #ef4444; padding: 15px;">Failed to correlate symptoms.</div>`;
+        });
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadSymptomsList();
+    });
+})();
+
+// ============================================================================
+// MODULE: PREVENTIVE HEALTH TIPS CONTROLLER
+// ============================================================================
+(function() {
+    function loadHealthTips() {
+        const grid = document.getElementById("health-tips-grid");
+        if (!grid) return;
+
+        fetch("/api/health-tips")
+            .then(res => res.json())
+            .then(data => {
+                if (data.status !== "success" || !data.categories.length) return;
+                grid.innerHTML = "";
+                data.categories.forEach(cat => {
+                    const card = document.createElement("div");
+                    card.className = "health-tip-card-item";
+                    card.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.5rem;">${cat.icon || '💡'}</span>
+                            <div>
+                                <h4 style="margin: 0; font-size: 1rem; font-weight: 800; color: var(--text-primary);">${cat.title}</h4>
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.12); color: #10b981; font-size: 0.68rem; font-weight: 700;">${cat.category}</span>
+                            </div>
+                        </div>
+                        <ul style="margin-left: 18px; margin-top: 4px; font-size: 0.76rem; color: var(--text-secondary); line-height: 1.5; display: flex; flex-direction: column; gap: 6px;">
+                            ${cat.tips.map(t => `<li>${t}</li>`).join("")}
+                        </ul>
+                    `;
+                    grid.appendChild(card);
+                });
+            })
+            .catch(err => console.error("Failed to load health tips:", err));
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadHealthTips();
+    });
+})();
+
+// ============================================================================
+// MODULE: LOCAL CHAT HISTORY & PERSISTENCE CONTROLLER
+// ============================================================================
+(function() {
+    window.currentActiveConvId = localStorage.getItem("aura_active_conv_id") || null;
+
+    window.startNewHealthChat = function() {
+        fetch("/api/conversations/new", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title: "New Health Consultation" })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                window.currentActiveConvId = data.conversation_id;
+                localStorage.setItem("aura_active_conv_id", data.conversation_id);
+                const chatMessages = document.getElementById("chat-messages");
+                if (chatMessages) {
+                    chatMessages.innerHTML = `
+                        <div class="message-wrapper assistant">
+                            <div class="message-bubble">
+                                <div style="font-size: 0.82rem; line-height: 1.5;">
+                                    <strong>Hello! I am AURA HealthAware AI. 🏥</strong><br>
+                                    I am your local offline health awareness assistant. All queries are retrieved 100% offline from verified clinical knowledge databases without internet connection.<br><br>
+                                    You can ask me about common diseases (Dengue, Malaria, TB, Diabetes, Hypertension), ask about symptoms, or review preventive lifestyle guidance.<br><br>
+                                    <em>How can I assist you today?</em>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                loadConversationsList();
+            }
+        })
+        .catch(err => console.error("Failed to create new conversation:", err));
+    };
+
+    function loadConversationsList() {
+        fetch("/api/conversations")
+            .then(res => res.json())
+            .then(data => {
+                if (data.status !== "success") return;
+                const container = document.getElementById("chat-history-sessions-list");
+                if (!container) return;
+
+                if (!data.conversations.length) {
+                    container.innerHTML = `<span style="font-size: 0.72rem; color: var(--text-muted); padding: 8px;">No previous consultations saved.</span>`;
+                    return;
+                }
+
+                container.innerHTML = "";
+                data.conversations.forEach(c => {
+                    const row = document.createElement("div");
+                    const isActive = c.id === window.currentActiveConvId;
+                    row.style.cssText = `padding: 6px 10px; border-radius: 6px; font-size: 0.74rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; background: ${isActive ? 'rgba(2, 132, 199, 0.15)' : 'rgba(0,0,0,0.03)'}; color: ${isActive ? '#0284c7' : 'var(--text-primary)'}; font-weight: ${isActive ? '700' : 'normal'};`;
+                    row.innerHTML = `
+                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;" onclick="switchConversationSession('${c.id}')">💬 ${c.title}</span>
+                        <span style="cursor: pointer; opacity: 0.6; padding-left: 6px;" title="Delete" onclick="deleteConversationSession('${c.id}', event)">🗑️</span>
+                    `;
+                    container.appendChild(row);
+                });
+            })
+            .catch(err => console.error("Failed to load chat history:", err));
+    }
+
+    window.switchConversationSession = function(convId) {
+        window.currentActiveConvId = convId;
+        localStorage.setItem("aura_active_conv_id", convId);
+
+        fetch(`/api/conversations/${encodeURIComponent(convId)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status !== "success") return;
+                const chatMessages = document.getElementById("chat-messages");
+                if (!chatMessages) return;
+
+                chatMessages.innerHTML = "";
+                data.conversation.messages.forEach(m => {
+                    const isUser = m.role === "user";
+                    const wrap = document.createElement("div");
+                    wrap.className = `message-wrapper ${isUser ? 'user' : 'assistant'}`;
+                    wrap.innerHTML = `
+                        <div class="message-bubble">
+                            <div style="font-size: 0.82rem; line-height: 1.5; white-space: pre-wrap;">${m.content}</div>
+                        </div>
+                    `;
+                    chatMessages.appendChild(wrap);
+                });
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                loadConversationsList();
+            })
+            .catch(err => console.error("Failed to switch conversation:", err));
+    };
+
+    window.deleteConversationSession = function(convId, event) {
+        if (event) event.stopPropagation();
+        if (!confirm("Delete this conversation session from local storage?")) return;
+
+        fetch(`/api/conversations/${encodeURIComponent(convId)}`, { method: "DELETE" })
+            .then(res => res.json())
+            .then(() => {
+                if (window.currentActiveConvId === convId) {
+                    window.currentActiveConvId = null;
+                    localStorage.removeItem("aura_active_conv_id");
+                }
+                loadConversationsList();
+            })
+            .catch(err => console.error("Failed to delete conversation:", err));
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadConversationsList();
+    });
 })();
 

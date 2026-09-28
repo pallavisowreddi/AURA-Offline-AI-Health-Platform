@@ -1,0 +1,104 @@
+[
+  {
+    "condition": "Acute Cardiac / Chest Pressure",
+    "keywords": [
+      "chest pain",
+      "heart attack",
+      "crushing chest",
+      "chest pressure",
+      "radiating to left arm",
+      "angina"
+    ],
+    "severity": "CRITICAL - CODE RED",
+    "immediate_action": "Seat the patient upright in a W-position with knees bent. Administer Aspirin 300mg (chewed) + Sorbitrate 5mg (sublingual) if systolic BP is > 90 mmHg and not allergic. Immediately dial 108 for an ambulance with ECG capability.",
+    "contraindications": [
+      "Do NOT give Nitrates (Sorbitrate) if systolic BP < 90 mmHg or if patient took Sildenafil/Tadalafil in the past 24 hours.",
+      "Do not allow patient to walk or exert physically."
+    ]
+  },
+  {
+    "condition": "Severe Respiratory Distress / Hypoxia",
+    "keywords": [
+      "severe breathing problem",
+      "cannot breathe",
+      "suffocating",
+      "gasping",
+      "silent chest",
+      "blue lips",
+      "cyanosis",
+      "spo2 < 90"
+    ],
+    "severity": "CRITICAL - CODE RED",
+    "immediate_action": "Sit the patient completely upright. Loosen constricting neckwear. Administer 4-6 puffs of Salbutamol inhaler with spacer immediately. Provide supplemental oxygen if available. Call 108 ambulance.",
+    "contraindications": [
+      "Do NOT force patient to lie down flat on back.",
+      "Do NOT leave patient unmonitored."
+    ]
+  },
+  {
+    "condition": "Severe Hemorrhage / Arterial Bleeding",
+    "keywords": [
+      "severe bleeding",
+      "arterial spurting",
+      "uncontrolled bleeding",
+      "gushing blood",
+      "stab wound",
+      "deep laceration"
+    ],
+    "severity": "CRITICAL - CODE RED",
+    "immediate_action": "Apply direct, firm, continuous pressure over the bleeding site with a sterile hemostatic dressing or clean cloth. Elevate injured extremity above heart level if no fracture. If limb bleeding is life-threatening and spurting, apply a tourniquet 2-3 inches above the wound. Transport immediately.",
+    "contraindications": [
+      "Do NOT remove deeply embedded foreign objects (knives, metal fragments).",
+      "Do NOT periodically remove gauze to check; keep adding more layers."
+    ]
+  },
+  {
+    "condition": "Anaphylaxis / Severe Allergic Reaction",
+    "keywords": [
+      "anaphylaxis",
+      "allergic shock",
+      "throat swelling",
+      "swollen tongue",
+      "bee sting shock",
+      "cannot swallow"
+    ],
+    "severity": "CRITICAL - CODE RED",
+    "immediate_action": "Administer Epinephrine (Adrenaline) Auto-injector 0.3 mg intramuscularly into outer mid-thigh immediately. Lay patient flat with legs elevated unless breathing is compromised. Call 108 immediately.",
+    "contraindications": [
+      "Do NOT delay Epinephrine; antihistamines alone cannot prevent fatal airway collapse in anaphylaxis."
+    ]
+  },
+  {
+    "condition": "Acute Poisoning / Toxic Ingestion",
+    "keywords": [
+      "poison",
+      "swallowed chemical",
+      "drank pesticide",
+      "acid ingestion",
+      "toxic overdose",
+      "insecticide poison"
+    ],
+    "severity": "CRITICAL - CODE RED",
+    "immediate_action": "Keep patient in recovery position. Identify the container or chemical substance for paramedics. Call National Poison Information Centre (1800-116-117) or local 108 immediately.",
+    "contraindications": [
+      "Do NOT induce vomiting (especially with corrosive acids, alkalis, or kerosene) as it causes esophageal perforation.",
+      "Do NOT give oral fluids if drowsy or unconscious."
+    ]
+  },
+  {
+    "condition": "Seizure / Convulsion",
+    "keywords": [
+      "seizure",
+      "convulsion",
+      "fits",
+      "epileptic seizure",
+      "frothing at mouth"
+    ],
+    "severity": "CRITICAL - CODE RED",
+    "immediate_action": "Ease the patient to the floor onto their side (recovery position). Clear surrounding area of sharp or hard objects. Cushion their head. Time the duration of the seizure. Call 108 if it lasts > 5 minutes.",
+    "contraindications": [
+      "Do NOT put any object, finger, spoon, or key into the patient's mouth.",
+      "Do NOT restrain or forcibly hold down convulsive limbs."
+    ]
+  }
+]

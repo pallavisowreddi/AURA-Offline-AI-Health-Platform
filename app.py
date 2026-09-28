@@ -2,6 +2,15 @@ import os
 import re
 from flask import Flask, request, jsonify, render_template
 import model_helper
+import json
+from core import database
+from core.rag_engine import rag_engine
+from core import safety
+from core import symptom_service
+
+# Initialize Local SQLite Database & Semantic RAG Vector Space
+database.init_db()
+rag_engine.build_index()
 
 app = Flask(__name__, 
             static_folder="static", 
@@ -244,6 +253,44 @@ def chat():
         return jsonify(response_data)
     if any(re.search(r'\b' + re.escape(w) + r'\b', message_lower) for w in help_words) and len(message.split()) <= 5:
         response_data["response"] = responses["help"].replace("\\n", "\n")
+        return jsonify(response_data)
+
+    # -------------------------------------------------------------------------
+    # STEP 0.5: SQLITE CHAT HISTORY SESSION & PERSISTENCE
+    # -------------------------------------------------------------------------
+    conv_id = data.get("conversation_id")
+    if not conv_id:
+        conv_title = message[:35] + ("..." if len(message) > 35 else "")
+        conv_id = database.create_conversation(title=conv_title)
+    
+    # Save user message locally
+    database.add_message(conv_id, "user", message)
+    response_data["conversation_id"] = conv_id
+
+    # -------------------------------------------------------------------------
+    # STEP 0.6: DETERMINISTIC EMERGENCY SAFETY SHIELD (PRE-RAG / PRE-LLM)
+    # -------------------------------------------------------------------------
+    is_emer, emer_info = safety.check_emergency(message)
+    if is_emer:
+        emergency_card = safety.format_emergency_response(emer_info)
+        response_data["response"] = emergency_card
+        response_data["is_emergency"] = True
+        response_data["source"] = "Local Clinical Emergency Safety Protocol"
+        response_data["confidence"] = "Immediate Critical Triage"
+        database.add_message(conv_id, "assistant", emergency_card, metadata={"is_emergency": True})
+        return jsonify(response_data)
+
+    # -------------------------------------------------------------------------
+    # STEP 0.7: LOCAL RAG SEMANTIC VECTOR RETRIEVAL (100% OFFLINE)
+    # -------------------------------------------------------------------------
+    rag_result = rag_engine.generate_grounded_response(message, lang=lang)
+    # If high-confidence match found in local verified knowledge base:
+    if rag_result and rag_result.get("retrieved_docs") and rag_result.get("retrieved_docs")[0]["score"] >= 0.10:
+        response_data["response"] = rag_result["response"]
+        response_data["source"] = rag_result["source"]
+        response_data["confidence"] = rag_result["confidence"]
+        response_data["retrieved_docs"] = rag_result["retrieved_docs"]
+        database.add_message(conv_id, "assistant", rag_result["response"], metadata=rag_result)
         return jsonify(response_data)
         
     # Step 1: Check for symptoms in user's query text using language matching
@@ -746,7 +793,118 @@ def chat():
         "probabilities": {"General Screening": 0.60, "Clinical Observation": 0.40},
         "prediction_mode": "informational"
     }
+    database.add_message(conv_id, "assistant", response_data.get("response", ""), metadata=response_data)
     return jsonify(response_data)
+
+
+
+
+# =========================================================================
+# AURA OFFLINE REST APIS: STATUS, DISEASES, SYMPTOMS, TIPS & CHAT HISTORY
+# =========================================================================
+
+@app.route("/api/status", methods=["GET"])
+def api_status():
+    """Returns local system status, offline verification, and database stats."""
+    stats = database.get_database_stats()
+    return jsonify({
+        "status": "success",
+        "mode": "offline",
+        "online_required": False,
+        "ai_engine": "Local RAG (Semantic Vector Space + Grounded Clinical Synthesis)",
+        "local_llm_supported": True,
+        "database": "SQLite Local (data/aura_health.db)",
+        "diseases_count": stats["diseases_count"],
+        "symptoms_count": stats["symptoms_count"],
+        "knowledge_docs_count": stats["knowledge_docs_count"],
+        "conversations_count": stats["conversations_count"],
+        "developer": "Pallavi Sowreddi (B.Tech Student)",
+        "offline_verified": True
+    })
+
+@app.route("/api/diseases", methods=["GET"])
+def api_get_diseases():
+    """Returns list of diseases with category filtering and local text search."""
+    category = request.args.get("category", "all")
+    search_q = request.args.get("q", "").strip()
+    diseases_list = database.get_all_diseases(category=category, search_query=search_q)
+    return jsonify({
+        "status": "success",
+        "count": len(diseases_list),
+        "category": category,
+        "diseases": diseases_list
+    })
+
+@app.route("/api/diseases/<disease_id>", methods=["GET"])
+def api_get_disease_detail(disease_id):
+    """Returns complete educational health profile for a specific disease."""
+    d = database.get_disease_by_id(disease_id)
+    if not d:
+        return jsonify({"status": "error", "message": f"Disease '{disease_id}' not found."}), 404
+    return jsonify({
+        "status": "success",
+        "disease": d
+    })
+
+@app.route("/api/symptoms", methods=["GET"])
+def api_get_symptoms():
+    """Returns all symptoms for the Symptom Explorer."""
+    category = request.args.get("category", "all")
+    syms = database.get_all_symptoms(category=category)
+    return jsonify({
+        "status": "success",
+        "count": len(syms),
+        "symptoms": syms
+    })
+
+@app.route("/api/symptom-awareness", methods=["POST"])
+def api_symptom_awareness():
+    """
+    Symptom Awareness & Educational Correlation.
+    Adheres strictly to WHO guidelines: educational awareness, NOT medical diagnosis.
+    """
+    data = request.get_json() or {}
+    symptoms = data.get("symptoms", [])
+    notes = data.get("notes", "")
+    lang = data.get("lang", "en")
+    result = symptom_service.analyze_symptoms_for_awareness(symptoms, user_notes=notes, lang=lang)
+    return jsonify(result)
+
+@app.route("/api/health-tips", methods=["GET"])
+def api_health_tips():
+    """Returns categorized health and preventive medicine tips."""
+    tips_path = os.path.join("data", "health_tips.json")
+    if os.path.exists(tips_path):
+        with open(tips_path, "r", encoding="utf-8") as f:
+            tips = json.load(f)
+        return jsonify({"status": "success", "categories": tips})
+    return jsonify({"status": "error", "message": "Health tips knowledge base not found."}), 404
+
+@app.route("/api/conversations", methods=["GET"])
+def api_conversations_list():
+    """Returns all local chat conversations from SQLite database."""
+    convs = database.get_conversations()
+    return jsonify({"status": "success", "conversations": convs})
+
+@app.route("/api/conversations/new", methods=["POST"])
+def api_conversations_new():
+    """Creates a new chat session in SQLite."""
+    data = request.get_json() or {}
+    title = data.get("title", "New Health Consultation")
+    conv_id = database.create_conversation(title=title)
+    return jsonify({"status": "success", "conversation_id": conv_id, "title": title})
+
+@app.route("/api/conversations/<conv_id>", methods=["GET", "DELETE"])
+def api_conversation_detail(conv_id):
+    """Retrieves full message history or deletes a conversation."""
+    if request.method == "DELETE":
+        database.delete_conversation(conv_id)
+        return jsonify({"status": "success", "message": "Conversation deleted successfully."})
+    
+    conv = database.get_conversation(conv_id)
+    if not conv:
+        return jsonify({"status": "error", "message": "Conversation not found."}), 404
+    return jsonify({"status": "success", "conversation": conv})
 
 
 # =========================================================================

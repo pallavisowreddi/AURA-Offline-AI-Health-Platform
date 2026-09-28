@@ -27,3 +27,4 @@ $RECYCLE.BIN/
 *.tmp
 *.log
 *.code-workspace
+*.db

@@ -1,0 +1,98 @@
+[
+  {
+    "category": "Mosquito Prevention",
+    "icon": "🦟",
+    "title": "Vector-Borne Disease Control",
+    "tips": [
+      "Empty, scrub, turn over, or dispose of items that hold water weekly (tires, buckets, planters, birdbaths).",
+      "Use mosquito repellents containing DEET or Picaridin on exposed skin and clothing.",
+      "Wear long-sleeved light-colored clothing outdoors to minimize mosquito attraction.",
+      "Install fine wire mesh screens on all windows and keep external doors closed at dusk.",
+      "Sleep under insecticide-treated bed nets, especially for infants and during daytime naps (Aedes protection)."
+    ]
+  },
+  {
+    "category": "Water & Food Hygiene",
+    "icon": "💧",
+    "title": "Safe Drinking & Dining Practices",
+    "tips": [
+      "Boil drinking water vigorously for at least 1 minute or use a certified UV/RO purifier.",
+      "Always wash hands with soap and water for 20 seconds before preparing or consuming food.",
+      "Eat freshly cooked foods while still hot; avoid room-temperature leftovers left uncovered.",
+      "Avoid ice cubes made from tap water and avoid pre-cut fruit from street vendors.",
+      "Store cooked foods and raw meats completely separately in clean containers."
+    ]
+  },
+  {
+    "category": "Hydration Guidelines",
+    "icon": "🚰",
+    "title": "Optimal Daily Fluid Balance",
+    "tips": [
+      "Aim for 2.5 to 3 liters (10–12 glasses) of water daily under moderate climate and activity.",
+      "Increase fluid intake by +500 mL to +1,000 mL during high fever (>100.4°F) or vigorous exercise.",
+      "Check urine color: it should be pale light straw; dark amber indicates immediate fluid deficit.",
+      "Include natural electrolyte sources: coconut water, light buttermilk, lemon water, and clear broths.",
+      "Carry a reusable water bottle to maintain consistent sips throughout the day."
+    ]
+  },
+  {
+    "category": "Respiratory Hygiene",
+    "icon": "🫁",
+    "title": "Airway Health & Infection Control",
+    "tips": [
+      "Cover your coughs and sneezes using the inside of your elbow or a disposable tissue.",
+      "Ensure cross-ventilation in rooms by keeping windows slightly open for air circulation.",
+      "Wear an N95/KN95 respirator mask in crowded hospitals, clinics, or heavily polluted areas.",
+      "Avoid active and passive tobacco smoke exposure to preserve lung cilia and immune defenses.",
+      "Perform gentle saline steam inhalation or warm saline gargles for mild throat tickles."
+    ]
+  },
+  {
+    "category": "Cardiovascular Health",
+    "icon": "❤️",
+    "title": "Heart & Blood Pressure Protection",
+    "tips": [
+      "Limit sodium (salt) intake to less than 5 grams (1 teaspoon) total per day across all meals.",
+      "Engage in at least 30 minutes of moderate aerobic exercise (brisk walking, swimming) 5 days a week.",
+      "Check blood pressure at least once every 6 months if under 40, and monthly if over 40.",
+      "Replace trans-fats and deep-fried palm oils with healthy oils (olive, mustard, groundnut in moderation).",
+      "Incorporate potassium-rich vegetables (leafy greens, bananas) to counterbalance vascular tension."
+    ]
+  },
+  {
+    "category": "Diabetes & Metabolism",
+    "icon": "🥗",
+    "title": "Blood Sugar & Weight Harmony",
+    "tips": [
+      "Adopt the plate method: half plate non-starchy vegetables, one quarter lean protein, one quarter whole grains.",
+      "Avoid sugar-sweetened beverages, commercial fruit juices, and refined flour snacks.",
+      "Take a 10-15 minute walk immediately after meals to reduce postprandial glucose spikes.",
+      "Maintain waist circumference below 90 cm for men and below 80 cm for women (South Asian standard).",
+      "Screen fasting blood glucose and HbA1c annually if you have a family history of diabetes."
+    ]
+  },
+  {
+    "category": "Vaccination Awareness",
+    "icon": "💉",
+    "title": "Immunization Defenses",
+    "tips": [
+      "Ensure children receive all National Immunization Schedule vaccines (BCG, Polio, DPT, MMR, HepB).",
+      "Take annual seasonal influenza vaccines, especially pregnant women and senior citizens.",
+      "Adults over 50 and chronic lung patients should take Pneumococcal and Shingles vaccinations.",
+      "Receive Typhoid Conjugate Vaccine (TCV) for children in endemic typhoid belts.",
+      "Always consult a physician regarding booster shots before traveling to disease-endemic zones."
+    ]
+  },
+  {
+    "category": "Sleep & Mental Rest",
+    "icon": "🌙",
+    "title": "Restorative Cellular Recovery",
+    "tips": [
+      "Aim for 7 to 8 hours of uninterrupted nocturnal sleep to regulate cytokine and immune balance.",
+      "Avoid screen use (phones, tablets, TV) for at least 45 minutes before sleep to support melatonin release.",
+      "Keep the bedroom dark, quiet, and cool for optimal deep sleep cycles.",
+      "Practice diaphragmatic breathing or mindfulness meditation to lower cortisol levels.",
+      "Maintain a consistent sleep-wake schedule even on weekends."
+    ]
+  }
+]

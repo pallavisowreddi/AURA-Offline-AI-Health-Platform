@@ -1,0 +1,1576 @@
+[
+  {
+    "id": "dengue",
+    "name": "Dengue Fever",
+    "aliases": [
+      "Breakbone fever",
+      "Dengue virus",
+      "Arboviral infection"
+    ],
+    "category": "Vector-borne",
+    "overview": "Dengue is a mosquito-borne viral infection caused by the dengue virus (DENV, serotypes 1-4) transmitted through the bite of infected female Aedes aegypti and Aedes albopictus mosquitoes. It presents acutely with severe flu-like illness.",
+    "common_symptoms": [
+      "High sudden fever (104°F)",
+      "Retro-orbital pain (pain behind eyes)",
+      "Severe headache",
+      "Joint and muscle aches (breakbone pain)",
+      "Nausea and vomiting",
+      "Petechial skin rash",
+      "Fatigue"
+    ],
+    "causes": [
+      "Dengue virus infection (Flavivirus family)",
+      "Bite of infected day-biting Aedes mosquitoes"
+    ],
+    "transmission": [
+      "Transmitted primarily through mosquito bites",
+      "Non-contagious from human to human by casual contact",
+      "Mosquitoes breed in clean standing water in containers"
+    ],
+    "risk_factors": [
+      "Living in or traveling to tropical and subtropical climates",
+      "Stagnant water near living quarters",
+      "Previous dengue infection (elevates risk of severe dengue/DHF)"
+    ],
+    "prevention": [
+      "Eliminate standing water in discarded containers, flower pots, tires, and cooler tanks",
+      "Use mosquito repellents containing DEET, Picaridin, or Oil of Lemon Eucalyptus",
+      "Install wire mesh screens on doors and windows",
+      "Wear long-sleeved light-colored clothing",
+      "Sleep under insecticide-treated bed nets"
+    ],
+    "general_care_information": [
+      "Strict bed rest during the acute febrile phase",
+      "Drink plenty of fluids (3 to 4 liters daily: ORS, tender coconut water, fresh fruit juices) to prevent hemoconcentration",
+      "Use only Paracetamol (Acetaminophen) for fever and pain relief",
+      "Monitor platelet counts and hematocrit daily through routine CBC blood tests"
+    ],
+    "warning_signs": [
+      "Severe persistent abdominal pain or tenderness",
+      "Persistent vomiting (unable to retain fluids)",
+      "Mucosal bleeding (bleeding gums, epistaxis / nosebleeds, black stools)",
+      "Lethargy, extreme restlessness, or mental confusion",
+      "Sudden temperature drop accompanied by cold, clammy skin (dengue shock syndrome)"
+    ],
+    "when_to_seek_medical_help": "Seek immediate hospital emergency admission if any warning sign appears, if platelets fall below 100,000/μL, or if signs of fluid leakage or shock develop.",
+    "contraindications": [
+      "STRICT CONTRAINDICATION: Do NOT take Aspirin, Ibuprofen, Naproxen, or other NSAIDs as they severely aggravate bleeding and platelet dysfunction."
+    ],
+    "faqs": [
+      {
+        "q": "Can dengue be treated with antibiotics?",
+        "a": "No. Dengue is caused by a virus, so antibiotics have no effect. Treatment focuses on supportive care, rigorous hydration, and monitoring."
+      },
+      {
+        "q": "How can I tell dengue apart from malaria?",
+        "a": "Dengue typically features retro-orbital eye pain, flushed face, and rash, whereas malaria features cyclical rigors/chills with sweating stages and is diagnosed via peripheral blood smear."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "डेंगू बुखार",
+        "overview": "एडीज मच्छर के काटने से फैलने वाला वायरल संक्रमण जिसमें अचानक तेज बुखार और गंभीर जोड़ों का दर्द होता है।"
+      },
+      "te": {
+        "name": "డెంగ్యూ జ్వరం",
+        "overview": "ఏడిస్ దోమ కాటు ద్వారా వ్యాపించే వైరల్ ఇన్ఫెక్షన్. తీవ్రమైన జ్వరం మరియు కీళ్ల నొప్పులు దీని ప్రధాన లక్షణాలు."
+      }
+    }
+  },
+  {
+    "id": "malaria",
+    "name": "Malaria",
+    "aliases": [
+      "Plasmodium infection",
+      "Paludism"
+    ],
+    "category": "Vector-borne",
+    "overview": "Malaria is a life-threatening protozoan infection caused by Plasmodium parasites (P. falciparum, P. vivax, P. malariae, P. ovale) transmitted to humans through the nocturnal bites of infected female Anopheles mosquitoes.",
+    "common_symptoms": [
+      "Cyclic fever episodes",
+      "Violent shivering chills (rigors)",
+      "Profuse drenching sweats",
+      "Severe headache",
+      "Nausea and vomiting",
+      "Body aches",
+      "Fatigue and anemia"
+    ],
+    "causes": [
+      "Plasmodium parasite invasion of liver and erythrocytes (red blood cells)"
+    ],
+    "transmission": [
+      "Night-biting female Anopheles mosquito bites",
+      "Rarely through blood transfusion or organ transplant"
+    ],
+    "risk_factors": [
+      "Living in warm tropical areas with poor drainage",
+      "Lack of bed nets",
+      "Stagnant pools, ponds, and puddles near homes",
+      "Pregnancy and young childhood"
+    ],
+    "prevention": [
+      "Sleep under long-lasting insecticide-treated nets (LLINs)",
+      "Indoor residual spraying (IRS) with approved insecticides",
+      "Apply mosquito repellents during dusk and night hours",
+      "Eliminate water pooling around residences",
+      "Take chemoprophylaxis when advised by doctors before visiting high-transmission areas"
+    ],
+    "general_care_information": [
+      "Confirmed diagnosis via rapid diagnostic test (RDT) or peripheral blood smear",
+      "Complete the entire course of physician-prescribed antimalarial medications (such as Artemisinin-based combination therapies - ACT)",
+      "Maintain high fluid intake to prevent dehydration",
+      "Tepid sponging and paracetamol for temperature management"
+    ],
+    "warning_signs": [
+      "Impaired consciousness, delirium, or seizures (Cerebral Malaria)",
+      "Extreme pallor, jaundice, or deep yellow urine",
+      "Respiratory distress or rapid shallow breathing",
+      "Inability to sit upright or swallow liquids"
+    ],
+    "when_to_seek_medical_help": "Immediate medical admission is mandatory if high cyclical fever occurs after visiting an endemic region, or if any sign of cerebral or falciparum malaria arises.",
+    "contraindications": [
+      "Do not delay confirmatory testing; untreated P. falciparum can be fatal within 24 hours."
+    ],
+    "faqs": [
+      {
+        "q": "Is malaria contagious directly from person to person?",
+        "a": "No, malaria cannot be transmitted casually, through coughing, sneezing, or physical contact."
+      },
+      {
+        "q": "Can malaria recur after treatment?",
+        "a": "Yes, P. vivax and P. ovale have dormant liver stages (hypnozoites) that can cause relapses months later unless treated with primaquine."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "मलेरिया",
+        "overview": "मादा एनोफिलीज मच्छर के काटने से फैलने वाला परजीवी संक्रमण, जिसमें कंपकंपी के साथ तेज बुखार आता है।"
+      },
+      "te": {
+        "name": "మలేరియా",
+        "overview": "ఆడ అనాఫిలిస్ దోమ కాటు వల్ల వచ్చే పరాన్నజీవి వ్యాధి. చలితో కూడిన తీవ్ర జ్వరం దీని ప్రధాన లక్షణం."
+      }
+    }
+  },
+  {
+    "id": "tuberculosis",
+    "name": "Tuberculosis (TB)",
+    "aliases": [
+      "TB",
+      "Koch's disease",
+      "Pulmonary TB"
+    ],
+    "category": "Infectious",
+    "overview": "Tuberculosis is a potentially serious infectious bacterial disease caused by Mycobacterium tuberculosis that primarily attacks the lungs (pulmonary TB), but can also affect kidneys, spine, and brain (extrapulmonary TB).",
+    "common_symptoms": [
+      "Chronic cough lasting more than 2-3 weeks",
+      "Hemoptysis (coughing up blood or blood-streaked sputum)",
+      "Chest pain with breathing",
+      "Low-grade evening fever",
+      "Drenching night sweats",
+      "Unexplained weight loss and anorexia",
+      "Chronic fatigue"
+    ],
+    "causes": [
+      "Mycobacterium tuberculosis infection inhaled via airborne droplets"
+    ],
+    "transmission": [
+      "Airborne transmission when a person with active pulmonary TB coughs, sneezes, speaks, or spits"
+    ],
+    "risk_factors": [
+      "Compromised immune system (HIV, diabetes, malnutrition, immunosuppressive therapy)",
+      "Crowded or poorly ventilated living environments",
+      "Close contact with active untreated TB patients",
+      "Tobacco use and silicosis"
+    ],
+    "prevention": [
+      "BCG (Bacille Calmette-Guérin) vaccination in infants",
+      "Ensuring good natural ventilation and sunlight in living spaces",
+      "Cough hygiene: covering mouth and nose with a tissue or elbow",
+      "Prompt diagnosis and completed treatment of index cases to stop transmission chain",
+      "Preventive therapy for close household contacts when clinically advised"
+    ],
+    "general_care_information": [
+      "Undergo Directly Observed Therapy (DOTS) under national TB elimination guidelines",
+      "Take all prescribed antibiotics (e.g. Isoniazid, Rifampicin, Pyrazinamide, Ethambutol) strictly every day for the full 6-9 month duration",
+      "High-protein, nutritious diet with adequate calories and micronutrients to rebuild body mass",
+      "Never stop medication early even if symptoms disappear completely"
+    ],
+    "warning_signs": [
+      "Massive hemoptysis (large volume coughing of blood)",
+      "Severe shortness of breath or cyanosis (bluish lips)",
+      "Severe persistent drug reaction (jaundice, vision changes, intense rash)"
+    ],
+    "when_to_seek_medical_help": "Consult a healthcare center immediately for sputum testing and chest X-ray if you have had a cough lasting over 2 weeks with unexplained weight loss or night sweats.",
+    "contraindications": [
+      "Never skip doses or discontinue anti-TB medications prematurely; doing so leads to Multi-Drug Resistant TB (MDR-TB)."
+    ],
+    "faqs": [
+      {
+        "q": "Is TB completely curable?",
+        "a": "Yes! TB is 100% curable if the full prescribed regimen of antibiotics is taken consistently without interruption."
+      },
+      {
+        "q": "Can latent TB spread to others?",
+        "a": "No. People with latent TB infection have no symptoms and cannot spread the bacteria to others."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "तपेदिक / टीबी (Tuberculosis)",
+        "overview": "माइकोबैक्टीरियम ट्यूबरकुलोसिस बैक्टीरिया से होने वाला संक्रामक फेफड़ों का रोग।"
+      },
+      "te": {
+        "name": "క్షయ వ్యాధి (టీబీ)",
+        "overview": "మైకోబాక్టీరియం ట్యూబర్‌క్యులోసిస్ వల్ల కలిగే ఊపిరితిత్తుల అంటువ్యాధి. 2 వారాలకు మించి దగ్గు దీని లక్షణం."
+      }
+    }
+  },
+  {
+    "id": "typhoid",
+    "name": "Typhoid Fever",
+    "aliases": [
+      "Enteric fever",
+      "Salmonellosis"
+    ],
+    "category": "Water-borne",
+    "overview": "Typhoid fever is an acute systemic infection caused by the bacterium Salmonella enterica serotype Typhi. It is characterized by persistent step-ladder high fever, gastrointestinal disturbance, and toxemia.",
+    "common_symptoms": [
+      "Prolonged step-ladder fever (rising progressively to 104°F)",
+      "Rose spots (faint pink rash on chest and abdomen)",
+      "Severe headache and weakness",
+      "Stomach pain and abdominal tenderness",
+      "Constipation or pea-soup diarrhea",
+      "Coated white tongue",
+      "Enlarged spleen and liver (hepatosplenomegaly)"
+    ],
+    "causes": [
+      "Ingestion of food, milk, or water contaminated with Salmonella Typhi feces or urine"
+    ],
+    "transmission": [
+      "Fecal-oral route through contaminated drinking water, street food, unwashed raw produce, or infected food handlers"
+    ],
+    "risk_factors": [
+      "Lack of clean potable water supply",
+      "Poor community sanitation",
+      "Eating uncooked food from hygiene-compromised sources",
+      "Travelling to endemic regions"
+    ],
+    "prevention": [
+      "Drink only boiled, filtered, or sealed bottled water",
+      "Wash hands thoroughly with soap before eating and after using toilets",
+      "Avoid street foods, unpasteurized milk, ice from unknown sources, and cut fruits left in the open",
+      "Typhoid conjugate vaccination (TCV) for children and travellers",
+      "Ensure safe sewage disposal and toilet sanitation"
+    ],
+    "general_care_information": [
+      "Confirmatory blood culture test or Widal serology",
+      "Complete full course of antibiotics prescribed by an attending physician",
+      "High-calorie, easily digestible soft diet (khichdi, curd rice, boiled potatoes, soups)",
+      "Frequent oral rehydration therapy to replenish fluid and electrolyte loss"
+    ],
+    "warning_signs": [
+      "Sudden severe abdominal pain with rigidity (intestinal perforation danger)",
+      "Rectal bleeding or dark tarry stools",
+      "Persistent high fever with delirium or extreme apathy (typhoid state)"
+    ],
+    "when_to_seek_medical_help": "Seek immediate hospital care if fever exceeds 4-5 days without remission, or if acute abdominal rigidity or severe bleeding develops.",
+    "contraindications": [
+      "Avoid spicy, oily, or fibrous foods during recovery as they irritate inflamed Peyer's patches."
+    ],
+    "faqs": [
+      {
+        "q": "Can someone carry typhoid without feeling sick?",
+        "a": "Yes, chronic asymptomatic carriers can harbor Salmonella Typhi in their gallbladders and shed bacteria in stools for years."
+      },
+      {
+        "q": "Is boiling water effective against typhoid bacteria?",
+        "a": "Yes, vigorous boiling for at least 1-2 minutes kills Salmonella Typhi and makes water safe."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "टाइफाइड / मियादी बुखार",
+        "overview": "दूषित पानी या भोजन से साल्मोनेला टाइफी बैक्टीरिया द्वारा फैलने वाला आंतों का गंभीर संक्रमण।"
+      },
+      "te": {
+        "name": "టైఫాయిడ్ జ్వరం",
+        "overview": "కలుషిత నీరు, ఆహారం వల్ల సాల్మొనెల్లా టైఫీ బ్యాక్టీరియాతో వచ్చే వ్యాధి. నిరంతర తీవ్ర జ్వరం దీని ప్రధాన లక్షణం."
+      }
+    }
+  },
+  {
+    "id": "cholera",
+    "name": "Cholera",
+    "aliases": [
+      "Vibrio cholerae infection",
+      "Acute watery diarrhea"
+    ],
+    "category": "Water-borne",
+    "overview": "Cholera is an extremely virulent bacterial infection caused by ingestion of food or water contaminated with the bacterium Vibrio cholerae. It can cause severe acute watery diarrhea and rapid hypovolemic shock within hours.",
+    "common_symptoms": [
+      "Painless, profuse rice-water diarrhea",
+      "Frequent severe vomiting",
+      "Extreme thirst and dry mucous membranes",
+      "Loss of skin elasticity (tenting skin)",
+      "Rapid heart rate and low blood pressure",
+      "Painful muscle cramps due to electrolyte depletion"
+    ],
+    "causes": [
+      "Vibrio cholerae colonization of the small intestine producing cholera enterotoxin"
+    ],
+    "transmission": [
+      "Drinking sewage-contaminated water",
+      "Eating seafood from contaminated waters or raw contaminated food"
+    ],
+    "risk_factors": [
+      "Monsoon flooding and damaged sanitation infrastructure",
+      "Overcrowded refugee or relief camps",
+      "Lack of treated drinking water"
+    ],
+    "prevention": [
+      "Use only water treated with chlorine tablets, boiled, or safely filtered",
+      "Practice rigorous hand washing with soap before handling meals",
+      "Cook foods thoroughly and eat them while hot",
+      "Oral cholera vaccines (OCV) for high-risk and outbreak populations",
+      "Proper disinfection of latrines and disposal of patient stools"
+    ],
+    "general_care_information": [
+      "IMMEDIATE ORAL REHYDRATION SALTS (ORS) administration at the very onset",
+      "Intravenous fluids (Ringer's lactate) for severe dehydration",
+      "Continue zinc supplementation in children to decrease diarrhea duration",
+      "Physician-directed antibiotics (e.g. Azithromycin, Doxycycline) in moderate to severe cases"
+    ],
+    "warning_signs": [
+      "Anuria (zero urine output for over 6 hours)",
+      "Sunken eyes, lethargy, or unconsciousness",
+      "Rapid, feeble, or unpalpable peripheral pulse",
+      "Cyanosis and cold clammy skin (severe hypovolemic shock)"
+    ],
+    "when_to_seek_medical_help": "EMERGENCY: Proceed to the nearest hospital or emergency clinic immediately upon experiencing continuous watery diarrhea. Delaying rehydration can be fatal within hours.",
+    "contraindications": [
+      "Never withhold fluids; do not rely on plain water alone without electrolytes in severe cholera as it can trigger hyponatremic seizures."
+    ],
+    "faqs": [
+      {
+        "q": "Can cholera kill within a single day?",
+        "a": "Yes, severe untreated cholera can cause fatal dehydration and kidney failure within 6 to 12 hours. Rapid rehydration saves over 99% of patients."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "हैजा (Cholera)",
+        "overview": "विब्रियो कोलेरी बैक्टीरिया से होने वाला घातक दस्त रोग, जिससे कुछ ही घंटों में गंभीर डिहाइड्रेशन हो सकता है।"
+      },
+      "te": {
+        "name": "కలరా",
+        "overview": "కలుషిత నీరు తాగడం వల్ల వైబ్రియో కలరా బ్యాక్టీరియాతో వచ్చే తీవ్ర నీళ్ల విరేచనాలు. వెంటనే ఓఆర్ఎస్ తీసుకోవాలి."
+      }
+    }
+  },
+  {
+    "id": "covid19",
+    "name": "COVID-19",
+    "aliases": [
+      "SARS-CoV-2",
+      "Coronavirus disease 2019"
+    ],
+    "category": "Respiratory",
+    "overview": "COVID-19 is a contagious respiratory illness caused by the severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2), ranging from mild upper respiratory symptoms to severe pneumonia and acute respiratory distress syndrome (ARDS).",
+    "common_symptoms": [
+      "Fever or chills",
+      "Dry cough and sore throat",
+      "Shortness of breath / dyspnea",
+      "Sudden loss of taste (ageusia) or smell (anosmia)",
+      "Fatigue and generalized muscle aches",
+      "Headache and nasal congestion",
+      "Diarrhea in some variants"
+    ],
+    "causes": [
+      "SARS-CoV-2 viral infection of respiratory epithelial cells via ACE2 receptors"
+    ],
+    "transmission": [
+      "Airborne inhalation of respiratory aerosols and droplets expelled during breathing, speaking, singing, or coughing",
+      "Touching contaminated surfaces and then touching mouth, eyes, or nose"
+    ],
+    "risk_factors": [
+      "Age > 65 years",
+      "Pre-existing comorbidities (diabetes, hypertension, cardiovascular disease, chronic lung disease, obesity)",
+      "Unvaccinated status",
+      "Crowded indoor environments with poor ventilation"
+    ],
+    "prevention": [
+      "Up-to-date COVID-19 vaccination and booster doses",
+      "Wearing well-fitted N95 / KN95 masks in crowded or enclosed settings",
+      "Ensuring cross-ventilation and air filtration indoors",
+      "Frequent hand hygiene with alcohol rub or soap",
+      "Isolating when experiencing acute respiratory symptoms"
+    ],
+    "general_care_information": [
+      "Monitor blood oxygen saturation (SpO2) 3-4 times daily using a pulse oximeter",
+      "Adequate hydration, warm fluid intake, and steam inhalation",
+      "Paracetamol for fever and body aches",
+      "Prone positioning (lying on the stomach) to improve oxygenation if dyspneic under medical guidance"
+    ],
+    "warning_signs": [
+      "Blood oxygen saturation (SpO2) falling below 93% on room air",
+      "Persistent pressure or heavy pain in the chest",
+      "Severe difficulty breathing or rapid gasping",
+      "Confusion, inability to awaken, or bluish lips / nail beds (cyanosis)"
+    ],
+    "when_to_seek_medical_help": "Seek emergency medical care if SpO2 drops below 94%, if breathing becomes labored, or if fever persists continuously beyond 5 days.",
+    "contraindications": [
+      "Do NOT self-medicate with systemic steroids or antibiotics without explicit prescription from a licensed medical professional."
+    ],
+    "faqs": [
+      {
+        "q": "What is normal SpO2 on room air?",
+        "a": "A healthy resting SpO2 is between 95% and 100%. Readings consistently below 94% require medical evaluation."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "कोविड-19 (COVID-19)",
+        "overview": "सार्स-सीओवी-2 वायरस से फैलने वाला संक्रामक श्वसन रोग जिसमें बुखार, खांसी और सांस लेने में कठिनाई हो सकती है।"
+      },
+      "te": {
+        "name": "కోవిడ్-19",
+        "overview": "కరోనా వైరస్ వల్ల కలిగే శ్వాసకోశ ఇన్ఫెక్షన్. జ్వరం, పొడి దగ్గు, వాసన/రుచి కోల్పోవడం దీని ప్రధాన లక్షణాలు."
+      }
+    }
+  },
+  {
+    "id": "influenza",
+    "name": "Influenza (Flu)",
+    "aliases": [
+      "Seasonal flu",
+      "Flu virus"
+    ],
+    "category": "Respiratory",
+    "overview": "Influenza is an acute contagious viral respiratory infection caused by influenza viruses (types A, B, and C) that infects the nose, throat, and sometimes the lungs, presenting abruptly with high fever and prostration.",
+    "common_symptoms": [
+      "Abrupt onset high fever (100°F to 103°F)",
+      "Severe muscle, joint, and body aches",
+      "Profound fatigue and weakness",
+      "Dry painful cough",
+      "Headache and retro-orbital ache",
+      "Sore throat and clear runny nose",
+      "Chills and sweats"
+    ],
+    "causes": [
+      "Influenza type A and B viruses circulating seasonally"
+    ],
+    "transmission": [
+      "Inhaling respiratory droplets when infected individuals cough, sneeze, or talk",
+      "Contact with contaminated hands or surfaces followed by touching eyes or mouth"
+    ],
+    "risk_factors": [
+      "Young children under 5 and adults over 65",
+      "Pregnant women",
+      "Asthma, COPD, heart disease, diabetes, or immunosuppression"
+    ],
+    "prevention": [
+      "Annual seasonal influenza vaccination",
+      "Covering coughs and sneezes with disposable tissues or flexed elbow",
+      "Frequent handwashing with soap and water",
+      "Staying home from school or work when symptomatic to avoid community spread",
+      "Avoiding close contact with sick individuals"
+    ],
+    "general_care_information": [
+      "Ample rest and sleep to allow immune recovery",
+      "High fluid intake: warm broths, herbal teas, electrolyte solutions",
+      "Saline nasal drops and warm salt water gargles for throat discomfort",
+      "Paracetamol for fever and pain; antiviral medications (such as Oseltamivir) if prescribed early within 48 hours for high-risk patients"
+    ],
+    "warning_signs": [
+      "Shortness of breath or rapid breathing",
+      "Chest pain or heaviness",
+      "Fever returning after initially subsiding (suggestive of secondary bacterial pneumonia)",
+      "Severe dizziness, drowsiness, or confusion"
+    ],
+    "when_to_seek_medical_help": "Seek medical attention if breathing difficulties arise, or if high-risk individuals (pregnant, elderly, asthmatics) contract symptoms.",
+    "contraindications": [
+      "Never give Aspirin to children or adolescents with flu-like symptoms due to the risk of Reye's syndrome (fatal hepatic and cerebral failure)."
+    ],
+    "faqs": [
+      {
+        "q": "How does the flu differ from a common cold?",
+        "a": "Flu comes on abruptly with high fever, severe body aches, and prostration; a cold begins gradually with runny nose and mild sore throat without severe prostration."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "इन्फ्लुएंजा / फ्लू (Influenza)",
+        "overview": "इन्फ्लुएंजा वायरस से होने वाला तीव्र श्वसन संक्रमण, जिसमें अचानक तेज बुखार और तेज बदन दर्द होता है।"
+      },
+      "te": {
+        "name": "ఇన్‌ఫ్లుయెంజా (ఫ్లూ)",
+        "overview": "వైరస్ వల్ల అకస్మాత్తుగా వచ్చే శ్వాసకోశ ఇన్ఫెక్షన్. తీవ్రమైన ఒళ్లు నొప్పులు మరియు జ్వరం ఉంటాయి."
+      }
+    }
+  },
+  {
+    "id": "asthma",
+    "name": "Bronchial Asthma",
+    "aliases": [
+      "Asthma",
+      "Reactive airway disease"
+    ],
+    "category": "Respiratory",
+    "overview": "Asthma is a chronic inflammatory disorder of the airways characterized by hyper-responsiveness, reversible airflow obstruction, and bronchospasm leading to recurrent episodes of wheezing, breathlessness, and chest tightness.",
+    "common_symptoms": [
+      "Expiratory wheezing (musical whistling sound during exhalation)",
+      "Shortness of breath / dyspnea",
+      "Chest tightness and suffocating sensation",
+      "Chronic coughing (especially at night or early morning)",
+      "Difficulty speaking in complete sentences during attacks"
+    ],
+    "causes": [
+      "Chronic airway inflammation and bronchoconstriction triggered by genetic predisposition and environmental triggers"
+    ],
+    "transmission": [
+      "Non-communicable chronic disease; cannot be transmitted from person to person"
+    ],
+    "risk_factors": [
+      "Family history of asthma or atopy (eczema, allergic rhinitis)",
+      "Exposure to secondhand tobacco smoke",
+      "Environmental allergens (dust mites, pollen, pet dander, mold)",
+      "Occupational irritants and chemical fumes",
+      "Obesity"
+    ],
+    "prevention": [
+      "Identify and strictly avoid personal asthma triggers (cold air, dust, smoke, pet fur, strong scents)",
+      "Use allergen-proof mattress and pillow covers to minimize dust mites",
+      "Avoid active and passive cigarette smoking",
+      "Keep emergency rescue inhaler (Salbutamol) readily accessible at all times",
+      "Maintain consistent controller medication (inhaled corticosteroids) as prescribed"
+    ],
+    "general_care_information": [
+      "Use peak flow meters at home to track airway patency",
+      "Master proper inhaler and spacer technique for optimal drug delivery into small bronchi",
+      "Maintain an Asthma Action Plan developed with your pulmonologist",
+      "Perform gentle breathing exercises (Pursed-lip breathing)"
+    ],
+    "warning_signs": [
+      "Inability to speak more than 1-2 words between breaths",
+      "Chest wall retractions (sucking in of skin between ribs and above collarbones)",
+      "Peak expiratory flow (PEF) below 50% of personal best",
+      "No improvement 10 minutes after using rescue inhaler puffs",
+      "Silent chest (complete cessation of wheezing due to zero air movement - fatal emergency)"
+    ],
+    "when_to_seek_medical_help": "EMERGENCY: Call 108 or go to the nearest emergency department immediately if rescue inhaler fails to relieve dyspnea or if speech is interrupted by breathlessness.",
+    "contraindications": [
+      "Do NOT delay using rescue inhaler (Salbutamol); avoid Beta-blockers and NSAIDs which can trigger severe fatal bronchospasm in sensitive asthmatics."
+    ],
+    "faqs": [
+      {
+        "q": "Are asthma inhalers addictive?",
+        "a": "No. Inhalers are not addictive; they deliver tiny, precise micro-doses directly to lung airways with minimal systemic absorption."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "दमा / अस्थमा (Asthma)",
+        "overview": "श्वासनलियों की पुरानी सूजन जिसमें सांस फूलना, छाती में जकड़न और घरघराहट की आवाज होती है।"
+      },
+      "te": {
+        "name": "ఆస్తమా / ఉబ్బసం",
+        "overview": "శ్వాసనాళాల వాపు వల్ల వచ్చే దీర్ఘకాలిక సమస్య. పిల్లికూతలు, ఆయాసం, శ్వాస తీసుకోవడంలో ఇబ్బంది ఉంటాయి."
+      }
+    }
+  },
+  {
+    "id": "diabetes_type2",
+    "name": "Type 2 Diabetes Mellitus",
+    "aliases": [
+      "Diabetes",
+      "Adult-onset diabetes",
+      "High blood sugar"
+    ],
+    "category": "Chronic",
+    "overview": "Type 2 diabetes is a chronic metabolic condition characterized by insulin resistance and relative insulin deficiency, resulting in chronic hyperglycemia (elevated blood glucose levels) that progressively damages micro- and macro-vascular systems.",
+    "common_symptoms": [
+      "Polyuria (frequent urination, especially at night)",
+      "Polydipsia (excessive unquenchable thirst)",
+      "Polyphagia (constant extreme hunger)",
+      "Unexplained weight loss despite eating",
+      "Blurry vision",
+      "Slow-healing cuts, scratches, or ulcers",
+      "Tingling or numbness in feet (peripheral neuropathy)",
+      "Frequent fungal infections"
+    ],
+    "causes": [
+      "Insulin resistance in peripheral tissues coupled with pancreatic beta-cell dysfunction"
+    ],
+    "transmission": [
+      "Non-communicable chronic metabolic disease"
+    ],
+    "risk_factors": [
+      "Overweight / obesity (high visceral waist circumference)",
+      "Sedentary lifestyle with minimal physical activity",
+      "Family history of type 2 diabetes",
+      "Age over 35-40 years",
+      "History of gestational diabetes or polycystic ovary syndrome (PCOS)",
+      "Diet high in refined carbohydrates and sugary beverages"
+    ],
+    "prevention": [
+      "Maintain healthy body weight (BMI between 18.5 and 23 for South Asian populations)",
+      "Engage in at least 150 minutes of moderate aerobic exercise (brisk walking, cycling) per week",
+      "Adopt a balanced plate: 50% fiber-rich vegetables, 25% lean protein, 25% complex whole grains",
+      "Eliminate sugary sodas, refined flours, sweets, and ultra-processed snacks",
+      "Routine screening: annual Fasting Blood Sugar (FBS) and HbA1c testing after age 30"
+    ],
+    "general_care_information": [
+      "Regular self-monitoring of blood glucose (glucometer) and 3-monthly HbA1c testing (target usually < 7.0%)",
+      "Daily foot examination: inspect for blisters, cracks, cuts, or redness; never walk barefoot",
+      "Strict adherence to prescribed oral hypoglycemic agents (e.g. Metformin) or insulin",
+      "Annual dilated eye exam, kidney microalbuminuria urine test, and cardiovascular checkups"
+    ],
+    "warning_signs": [
+      "Hyperglycemic Hyperosmolar State (HHS) / Diabetic Ketoacidosis (DKA): extreme dehydration, confusion, sweet fruity breath",
+      "Hypoglycemia (blood sugar < 70 mg/dL): trembling, cold sweat, palpitations, dizziness, confusion (requires immediate 15g fast sugar intake)",
+      "Non-healing foot ulcer with redness or blackening (gangrene risk)"
+    ],
+    "when_to_seek_medical_help": "Consult your physician regularly for glycemic management. Seek emergency care immediately if blood sugar is < 55 mg/dL with altered sensorium or > 350 mg/dL with dehydration.",
+    "contraindications": [
+      "Never abruptly discontinue insulin or diabetes medications without medical guidance; doing so can precipitate life-threatening ketoacidosis or hyperosmolar coma."
+    ],
+    "faqs": [
+      {
+        "q": "What is a healthy fasting blood sugar range?",
+        "a": "Normal fasting glucose is 70–99 mg/dL. 100–125 mg/dL indicates prediabetes, and 126 mg/dL or higher on two tests indicates diabetes."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "टाइप 2 मधुमेह / शुगर (Diabetes)",
+        "overview": "क्रोनिक मेटाबॉलिक रोग जिसमें इंसुलिन प्रतिरोध के कारण रक्त शर्करा (ब्लड शुगर) का स्तर बढ़ जाता है।"
+      },
+      "te": {
+        "name": "మధుమేహం / డయాబెటిస్",
+        "overview": "రక్తంలో చక్కెర స్థాయిలు ఎక్కువగా ఉండే జీవక్రియ సమస్య. అధిక దాహం, తరచుగా మూత్రవిసర్జన ప్రధాన లక్షణాలు."
+      }
+    }
+  },
+  {
+    "id": "hypertension",
+    "name": "Hypertension (High Blood Pressure)",
+    "aliases": [
+      "High BP",
+      "Arterial hypertension",
+      "Silent killer"
+    ],
+    "category": "Chronic",
+    "overview": "Hypertension is a chronic cardiovascular condition in which the systemic arterial blood pressure is persistently elevated (systolic BP ≥ 140 mmHg and/or diastolic BP ≥ 90 mmHg). It is known as the 'Silent Killer' because it typically progresses without overt symptoms for years.",
+    "common_symptoms": [
+      "Often asymptomatic in early to moderate stages",
+      "Morning occipital headaches (throbbing pain at base of skull)",
+      "Occasional dizziness or lightheadedness",
+      "Pulsatile tinnitus (buzzing or whooshing sound in ears)",
+      "Blurred vision or floaters",
+      "Epistaxis (nosebleeds) in sudden spikes",
+      "Shortness of breath upon mild exertion"
+    ],
+    "causes": [
+      "Primary (essential) hypertension: multifactorial genetic, dietary, vascular stiffness, and autonomic factors",
+      "Secondary hypertension: renal artery stenosis, kidney disease, endocrine tumors"
+    ],
+    "transmission": [
+      "Non-communicable chronic cardiovascular disease"
+    ],
+    "risk_factors": [
+      "High dietary sodium intake (> 5g salt/day)",
+      "Lack of regular physical activity and obesity",
+      "Excessive alcohol consumption and tobacco use",
+      "Chronic emotional stress",
+      "Advancing age and family history of early stroke or heart attack"
+    ],
+    "prevention": [
+      "Follow the DASH (Dietary Approaches to Stop Hypertension) diet rich in vegetables, fruits, and low-fat dairy",
+      "Limit table salt to less than 1 level teaspoon (< 5 grams) per day",
+      "Maintain body mass index (BMI) within normal limits",
+      "Perform at least 30 minutes of aerobic exercise 5 days a week",
+      "Avoid smoking and limit alcohol intake",
+      "Practice stress-reduction techniques (meditation, yoga, deep breathing)"
+    ],
+    "general_care_information": [
+      "Monitor blood pressure routinely at home with a calibrated digital arm cuff",
+      "Take prescribed anti-hypertensive medications (ACE inhibitors, ARBs, Calcium Channel Blockers, Diuretics) regularly without skipping",
+      "Never stop medication when BP readings appear normal; the medication is what keeps the reading normal",
+      "Periodic monitoring of serum creatinine, electrolytes, and ECG"
+    ],
+    "warning_signs": [
+      "Hypertensive Crisis (BP > 180/120 mmHg): sudden thunderclap headache, blurred vision, acute chest pain, breathlessness, confusion, or weakness on one side of the face/arm (stroke warning)"
+    ],
+    "when_to_seek_medical_help": "Seek emergency medical evaluation immediately if blood pressure reads > 180/120 mmHg with any symptoms of chest pain, shortness of breath, or neurological deficits.",
+    "contraindications": [
+      "Do NOT abruptly cease Beta-blockers or Clonidine; sudden withdrawal can trigger rebound hypertensive crises and myocardial infarction."
+    ],
+    "faqs": [
+      {
+        "q": "What is normal blood pressure?",
+        "a": "Normal adult blood pressure is below 120/80 mmHg. Readings between 120-129/<80 are elevated; 130-139/80-89 is Stage 1 hypertension; ≥140/90 is Stage 2."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "उच्च रक्तचाप / हाई बीपी (Hypertension)",
+        "overview": "धमनियों में रक्त के दबाव का लगातार सामान्य से अधिक (140/90 या उससे ऊपर) रहना। इसे 'साइलेंट किलर' कहा जाता है।"
+      },
+      "te": {
+        "name": "అధిక రక్తపోటు / హై బీపీ",
+        "overview": "ధమనులలో రక్త పీడనం నిరంతరం ఎక్కువగా ఉండే పరిస్థితి (140/90 mmHg పైన). దీనిని సైలెంట్ కిల్లర్ అంటారు."
+      }
+    }
+  },
+  {
+    "id": "pneumonia",
+    "name": "Pneumonia",
+    "aliases": [
+      "Lower respiratory tract infection",
+      "Lung consolidation"
+    ],
+    "category": "Infectious",
+    "overview": "Pneumonia is an acute inflammatory infection of one or both lungs that causes the alveoli (air sacs) to fill with pus, inflammatory exudate, and fluid, significantly impeding gas exchange.",
+    "common_symptoms": [
+      "High fever with chills and rigor",
+      "Productive cough with yellow, green, or rust-colored sputum",
+      "Pleuritic chest pain (sharp stabbing pain when taking a deep breath or coughing)",
+      "Shortness of breath / rapid shallow breathing",
+      "Extreme fatigue, sweatiness, and loss of appetite",
+      "Mental confusion (especially in older adults)"
+    ],
+    "causes": [
+      "Bacterial infection (Streptococcus pneumoniae, Haemophilus influenzae)",
+      "Viral infection (RSV, Influenza, SARS-CoV-2)",
+      "Fungal or aspiration etiology"
+    ],
+    "transmission": [
+      "Inhalation of airborne pathogens or micro-aspiration of colonized oropharyngeal secretions"
+    ],
+    "risk_factors": [
+      "Ages under 2 and over 65",
+      "Smoking and COPD / chronic lung diseases",
+      "Immunocompromised states",
+      "Recent viral respiratory infection (post-viral pneumonia)",
+      "Bedridden status or swallowing impairment"
+    ],
+    "prevention": [
+      "Pneumococcal conjugate / polysaccharide vaccination (PCV13 / PPSV23)",
+      "Annual influenza vaccination",
+      "Cessation of smoking and alcohol abuse",
+      "Good oral hygiene and pulmonary toilet",
+      "Hand hygiene in healthcare and community environments"
+    ],
+    "general_care_information": [
+      "Prompt medical consultation for chest auscultation and chest radiography",
+      "Complete the entire course of prescribed antibiotics or antiviral therapy",
+      "Adequate hydration to thin pulmonary secretions and facilitate coughing",
+      "Rest with upper torso elevated to improve lung expansion and diaphragmatic movement"
+    ],
+    "warning_signs": [
+      "Blood oxygen saturation (SpO2) < 92%",
+      "Severe dyspnea, cyanosis (bluish lips/fingers), or grunting respiration",
+      "Hypotension (systolic BP < 90 mmHg) or rapid heart rate (> 120 bpm)",
+      "New onset confusion, lethargy, or inability to stay awake"
+    ],
+    "when_to_seek_medical_help": "Seek immediate hospital emergency admission if breathing is painful and rapid, or if SpO2 drops below 93%.",
+    "contraindications": [
+      "Do not suppress a productive cough with strong cough sedatives without doctor consent; clearing phlegm is necessary to resolve alveolar consolidation."
+    ],
+    "faqs": [
+      {
+        "q": "Is pneumonia contagious?",
+        "a": "The bacteria and viruses causing pneumonia can be transmitted via droplets, though not everyone infected will necessarily develop lung consolidation."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "निमोनिया (Pneumonia)",
+        "overview": "फेफड़ों के वायु थैलों (एल्वियोली) का गंभीर संक्रमण जिसमें मवाद और तरल पदार्थ भर जाता है।"
+      },
+      "te": {
+        "name": "న్యుమోనియా",
+        "overview": "ఊపిరితిత్తులలో చీము మరియు ద్రవాలు చేరే తీవ్ర ఇన్ఫెక్షన్. శ్వాసలో నొప్పి, దగ్గు మరియు జ్వరం ఉంటాయి."
+      }
+    }
+  },
+  {
+    "id": "hepatitis_b",
+    "name": "Hepatitis B",
+    "aliases": [
+      "HBV infection",
+      "Serum hepatitis"
+    ],
+    "category": "Infectious",
+    "overview": "Hepatitis B is a viral liver infection caused by the Hepatitis B virus (HBV) that can cause both acute illness and chronic liver disease, leading to progressive cirrhosis and hepatocellular carcinoma (liver cancer).",
+    "common_symptoms": [
+      "Jaundice (yellowing of sclera and skin)",
+      "Dark tea-colored urine",
+      "Pale or clay-colored stools",
+      "Extreme persistent fatigue",
+      "Abdominal pain in right upper quadrant (liver area)",
+      "Nausea, vomiting, and loss of appetite",
+      "Low-grade fever and joint pain"
+    ],
+    "causes": [
+      "Hepatitis B virus (HBV, Hepadnaviridae family)"
+    ],
+    "transmission": [
+      "Contact with infectious blood, semen, or other body fluids",
+      "Perinatal transmission from mother to baby during birth",
+      "Unsafe injections, unsterile tattoos, or sharing needles",
+      "Unprotected sexual intercourse"
+    ],
+    "risk_factors": [
+      "Healthcare workers handling sharps",
+      "Recipients of unscreened blood products",
+      "Infants born to infected mothers",
+      "Sharing razors or dental instruments"
+    ],
+    "prevention": [
+      "Hepatitis B vaccination (3-dose series) beginning at birth",
+      "Screening of all donated blood and blood products",
+      "Use of single-use disposable syringes and needles",
+      "Safe sex practices with barrier contraception",
+      "Standard infection control precautions in medical settings"
+    ],
+    "general_care_information": [
+      "Screening with HBsAg, anti-HBs, and HBV DNA viral load tests",
+      "Total avoidance of alcohol, hepatotoxic medications, and unverified herbal supplements",
+      "Well-balanced nutrition rich in fresh produce, lean protein, and adequate fluids",
+      "Regular liver function tests (LFT) and ultrasound screening for chronic carriers"
+    ],
+    "warning_signs": [
+      "Severe worsening jaundice with mental confusion (hepatic encephalopathy)",
+      "Ascites (distended fluid accumulation in the abdomen)",
+      "Hematemesis (vomiting blood from esophageal varices)",
+      "Spontaneous bleeding or bruising due to coagulopathy"
+    ],
+    "when_to_seek_medical_help": "Seek immediate gastroenterological care if jaundice, pale stools, or dark urine appear, or if you suspect blood/body fluid exposure.",
+    "contraindications": [
+      "Strictly avoid all alcohol consumption; avoid high doses of Paracetamol (> 2g/day) which can precipitate acute liver necrosis."
+    ],
+    "faqs": [
+      {
+        "q": "Can Hepatitis B be prevented by vaccine?",
+        "a": "Yes! The Hepatitis B vaccine has over 98% efficacy in preventing infection and subsequent chronic liver cancer."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "हेपेटाइटिस बी / पीलिया (Hepatitis B)",
+        "overview": "हेपेटाइटिस बी वायरस से होने वाला गंभीर यकृत (लिवर) का संक्रमण, जिससे पीलिया और लिवर सिरोसिस हो सकता है।"
+      },
+      "te": {
+        "name": "హెపటైటిస్ బి / పచ్చకామెర్లు",
+        "overview": "హెపటైటిస్ బి వైరస్ వల్ల కాలేయానికి వచ్చే తీవ్రమైన ఇన్ఫెక్షన్. మూత్రం పసుపు రంగులో రావడం ప్రధాన లక్షణం."
+      }
+    }
+  },
+  {
+    "id": "gerd",
+    "name": "GERD (Acid Reflux)",
+    "aliases": [
+      "Gastroesophageal reflux disease",
+      "Heartburn",
+      "Acid reflux"
+    ],
+    "category": "Lifestyle",
+    "overview": "Gastroesophageal Reflux Disease (GERD) is a chronic digestive condition where stomach acid and enzyme-rich gastric contents repeatedly flow backward into the esophagus, causing chemical irritation and mucosal erosion.",
+    "common_symptoms": [
+      "Heartburn (burning pain or discomfort in chest behind breastbone)",
+      "Acid regurgitation (sour or bitter fluid rising into throat or mouth)",
+      "Dysphagia (difficulty or discomfort when swallowing)",
+      "Chronic dry cough or throat clearing",
+      "Hoarseness of voice (especially in mornings)",
+      "Sensation of a lump in the throat (globus sensation)"
+    ],
+    "causes": [
+      "Transient or chronic relaxation of the lower esophageal sphincter (LES)",
+      "Hiatal hernia",
+      "Delayed gastric emptying"
+    ],
+    "transmission": [
+      "Non-communicable gastrointestinal disorder"
+    ],
+    "risk_factors": [
+      "Overweight / obesity (increases intra-abdominal pressure)",
+      "Hiatus hernia",
+      "Pregnancy",
+      "Smoking and alcohol intake",
+      "Heavy meals before bedtime, fatty/fried foods, caffeine, chocolate, and citrus"
+    ],
+    "prevention": [
+      "Eat smaller, more frequent meals rather than large heavy dinners",
+      "Remain upright for at least 2 to 3 hours after eating; avoid reclining immediately",
+      "Elevate the head of your bed by 6 to 8 inches (using bed risers, not just extra pillows)",
+      "Limit trigger foods: deep fried foods, spicy curries, citrus, coffee, carbonated drinks, and raw onions",
+      "Maintain healthy body weight and avoid tight restrictive waistbands"
+    ],
+    "general_care_information": [
+      "Over-the-counter antacids or physician-prescribed PPIs (Omeprazole, Pantoprazole) or H2 blockers",
+      "Chew food thoroughly and eat in a relaxed unhurried environment",
+      "Avoid late-night snacking and drinking alcohol before bed",
+      "Drink adequate water during the day, but sip small amounts during meals"
+    ],
+    "warning_signs": [
+      "CRITICAL: Crushing chest pain radiating to jaw, left shoulder, or arm with cold sweats (must be evaluated as Myocardial Infarction / Heart Attack first!)",
+      "Progressive difficulty or pain when swallowing solid food",
+      "Vomiting coffee-ground material or blood",
+      "Unexplained weight loss or persistent choking spells at night"
+    ],
+    "when_to_seek_medical_help": "Seek emergency medical care if chest pain is crushing or unfamiliar. Consult a gastroenterologist if heartburn occurs more than twice a week or if swallowing is impaired.",
+    "contraindications": [
+      "Do NOT assume severe acute chest pressure is 'just acidity'; always rule out an acute cardiac event first."
+    ],
+    "faqs": [
+      {
+        "q": "How can I tell heart attack chest pain from GERD heartburn?",
+        "a": "Heartburn is typically a burning retrosternal sensation worsened by lying down; heart attack pain is a heavy pressure, squeezing, or tightness often radiating to arm/jaw with breathlessness and cold sweats. When in doubt, seek emergency care immediately!"
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "जीईआरडी / एसिडिटी (GERD / Acid Reflux)",
+        "overview": "पेट का एसिड बार-बार भोजन नली में वापस आने से सीने में जलन (हार्टबर्न) और खट्टी डकारें आना।"
+      },
+      "te": {
+        "name": "గ్యాస్ / ఎసిడిటీ (GERD)",
+        "overview": "కడుపులోని ఆమ్లాలు అన్నవాహికలోకి తిరిగి రావడం వల్ల ఛాతీలో మంట, పుల్లని తేన్పులు రావడం."
+      }
+    }
+  },
+  {
+    "id": "anemia",
+    "name": "Iron-Deficiency Anemia",
+    "aliases": [
+      "Anemia",
+      "Low hemoglobin",
+      "Iron deficiency"
+    ],
+    "category": "Chronic",
+    "overview": "Iron-deficiency anemia is a common blood condition characterized by a deficit of functional iron, leading to reduced hemoglobin synthesis and diminished oxygen-carrying capacity of the blood.",
+    "common_symptoms": [
+      "Chronic generalized fatigue and weakness",
+      "Pale or yellowish skin, inner eyelids, and pale nail beds",
+      "Shortness of breath with minimal exertion",
+      "Dizziness, lightheadedness, or fainting sensations",
+      "Cold hands and feet",
+      "Brittle spoon-shaped nails (koilonychia)",
+      "Headaches and rapid heartbeat (tachycardia)",
+      "Craving non-food items like ice, chalk, or clay (pica)"
+    ],
+    "causes": [
+      "Inadequate dietary iron intake",
+      "Chronic blood loss (heavy menstrual periods, gastrointestinal bleeding, peptic ulcers, hookworm infestation)",
+      "Impaired iron absorption (celiac disease, post-bariatric surgery)"
+    ],
+    "transmission": [
+      "Non-communicable hematological nutritional condition"
+    ],
+    "risk_factors": [
+      "Women of reproductive age (menorrhagia)",
+      "Pregnant and postpartum women",
+      "Infants, adolescents during growth spurts",
+      "Strict vegetarian/vegan diets without balanced iron planning"
+    ],
+    "prevention": [
+      "Consume iron-rich foods: dark green leafy vegetables (spinach, methi), lentils, chickpeas, beans, nuts, seeds, jaggery, eggs, and lean meats",
+      "Pair iron foods with Vitamin C (lemon juice, amla, oranges, tomatoes) which enhances iron absorption significantly",
+      "Avoid drinking strong tea or coffee directly with meals, as tannins inhibit iron uptake",
+      "Routine screening in adolescent girls and pregnant women",
+      "Regular deworming in endemic areas"
+    ],
+    "general_care_information": [
+      "Complete blood count (CBC), serum ferritin, and iron profile tests",
+      "Take prescribed oral iron supplements (e.g. Ferrous ascorbate/fumarate) as directed, ideally with vitamin C on an empty stomach or with a light snack if gastric upset occurs",
+      "Do not consume milk, calcium supplements, or antacids within 2 hours of taking iron tablets",
+      "Expect harmless dark stools while taking oral iron"
+    ],
+    "warning_signs": [
+      "Chest pain, palpitations, or fainting spells upon standing",
+      "Severe breathlessness even at complete rest",
+      "Tarry black stools or visible blood in stools (indicative of acute GI bleed)",
+      "Hemoglobin falling below 7.0 g/dL"
+    ],
+    "when_to_seek_medical_help": "Consult a physician for blood tests if you experience persistent fatigue or pallor. Seek emergency care if fainting, chest pain, or severe breathlessness occurs.",
+    "contraindications": [
+      "Do not take iron supplements without confirming deficiency via blood tests; iron overload (hemochromatosis) damages liver and heart."
+    ],
+    "faqs": [
+      {
+        "q": "What is normal hemoglobin level?",
+        "a": "Normal Hb for adult males is 13.8 to 17.2 g/dL; for non-pregnant adult females, it is 12.1 to 15.1 g/dL."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "एनीमिया / खून की कमी (Anemia)",
+        "overview": "आयरन की कमी के कारण हीमोग्लोबिन कम होना, जिससे कमजोरी, थकान और त्वचा में पीलापन होता है।"
+      },
+      "te": {
+        "name": "రక్తహీనత (ఎనీమియా)",
+        "overview": "శరీరంలో ఐరన్ లోపం వల్ల హిమోగ్లోబిన్ తగ్గడం. నీరసం, అలసట, తలతిరగడం ప్రధాన లక్షణాలు."
+      }
+    }
+  },
+  {
+    "id": "dehydration",
+    "name": "Dehydration & Heat Exhaustion",
+    "aliases": [
+      "Dehydration",
+      "Heat exhaustion",
+      "Fluid deficit"
+    ],
+    "category": "Lifestyle",
+    "overview": "Dehydration occurs when the body loses significantly more water and essential electrolytes than it takes in, impairing normal cellular and physiological functions, frequently triggered by heatwaves, fever, vomiting, or diarrhea.",
+    "common_symptoms": [
+      "Intense dry thirst",
+      "Dry sticky mouth and cracked lips",
+      "Dark amber or honey-colored urine",
+      "Markedly decreased urine frequency (anuria / oliguria)",
+      "Fatigue, weakness, and lightheadedness upon standing",
+      "Sunken eyes and reduced tears",
+      "Headache and muscle cramps"
+    ],
+    "causes": [
+      "Insufficient fluid intake during hot weather or strenuous exercise",
+      "Excessive sweating, prolonged fever, or gastrointestinal fluid loss (vomiting, diarrhea)"
+    ],
+    "transmission": [
+      "Non-communicable environmental/physiological condition"
+    ],
+    "risk_factors": [
+      "Infants and young children (high surface-area-to-mass ratio)",
+      "Elderly individuals with blunted thirst mechanisms",
+      "Outdoor manual laborers and athletes in high temperatures",
+      "Patients taking diuretic medications"
+    ],
+    "prevention": [
+      "Drink plenty of water consistently throughout the day (at least 2.5 to 3 liters daily)",
+      "Drink extra fluids before, during, and after physical exertion or outdoor exposure",
+      "Consume hydrating foods: watermelons, cucumbers, tender coconut water, buttermilk, and soups",
+      "Avoid excessive alcohol and sugary drinks which worsen fluid loss",
+      "Rest in shaded, ventilated spaces during peak sunshine hours (11 AM to 4 PM)"
+    ],
+    "general_care_information": [
+      "Sip Oral Rehydration Salt (ORS) solution slowly in small frequent gulps",
+      "Move to a cool, air-conditioned or shaded room and loosen tight clothing",
+      "Apply cool wet cloths to the forehead, neck, and underarms",
+      "Monitor urine color: aim for pale straw yellow"
+    ],
+    "warning_signs": [
+      "Severe Heat Stroke / Hypovolemia: Core body temperature > 103°F (39.4°C)",
+      "Hot, red, completely dry skin without sweating",
+      "Confusion, slurred speech, delirium, or loss of consciousness",
+      "Inability to retain any oral fluids due to persistent vomiting",
+      "No urination for more than 8 hours"
+    ],
+    "when_to_seek_medical_help": "EMERGENCY: If heat stroke symptoms, confusion, or zero urine output develop, call 108 immediately and begin aggressive evaporative external cooling while awaiting transport.",
+    "contraindications": [
+      "Do not administer salt tablets or concentrated sugary drinks without water; they can exacerbate hyperosmolar dehydration."
+    ],
+    "faqs": [
+      {
+        "q": "How to prepare WHO ORS at home?",
+        "a": "Dissolve 1 standard packet of WHO ORS powder in exactly 1 liter of clean drinking water. If unavailable in an emergency, mix 6 level teaspoons of sugar and 1/2 level teaspoon of salt in 1 liter of clean water."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "डिहाइड्रेशन / निर्जलीकरण (Dehydration)",
+        "overview": "शरीर में पानी और इलेक्ट्रोलाइट्स की अत्यधिक कमी होना। चक्कर आना और गहरा पेशाब इसके लक्षण हैं।"
+      },
+      "te": {
+        "name": "నిర్జలీకరణం / డీహైడ్రేషన్",
+        "overview": "శరీరంలో తగినంత నీరు మరియు లవణాలు తగ్గడం. తీవ్రమైన దాహం, తలనొప్పి, మూత్రం తక్కువ రావడం లక్షణాలు."
+      }
+    }
+  },
+  {
+    "id": "common_cold",
+    "name": "Common Cold",
+    "aliases": [
+      "Viral rhinitis",
+      "Upper respiratory tract infection",
+      "Coryza"
+    ],
+    "category": "Respiratory",
+    "overview": "The common cold is a mild, self-limiting viral infection of the upper respiratory tract primarily caused by Rhinoviruses. It causes nasal discharge, congestion, and mild sore throat.",
+    "common_symptoms": [
+      "Runny or stuffy nose (rhinorrhea)",
+      "Sore or scratchy throat",
+      "Sneezing",
+      "Low-grade fever or mild chills",
+      "Mild cough",
+      "Malaise"
+    ],
+    "causes": [
+      "Rhinovirus (over 50% of cases), Coronavirus, Adenovirus"
+    ],
+    "transmission": [
+      "Inhalation of airborne droplets from coughing/sneezing",
+      "Touching contaminated surfaces and touching eyes, nose, or mouth"
+    ],
+    "risk_factors": [
+      "Young children in school or daycare",
+      "Weakened immune system",
+      "Cold weather (crowded indoor exposure)",
+      "Exposure to secondhand smoke"
+    ],
+    "prevention": [
+      "Wash hands frequently with soap and water for 20 seconds",
+      "Avoid touching eyes, nose, and mouth with unwashed hands",
+      "Cover coughs and sneezes with a tissue or elbow",
+      "Stay home while symptomatic to protect vulnerable individuals",
+      "Disinfect high-touch objects (doorknobs, mobile screens)"
+    ],
+    "general_care_information": [
+      "Adequate rest and high intake of warm fluids (herbal teas, warm water, soups)",
+      "Saline nasal spray or drops to loosen nasal mucus",
+      "Steam inhalation for nasal decongestion",
+      "Warm salt water gargle (1/2 tsp salt in 1 cup warm water) for throat soothing"
+    ],
+    "warning_signs": [
+      "Fever > 102°F or fever lasting more than 3-4 days",
+      "Shortness of breath, chest pain, or wheezing",
+      "Severe sinus pain around forehead and cheekbones lasting > 10 days"
+    ],
+    "when_to_seek_medical_help": "Consult a doctor if cold symptoms persist longer than 10-14 days without improvement, or if breathing becomes labored.",
+    "contraindications": [
+      "Do NOT demand or use antibiotics for a common cold; antibiotics have zero effect on cold viruses."
+    ],
+    "faqs": [
+      {
+        "q": "How long does a typical cold last?",
+        "a": "Most common colds resolve naturally within 7 to 10 days with basic rest and supportive hydration."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "सामान्य सर्दी-जुकाम (Common Cold)",
+        "overview": "राइनोवायरस से होने वाला हल्का ऊपरी श्वसन संक्रमण जिसमें छींकें, बहती नाक और गले में खराश होती है।"
+      },
+      "te": {
+        "name": "సాధారణ జలుబు",
+        "overview": "ముక్కు కారడం, తుమ్ములు మరియు గొంతు నొప్పి కలిగించే సాధారణ వైరల్ ఇన్ఫెక్షన్."
+      }
+    }
+  },
+  {
+    "id": "chickenpox",
+    "name": "Chickenpox (Varicella)",
+    "aliases": [
+      "Varicella",
+      "Varicella-zoster virus"
+    ],
+    "category": "Infectious",
+    "overview": "Chickenpox is a highly contagious viral illness caused by the varicella-zoster virus (VZV), characterized by an intensely itchy blister-like rash starting on the chest, back, and face, spreading across the entire body.",
+    "common_symptoms": [
+      "Itchy fluid-filled blisters (vesicles) on red base",
+      "Moderate fever and tiredness",
+      "Loss of appetite",
+      "Headache",
+      "Crusting scabs after blisters break"
+    ],
+    "causes": [
+      "Varicella-zoster virus (VZV) infection"
+    ],
+    "transmission": [
+      "Direct contact with blister fluid",
+      "Airborne droplet transmission when an infected person coughs or breathes"
+    ],
+    "risk_factors": [
+      "Unvaccinated children and adults",
+      "Close contact with active chickenpox or shingles patients",
+      "Immunocompromised individuals"
+    ],
+    "prevention": [
+      "Varicella vaccination (2-dose series for children and non-immune adults)",
+      "Isolate the infected person until all blisters have scabbed over completely (usually 7 days)",
+      "Avoid scratching blisters to prevent secondary bacterial skin infections (staph/strep)",
+      "Good hand hygiene for caregivers"
+    ],
+    "general_care_information": [
+      "Apply calamine lotion to itchy lesions",
+      "Take cool or lukewarm oatmeal baths to soothe cutaneous itching",
+      "Keep fingernails trimmed short and clean to minimize skin trauma from scratching",
+      "Paracetamol for fever; consult a pediatrician for oral antihistamines"
+    ],
+    "warning_signs": [
+      "Skin rash becomes very red, warm, tender, or leaks yellow pus (secondary bacterial superinfection)",
+      "Extreme drowsiness, confusion, unsteady gait, or stiff neck",
+      "Persistent coughing or difficulty breathing (varicella pneumonia)"
+    ],
+    "when_to_seek_medical_help": "Seek medical care if a newborn, pregnant woman, or immunocompromised individual is exposed, or if any warning signs develop.",
+    "contraindications": [
+      "NEVER give Aspirin to anyone with chickenpox; this can trigger Reye's syndrome (fatal liver and brain swelling)."
+    ],
+    "faqs": [
+      {
+        "q": "Can someone get chickenpox twice?",
+        "a": "Rarely. Infection usually provides lifelong immunity, though the dormant virus can reactivate decades later as Shingles (Herpes Zoster)."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "चेचक / छोटी माता (Chickenpox)",
+        "overview": "वेरिसेला-जोस्टर वायरस से फैलने वाला अत्यधिक संक्रामक रोग जिसमें पूरे शरीर पर खुजली वाले दाने और छाले निकलते हैं।"
+      },
+      "te": {
+        "name": "ఆటలమ్మ / చికెన్ పాక్స్",
+        "overview": "వైరస్ వల్ల ఒంటిపై నీటి పొక్కులు, దురద మరియు జ్వరం కలిగించే అంటువ్యాధి."
+      }
+    }
+  },
+  {
+    "id": "measles",
+    "name": "Measles (Rubeola)",
+    "aliases": [
+      "Rubeola",
+      "Morbilli"
+    ],
+    "category": "Infectious",
+    "overview": "Measles is a highly contagious, serious airborne viral disease caused by a paramyxovirus. It spreads easily through the air when an infected person breathes, coughs, or sneezes.",
+    "common_symptoms": [
+      "High fever (up to 104°F / 105°F)",
+      "The 3 C's: Cough, Coryza (runny nose), and Conjunctivitis (red, watery eyes)",
+      "Koplik spots (tiny white spots with bluish-white centers inside the mouth)",
+      "Maculopapular rash starting at hairline and spreading downward",
+      "Photophobia (sensitivity to light)"
+    ],
+    "causes": [
+      "Measles virus (Morbillivirus genus, Paramyxoviridae family)"
+    ],
+    "transmission": [
+      "Airborne aerosol transmission; virus can remain suspended in air and infectious for up to 2 hours after an infected person leaves the room"
+    ],
+    "risk_factors": [
+      "Unvaccinated status (MMR vaccine deficiency)",
+      "International travel to outbreak regions",
+      "Vitamin A deficiency and malnutrition"
+    ],
+    "prevention": [
+      "MMR (Measles, Mumps, Rubella) vaccine (2 doses provide 97% lifetime protection)",
+      "Strict isolation of suspected cases for at least 4 days after the rash appears",
+      "Vitamin A supplementation in children diagnosed with measles as per WHO guidelines",
+      "Maintain high community vaccination coverage (>95% herd immunity)"
+    ],
+    "general_care_information": [
+      "Bed rest in a dimly lit room to protect eyes from bright light",
+      "Adequate fluid intake (ORS, juices, water) to avoid dehydration",
+      "Paracetamol for fever relief",
+      "WHO-recommended high-dose Vitamin A administration under medical supervision"
+    ],
+    "warning_signs": [
+      "Severe persistent coughing or fast breathing (measles pneumonia)",
+      "Ear pain or purulent drainage (acute otitis media)",
+      "Extreme lethargy, convulsions, or stiff neck (measles encephalitis)"
+    ],
+    "when_to_seek_medical_help": "Seek immediate medical attention if measles is suspected, particularly in infants under 12 months or individuals with breathing difficulty.",
+    "contraindications": [
+      "Do not administer aspirin to pediatric patients due to risk of Reye's syndrome."
+    ],
+    "faqs": [
+      {
+        "q": "How contagious is measles?",
+        "a": "Measles is one of the world's most contagious diseases: one infected individual can infect up to 9 out of 10 unvaccinated close contacts."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "खसरा (Measles)",
+        "overview": "हवा से फैलने वाला अत्यधिक संक्रामक वायरल रोग जिसमें तेज बुखार, खांसी और त्वचा पर लाल दाने होते हैं।"
+      },
+      "te": {
+        "name": "తట్టు / మీజిల్స్",
+        "overview": "గాలి ద్వారా వ్యాపించే అత్యంత తీవ్రమైన వైరల్ వ్యాధి. తీవ్ర జ్వరం, ఎర్రటి దద్దుర్లు దీని ప్రధాన లక్షణాలు."
+      }
+    }
+  },
+  {
+    "id": "food_poisoning",
+    "name": "Food Poisoning (Acute Foodborne Illness)",
+    "aliases": [
+      "Foodborne infection",
+      "Gastroenteritis",
+      "Foodborne intoxication"
+    ],
+    "category": "Infectious",
+    "overview": "Food poisoning is an acute illness caused by consuming food or beverages contaminated with infectious bacteria, viruses, parasites, or their toxins (such as Salmonella, E. coli, Staphylococcus aureus, or Norovirus).",
+    "common_symptoms": [
+      "Acute abdominal cramps and stomach pain",
+      "Frequent vomiting and nausea",
+      "Watery or bloody diarrhea",
+      "Low-grade fever",
+      "Chills and muscle aches",
+      "General weakness and headache"
+    ],
+    "causes": [
+      "Bacterial toxins (Staph enterotoxin, B. cereus)",
+      "Bacterial infection (Salmonella, Campylobacter, E. coli)",
+      "Viral infection (Norovirus, Rotavirus)"
+    ],
+    "transmission": [
+      "Ingesting undercooked meats, unpasteurized milk, contaminated dairy, or raw salads washed with tainted water",
+      "Cross-contamination in kitchens"
+    ],
+    "risk_factors": [
+      "Eating raw seafood, undercooked eggs, or street foods left unrefrigerated",
+      "Pregnant women, elderly, infants",
+      "Immunocompromised patients"
+    ],
+    "prevention": [
+      "Cook all poultry, ground meats, and eggs to safe internal temperatures",
+      "Refrigerate perishable foods promptly within 2 hours of preparation",
+      "Wash cutting boards, knives, and countertops with hot soapy water after handling raw meats",
+      "Keep raw meats and fresh ready-to-eat produce completely separate",
+      "Drink only treated, boiled, or purified water"
+    ],
+    "general_care_information": [
+      "Rest the stomach for a few hours, then sip clear fluids or ORS slowly in small teaspoons",
+      "Gradually reintroduce bland foods (BRAT diet: Bananas, Rice, Applesauce, Toast)",
+      "Avoid dairy products, caffeine, alcohol, nicotine, and high-fat spicy dishes for 48 hours",
+      "Replace lost electrolytes to prevent hypovolemic dehydration"
+    ],
+    "warning_signs": [
+      "Inability to keep liquids down for more than 12-24 hours",
+      "Blood in vomit or bloody stools",
+      "Signs of severe dehydration: dry mouth, minimal urination, dizziness, sunken eyes",
+      "High fever (>102°F) accompanied by severe abdominal pain"
+    ],
+    "when_to_seek_medical_help": "Seek immediate medical attention if diarrhea lasts more than 3 days, if stools contain visible blood, or if symptoms of dehydration occur.",
+    "contraindications": [
+      "Do NOT use anti-motility drugs (like Loperamide) if diarrhea is accompanied by high fever or bloody stools, as they trap invasive pathogens in the intestine."
+    ],
+    "faqs": [
+      {
+        "q": "How fast does food poisoning begin?",
+        "a": "Toxin-mediated food poisoning (Staph aureus) can start within 1 to 6 hours; bacterial infections (Salmonella) usually take 12 to 72 hours to manifest."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "फूड पॉइजनिंग / खाद्य विषाक्तता",
+        "overview": "दूषित या बासी भोजन खाने से होने वाली बीमारी, जिसमें पेट दर्द, उल्टी और दस्त होते हैं।"
+      },
+      "te": {
+        "name": "ఫుడ్ పాయిజనింగ్",
+        "overview": "కలుషిత ఆహారం తినడం వల్ల కడుపునొప్పి, వాంతులు, విరేచనాలు కలిగించే తీవ్రమైన పరిస్థితి."
+      }
+    }
+  },
+  {
+    "id": "hepatitis_a",
+    "name": "Hepatitis A",
+    "aliases": [
+      "HAV infection",
+      "Infectious jaundice",
+      "Epidemic hepatitis"
+    ],
+    "category": "Water-borne",
+    "overview": "Hepatitis A is a highly contagious liver infection caused by the Hepatitis A virus (HAV). Unlike Hepatitis B and C, it does not cause chronic liver disease and is rarely fatal, but can cause debilitating symptoms.",
+    "common_symptoms": [
+      "Jaundice (yellow eyes and yellow skin)",
+      "Dark tea-colored urine",
+      "Pale clay-colored bowel movements",
+      "Loss of appetite and aversion to oily food",
+      "Nausea, vomiting, and upper right abdominal pain",
+      "Fatigue and low fever"
+    ],
+    "causes": [
+      "Hepatitis A virus (HAV, Picornaviridae family)"
+    ],
+    "transmission": [
+      "Fecal-oral route through ingestion of water or food contaminated with feces of an infected person",
+      "Direct close contact with an infected family member"
+    ],
+    "risk_factors": [
+      "Poor community sanitation and contaminated water pipes",
+      "Eating raw shellfish harvested from sewage-polluted waters",
+      "Travel to developing endemic regions"
+    ],
+    "prevention": [
+      "Hepatitis A vaccination (2 doses 6 months apart)",
+      "Rigorous handwashing with soap before eating and after using the toilet",
+      "Drink only boiled or purified water",
+      "Avoid raw salads, unpeeled fruits, and street vendors' drinks in endemic zones",
+      "Adequate municipal sewage treatment"
+    ],
+    "general_care_information": [
+      "Rest during the acute icteric (jaundice) phase until appetite returns",
+      "High-carbohydrate, low-fat nutritious diet that is gentle on liver metabolism (fruit juices, rice, khichdi, honey)",
+      "Strictly avoid alcohol and hepatotoxic drugs (like Paracetamol in high doses)",
+      "Frequent hydration to support metabolic clearance"
+    ],
+    "warning_signs": [
+      "Severe persistent vomiting resulting in dehydration",
+      "Confusion, extreme drowsiness, or hand tremors (acute liver failure)",
+      "Prolonged severe jaundice lasting more than 4 weeks"
+    ],
+    "when_to_seek_medical_help": "Consult a physician when jaundice, dark urine, or pale stools appear for diagnostic liver function tests (LFT) and viral serology.",
+    "contraindications": [
+      "Strictly avoid all alcohol consumption during illness and for at least 6 months after recovery."
+    ],
+    "faqs": [
+      {
+        "q": "Does Hepatitis A turn into chronic liver disease?",
+        "a": "No, Hepatitis A almost never becomes chronic. The body typically clears the virus completely and develops lifelong protective immunity."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "हेपेटाइटिस ए / पीलिया (Hepatitis A)",
+        "overview": "दूषित पानी या भोजन से फैलने वाला लिवर का वायरल संक्रमण जिससे पीलिया, भूख न लगना और कमजोरी होती है।"
+      },
+      "te": {
+        "name": "హెపటైటిస్ ఎ / కామెర్లు",
+        "overview": "కలుషిత నీరు, ఆహారం వల్ల కాలేయానికి వచ్చే వైరల్ ఇన్ఫెక్షన్. పచ్చకామెర్లు, అలసట లక్షణాలు."
+      }
+    }
+  },
+  {
+    "id": "migraine",
+    "name": "Migraine Headache",
+    "aliases": [
+      "Vascular headache",
+      "Hemicrania"
+    ],
+    "category": "Chronic",
+    "overview": "Migraine is a chronic neurological disorder characterized by recurrent attacks of moderate to severe throbbing or pulsating unilateral headache, often accompanied by autonomic, visual, and sensory symptoms.",
+    "common_symptoms": [
+      "Unilateral throbbing or pulsating head pain (one side of head)",
+      "Photophobia (extreme sensitivity to light)",
+      "Phonophobia (sensitivity to loud sounds)",
+      "Nausea and vomiting",
+      "Visual aura (zigzag flashing lights, blind spots 20-30 mins prior)",
+      "Pain worsened by routine physical activity"
+    ],
+    "causes": [
+      "Neurovascular dysfunction, trigeminovascular activation, and cortical spreading depression"
+    ],
+    "transmission": [
+      "Non-communicable neurological disorder"
+    ],
+    "risk_factors": [
+      "Female sex (3x more common in women due to hormonal fluctuations)",
+      "Family history of migraine",
+      "Stress, irregular sleep, skipping meals, caffeine withdrawal, sensory stimuli (bright lights, perfumes), artificial sweeteners"
+    ],
+    "prevention": [
+      "Maintain a consistent sleep-wake schedule 7 days a week",
+      "Do not skip meals; keep blood sugar stable with balanced snacks",
+      "Stay well-hydrated throughout the day",
+      "Keep a headache diary to identify individual triggers (chocolate, aged cheese, MSG, wine)",
+      "Physician-prescribed preventive medications (Beta-blockers, Topiramate, Flunarizine) for frequent debilitating attacks"
+    ],
+    "general_care_information": [
+      "Rest in a quiet, dark, well-ventilated room during an attack",
+      "Apply a cold ice compress or cool gel pack to the forehead or back of the neck",
+      "Take abortive medication (such as Paracetamol/NSAIDs or prescribed Triptans) at the earliest onset of pain",
+      "Sip water or electrolyte fluids"
+    ],
+    "warning_signs": [
+      "'Thunderclap' headache: instantaneous peak intensity within seconds (rule out Subarachnoid Hemorrhage!)",
+      "Headache accompanied by high fever, stiff neck, confusion, or rash (rule out Meningitis!)",
+      "New onset focal weakness, speech difficulty, or facial drooping (rule out Stroke!)",
+      "First severe headache onset after age 50"
+    ],
+    "when_to_seek_medical_help": "Seek emergency medical evaluation if a sudden explosive headache occurs or is accompanied by neurological deficits. Consult a neurologist for recurring headaches.",
+    "contraindications": [
+      "Do NOT overuse abortive pain medications (> 10-15 days/month) as this causes Medication Overuse Headache (rebound headaches)."
+    ],
+    "faqs": [
+      {
+        "q": "What is a migraine aura?",
+        "a": "An aura is a temporary neurological disturbance, usually visual (flashing lights, zigzag lines, or vision loss), occurring 20–60 minutes before the headache begins."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "माइग्रेन / आधासीसी का दर्द",
+        "overview": "सिर के एक तरफ तेज धड़कता हुआ दर्द, जिसके साथ रोशनी और आवाज से परेशानी तथा उल्टी महसूस होती है।"
+      },
+      "te": {
+        "name": "మైగ్రేన్ / పార్శ్వపు తలనొప్పి",
+        "overview": "తల ఒక వైపు తీవ్రంగా వచ్చే నరాల సంబంధిత నొప్పి. వెలుతురు, శబ్దాలు చూడలేకపోవడం ప్రధాన లక్షణాలు."
+      }
+    }
+  },
+  {
+    "id": "chronic_kidney_disease",
+    "name": "Chronic Kidney Disease (CKD)",
+    "aliases": [
+      "CKD",
+      "Renal impairment",
+      "Chronic renal failure"
+    ],
+    "category": "Chronic",
+    "overview": "Chronic Kidney Disease is a progressive, long-term condition where the kidneys become damaged and cannot filter toxins, excess metabolic waste, and excess fluids from the blood effectively.",
+    "common_symptoms": [
+      "Often completely asymptomatic in early stages",
+      "Swelling (edema) in feet, ankles, legs, or puffiness around eyes",
+      "Fatigue and decreased mental sharpness due to anemia",
+      "Changes in urination (foamy/bubbly urine, frequent night urination)",
+      "Persistent itching and dry skin",
+      "Loss of appetite, metallic taste in mouth, nausea",
+      "Difficulty breathing due to fluid buildup in lungs"
+    ],
+    "causes": [
+      "Longstanding uncontrolled diabetes (Diabetic Nephropathy)",
+      "Uncontrolled hypertension (Hypertensive Nephrosclerosis)",
+      "Glomerulonephritis, Polycystic kidney disease, recurrent kidney infections"
+    ],
+    "transmission": [
+      "Non-communicable chronic disease"
+    ],
+    "risk_factors": [
+      "Diabetes mellitus",
+      "High blood pressure",
+      "Cardiovascular disease",
+      "Family history of kidney failure",
+      "Age over 60 years",
+      "Frequent long-term use of NSAID pain relievers (Ibuprofen, Diclofenac)"
+    ],
+    "prevention": [
+      "Strictly maintain blood pressure target (usually < 130/80 mmHg)",
+      "Strictly control blood sugar (HbA1c target < 7.0%) in diabetics",
+      "Avoid regular over-the-counter NSAID painkillers which are nephrotoxic",
+      "Maintain a low-sodium diet (< 2g sodium/day) and avoid excess protein supplements",
+      "Annual screening of serum creatinine, eGFR, and urine microalbumin/creatinine ratio (ACR)"
+    ],
+    "general_care_information": [
+      "Consult a nephrologist for individualized disease staging (Stages 1 to 5)",
+      "Follow prescribed dietary restrictions regarding sodium, potassium, and phosphorus",
+      "Stay well-hydrated within personal fluid limits advised by doctor",
+      "Take ACE-inhibitors or ARBs as prescribed to protect glomeruli"
+    ],
+    "warning_signs": [
+      "Severe shortness of breath or inability to lie flat (pulmonary edema)",
+      "Severe confusion, drowsiness, or seizures (uremic encephalopathy)",
+      "Critically elevated serum potassium (> 6.0 mEq/L - cardiac arrest danger)",
+      "Zero urine output (anuria) over 12 hours"
+    ],
+    "when_to_seek_medical_help": "Consult a physician if you notice leg swelling or foamy urine. Seek emergency care immediately if severe breathlessness or confusion develops in a CKD patient.",
+    "contraindications": [
+      "Strictly avoid NSAIDs (Diclofenac, Ibuprofen, Naproxen); use only Paracetamol for minor pain with doctor permission."
+    ],
+    "faqs": [
+      {
+        "q": "What test checks kidney function?",
+        "a": "Serum Creatinine with estimated Glomerular Filtration Rate (eGFR) and a simple Urine Routine / Albumin-to-Creatinine Ratio (ACR)."
+      }
+    ],
+    "translations": {
+      "hi": {
+        "name": "क्रोनिक किडनी रोग (CKD)",
+        "overview": "गुर्दे (किडनी) की कार्यप्रणाली में धीरे-धीरे कमी आना, जिससे शरीर में विषाक्त पदार्थ और पानी जमा होने लगता है।"
+      },
+      "te": {
+        "name": "దీర్ఘకాలిక మూత్రపిండాల వ్యాధి (CKD)",
+        "overview": "కిడ్నీలు రక్తాన్ని సరిగ్గా వడకట్టలేని పరిస్థితి. కాళ్ల వాపులు మరియు నీరసం దీని లక్షణాలు."
+      }
+    }
+  }
+]

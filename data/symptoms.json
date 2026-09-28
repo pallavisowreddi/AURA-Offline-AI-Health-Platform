@@ -1,0 +1,366 @@
+[
+  {
+    "id": "fever",
+    "name": "Fever / Pyrexia",
+    "category": "General",
+    "description": "Core body temperature elevation > 100.4°F.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "high_fever",
+    "name": "High Fever (>103°F)",
+    "category": "General",
+    "description": "High temperature elevation that can trigger seizures.",
+    "warning_level": "critical"
+  },
+  {
+    "id": "chills",
+    "name": "Chills & Shivering",
+    "category": "General",
+    "description": "Involuntary muscular contractions due to rapid temperature shifts.",
+    "warning_level": "low"
+  },
+  {
+    "id": "night_sweats",
+    "name": "Night Sweats",
+    "category": "General",
+    "description": "Severe drenching perspiration during sleep requiring clothes change.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "fatigue",
+    "name": "Fatigue & Malaise",
+    "category": "General",
+    "description": "Overwhelming exhaustion and decreased energy capacity.",
+    "warning_level": "low"
+  },
+  {
+    "id": "weight_loss",
+    "name": "Unintentional Weight Loss",
+    "category": "General",
+    "description": "Loss of >5% body weight without dietary restriction.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "headache",
+    "name": "Headache",
+    "category": "Neurological",
+    "description": "Aching pain anywhere in the cranial region.",
+    "warning_level": "low"
+  },
+  {
+    "id": "throbbing_headache",
+    "name": "Throbbing Unilateral Headache",
+    "category": "Neurological",
+    "description": "Pulsating headache typical of migraine attacks.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "dizziness",
+    "name": "Dizziness / Vertigo",
+    "category": "Neurological",
+    "description": "Sensation of unsteadiness, spinning room, or near-syncope.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "confusion",
+    "name": "Confusion & Altered Sensorium",
+    "category": "Neurological",
+    "description": "Disorientation, difficulty thinking clearly, or delirium.",
+    "warning_level": "critical"
+  },
+  {
+    "id": "seizures",
+    "name": "Seizures / Convulsions",
+    "category": "Neurological",
+    "description": "Uncontrolled electrical disturbance in the brain causing jerking.",
+    "warning_level": "critical"
+  },
+  {
+    "id": "chest_pain",
+    "name": "Chest Pain / Pressure",
+    "category": "Cardiovascular",
+    "description": "Retrosternal squeezing, burning, or tightness.",
+    "warning_level": "critical"
+  },
+  {
+    "id": "palpitations",
+    "name": "Palpitations / Rapid Pulse",
+    "category": "Cardiovascular",
+    "description": "Awareness of pounding, fluttering, or irregular heartbeat.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "leg_swelling",
+    "name": "Pedal Edema (Leg Swelling)",
+    "category": "Cardiovascular",
+    "description": "Puffy fluid accumulation in feet, ankles, and shins.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "shortness_of_breath",
+    "name": "Shortness of Breath (Dyspnea)",
+    "category": "Respiratory",
+    "description": "Difficulty breathing or feeling starved of oxygen.",
+    "warning_level": "critical"
+  },
+  {
+    "id": "wheezing",
+    "name": "Wheezing",
+    "category": "Respiratory",
+    "description": "Musical whistling breath sounds during exhalation.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "cough_dry",
+    "name": "Dry Cough",
+    "category": "Respiratory",
+    "description": "Non-productive irritating cough without sputum production.",
+    "warning_level": "low"
+  },
+  {
+    "id": "cough_productive",
+    "name": "Productive Cough (Phlegm)",
+    "category": "Respiratory",
+    "description": "Cough expelling yellow, green, or thick mucous.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "hemoptysis",
+    "name": "Coughing Blood (Hemoptysis)",
+    "category": "Respiratory",
+    "description": "Blood or blood-streaked mucus expelled from airways.",
+    "warning_level": "critical"
+  },
+  {
+    "id": "sore_throat",
+    "name": "Sore Throat (Pharyngitis)",
+    "category": "Respiratory",
+    "description": "Pain, irritation, or scratchiness in the throat.",
+    "warning_level": "low"
+  },
+  {
+    "id": "runny_nose",
+    "name": "Runny Nose (Rhinorrhea)",
+    "category": "Respiratory",
+    "description": "Excessive watery discharge from nasal cavities.",
+    "warning_level": "low"
+  },
+  {
+    "id": "nasal_congestion",
+    "name": "Nasal Congestion / Blockage",
+    "category": "Respiratory",
+    "description": "Swollen nasal passages blocking airflow.",
+    "warning_level": "low"
+  },
+  {
+    "id": "loss_of_smell",
+    "name": "Loss of Smell (Anosmia)",
+    "category": "Neurological",
+    "description": "Inability to detect odors and aromas.",
+    "warning_level": "low"
+  },
+  {
+    "id": "loss_of_taste",
+    "name": "Loss of Taste (Ageusia)",
+    "category": "Neurological",
+    "description": "Loss of gustatory sensations.",
+    "warning_level": "low"
+  },
+  {
+    "id": "nausea",
+    "name": "Nausea",
+    "category": "Gastrointestinal",
+    "description": "Queasy feeling with urge to vomit.",
+    "warning_level": "low"
+  },
+  {
+    "id": "vomiting",
+    "name": "Vomiting (Emesis)",
+    "category": "Gastrointestinal",
+    "description": "Forceful ejection of stomach contents through mouth.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "diarrhea",
+    "name": "Diarrhea",
+    "category": "Gastrointestinal",
+    "description": "Frequent watery or loose bowel movements.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "bloody_stool",
+    "name": "Blood in Stool (Melena / Hematochezia)",
+    "category": "Gastrointestinal",
+    "description": "Visible red blood or dark black tarry feces.",
+    "warning_level": "critical"
+  },
+  {
+    "id": "stomach_cramps",
+    "name": "Abdominal Cramps & Pain",
+    "category": "Gastrointestinal",
+    "description": "Sharp, dull, or colicky pain in abdominal cavity.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "heartburn",
+    "name": "Heartburn / Acid Regurgitation",
+    "category": "Gastrointestinal",
+    "description": "Burning sensation rising from stomach to throat.",
+    "warning_level": "low"
+  },
+  {
+    "id": "bloating",
+    "name": "Bloating & Gas",
+    "category": "Gastrointestinal",
+    "description": "Feeling of full, distended abdominal tightness.",
+    "warning_level": "low"
+  },
+  {
+    "id": "difficulty_swallowing",
+    "name": "Difficulty Swallowing (Dysphagia)",
+    "category": "Gastrointestinal",
+    "description": "Food sticking or painful passage through esophagus.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "jaundice",
+    "name": "Jaundice (Yellow Eyes / Skin)",
+    "category": "Hepatic",
+    "description": "Bilirubin pigment buildup turning sclera and skin yellow.",
+    "warning_level": "critical"
+  },
+  {
+    "id": "dark_urine",
+    "name": "Dark Amber / Tea-Colored Urine",
+    "category": "Hepatic",
+    "description": "High bilirubin or severe dehydration darkening urine.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "pale_stool",
+    "name": "Clay-Colored / Pale Stool",
+    "category": "Hepatic",
+    "description": "Lack of bile pigment in bowel movements.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "joint_pain",
+    "name": "Joint Pain (Arthralgia)",
+    "category": "Musculoskeletal",
+    "description": "Aching or throbbing in knees, wrists, elbows, ankles.",
+    "warning_level": "low"
+  },
+  {
+    "id": "muscle_pain",
+    "name": "Muscle Aches (Myalgia)",
+    "category": "Musculoskeletal",
+    "description": "Diffuse soreness across major muscle groups.",
+    "warning_level": "low"
+  },
+  {
+    "id": "back_pain",
+    "name": "Back Pain",
+    "category": "Musculoskeletal",
+    "description": "Discomfort or tension along spinal vertebral column.",
+    "warning_level": "low"
+  },
+  {
+    "id": "retro_orbital_pain",
+    "name": "Eye Pain (Retro-orbital Pain)",
+    "category": "Ophthalmological",
+    "description": "Deep ache behind eyeballs worsened by eye movement.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "red_eyes",
+    "name": "Red / Watery Eyes (Conjunctivitis)",
+    "category": "Ophthalmological",
+    "description": "Hyperemic conjunctiva with discharge or tearing.",
+    "warning_level": "low"
+  },
+  {
+    "id": "photophobia",
+    "name": "Light Sensitivity (Photophobia)",
+    "category": "Ophthalmological",
+    "description": "Discomfort or ocular pain caused by bright lights.",
+    "warning_level": "low"
+  },
+  {
+    "id": "skin_rash",
+    "name": "Skin Rash / Eruption",
+    "category": "Dermatological",
+    "description": "Red spots, bumps, or patches on skin.",
+    "warning_level": "low"
+  },
+  {
+    "id": "skin_blisters",
+    "name": "Fluid-Filled Blisters",
+    "category": "Dermatological",
+    "description": "Vesicles containing clear fluid on skin surface.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "petechiae",
+    "name": "Petechiae (Pinpoint Bleed Spots)",
+    "category": "Dermatological",
+    "description": "Tiny non-blanching red or purple intradermal spots.",
+    "warning_level": "critical"
+  },
+  {
+    "id": "intense_itching",
+    "name": "Severe Pruritus (Itching)",
+    "category": "Dermatological",
+    "description": "Persistent urge to scratch cutaneous surfaces.",
+    "warning_level": "low"
+  },
+  {
+    "id": "excessive_thirst",
+    "name": "Excessive Thirst (Polydipsia)",
+    "category": "Endocrine",
+    "description": "Constant unquenchable craving for fluids.",
+    "warning_level": "low"
+  },
+  {
+    "id": "frequent_urination",
+    "name": "Frequent Urination (Polyuria)",
+    "category": "Endocrine",
+    "description": "High volume or high frequency of urination.",
+    "warning_level": "low"
+  },
+  {
+    "id": "no_urination",
+    "name": "Zero Urine Output (Anuria)",
+    "category": "Renal",
+    "description": "Absence of urine for over 8-12 hours.",
+    "warning_level": "critical"
+  },
+  {
+    "id": "foamy_urine",
+    "name": "Foamy / Bubbly Urine",
+    "category": "Renal",
+    "description": "Excessive bubbles indicating proteinuria in urine.",
+    "warning_level": "moderate"
+  },
+  {
+    "id": "gum_bleeding",
+    "name": "Bleeding Gums / Spontaneous Bleed",
+    "category": "Hematological",
+    "description": "Spontaneous bleeding from oral mucosa.",
+    "warning_level": "critical"
+  },
+  {
+    "id": "pallor",
+    "name": "Pale Conjunctiva & Skin (Pallor)",
+    "category": "Hematological",
+    "description": "Whitish discoloration of inner eyelids and nailbeds.",
+    "warning_level": "low"
+  },
+  {
+    "id": "cold_extremities",
+    "name": "Cold Clammy Hands & Feet",
+    "category": "Cardiovascular",
+    "description": "Peripheral vasoconstriction indicating shock or fever spike.",
+    "warning_level": "moderate"
+  }
+]

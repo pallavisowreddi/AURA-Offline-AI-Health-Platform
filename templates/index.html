@@ -208,7 +208,10 @@
         
         <nav class="nav-links">
             <button class="nav-item active" data-tab="home" data-i18n="nav_home">Home</button>
-            <button class="nav-item" data-tab="prediction" data-i18n="nav_prediction">Disease Prediction</button>
+            <button class="nav-item" data-tab="prediction" data-i18n="nav_prediction">AI Chat Assistant</button>
+            <button class="nav-item" data-tab="diseases" data-i18n="nav_diseases">🦠 Disease Library</button>
+            <button class="nav-item" data-tab="symptoms" data-i18n="nav_symptoms">🔍 Symptom Explorer</button>
+            <button class="nav-item" data-tab="tips" data-i18n="nav_tips">💡 Health Tips</button>
             <button class="nav-item" data-tab="reports" data-i18n="nav_reports">Medical Reports</button>
             <button class="nav-item" data-tab="vaccines" data-i18n="nav_vaccines">Vaccination</button>
             <button class="nav-item" data-tab="dashboard" data-i18n="nav_dashboard">Health Dashboard</button>
@@ -577,7 +580,26 @@
             <!-- ================= VIEW 2: DISEASE PREDICTION ================= -->
             <section id="section-prediction" class="section-view hidden" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px;">
                 <div class="chat-layout-panel" style="display: flex; flex-direction: column; height: calc(100vh - 120px);">
-                    <button class="btn-back-home" onclick="returnToHomeOrLanding()">← Return</button>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                        <button class="btn-back-home" onclick="returnToHomeOrLanding()">← Return</button>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button type="button" class="btn btn-secondary" onclick="startNewHealthChat()" style="font-size: 0.74rem; padding: 4px 10px; color: #0284c7; border-color: rgba(2, 132, 199, 0.3);">
+                                ➕ New Consultation
+                            </button>
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.12); color: #10b981; font-size: 0.7rem; font-weight: 700;">
+                                🟢 Local Semantic RAG Active
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat History Sessions Drawer -->
+                    <div id="chat-history-drawer" style="max-height: 85px; overflow-y: auto; background: rgba(0,0,0,0.02); border: 1px solid var(--border-glass); border-radius: 8px; padding: 6px 10px; margin-bottom: 8px;">
+                        <div style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">Recent Consultations (SQLite Local Storage):</div>
+                        <div id="chat-history-sessions-list" style="display: flex; flex-direction: column; gap: 2px;">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
                     <div class="messages-container" id="chat-messages" style="flex-grow: 1; overflow-y: auto; padding-right: 10px;">
                         <!-- Messages dynamically added by app.js -->
                     </div>
@@ -1461,6 +1483,131 @@
                 </footer>
             
             </section>
+
+            
+            <!-- ================= VIEW: DISEASE LIBRARY ================= -->
+            <section id="section-diseases" class="section-view hidden" style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="widget-card" style="border-top: 3px solid #0284c7;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+                        <div>
+                            <h2 style="font-size: 1.3rem; font-weight: 800; color: #0284c7; margin: 0;">
+                                🦠 Disease Awareness Library
+                            </h2>
+                            <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 3px;">
+                                Verified clinical health-awareness encyclopedia. 100% offline retrieval from local SQLite knowledge database.
+                            </p>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.12); color: #10b981; font-weight: 700; font-size: 0.74rem;">
+                                🟢 22+ Conditions Verified
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Search and Category Filters -->
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px;">
+                        <input type="text" id="disease-search-bar" placeholder="🔍 Search diseases by name, symptom, or cause (e.g. Dengue, Malaria, Tuberculosis, Diabetes)..." style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); color: var(--text-primary); font-size: 0.82rem; outline: none;">
+                        
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="disease-filter-chips-container">
+                            <button type="button" class="disease-filter-chip active" data-category="all" onclick="filterDiseasesCategory('all')">All Diseases</button>
+                            <button type="button" class="disease-filter-chip" data-category="vector-borne" onclick="filterDiseasesCategory('vector-borne')">🦟 Vector-Borne</button>
+                            <button type="button" class="disease-filter-chip" data-category="infectious" onclick="filterDiseasesCategory('infectious')">🦠 Infectious</button>
+                            <button type="button" class="disease-filter-chip" data-category="respiratory" onclick="filterDiseasesCategory('respiratory')">🫁 Respiratory</button>
+                            <button type="button" class="disease-filter-chip" data-category="chronic" onclick="filterDiseasesCategory('chronic')">❤️ Chronic / Metabolic</button>
+                            <button type="button" class="disease-filter-chip" data-category="water-borne" onclick="filterDiseasesCategory('water-borne')">💧 Water-Borne</button>
+                            <button type="button" class="disease-filter-chip" data-category="lifestyle" onclick="filterDiseasesCategory('lifestyle')">🥗 Lifestyle & Digestive</button>
+                        </div>
+                    </div>
+
+                    <!-- Disease Cards Grid -->
+                    <div id="disease-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px;">
+                        <!-- Rendered dynamically by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW: SYMPTOM EXPLORER ================= -->
+            <section id="section-symptoms" class="section-view hidden" style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="widget-card" style="border-top: 3px solid #8b5cf6;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+                        <div>
+                            <h2 style="font-size: 1.3rem; font-weight: 800; color: #8b5cf6; margin: 0;">
+                                🔍 Symptom Awareness Explorer
+                            </h2>
+                            <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 3px;">
+                                Select symptoms to review potential health associations, warning signs, and care guidance. 
+                                <strong style="color: #ef4444;">Strictly educational; this is NOT a medical diagnosis.</strong>
+                            </p>
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="clearSelectedSymptoms()" style="font-size: 0.72rem; padding: 5px 10px;">
+                            Clear Selection
+                        </button>
+                    </div>
+
+                    <!-- Selected Symptoms Pill Box -->
+                    <div id="selected-symptoms-tray" style="min-height: 42px; background: rgba(0,0,0,0.03); border: 1px dashed var(--border-glass); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
+                        <span style="font-size: 0.74rem; color: var(--text-muted);">No symptoms selected yet. Click any symptom pill below to add it:</span>
+                    </div>
+
+                    <!-- Filter pills category & grid -->
+                    <div style="margin-bottom: 14px;">
+                        <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-primary); display: block; margin-bottom: 6px;">Available Symptoms Directory (52+ Symptoms):</label>
+                        <div id="symptoms-pills-grid" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 240px; overflow-y: auto; padding: 6px; border: 1px solid var(--border-glass); border-radius: 8px;">
+                            <!-- Populated dynamically by JS -->
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+                        <input type="text" id="symptom-notes-input" placeholder="Optional notes: e.g. started 2 days ago, worse at night..." style="flex: 1; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); color: var(--text-primary); font-size: 0.78rem; outline: none;">
+                        <button type="button" class="btn btn-primary" onclick="runSymptomAwarenessAnalysis()" style="background: #8b5cf6; font-size: 0.78rem; padding: 9px 16px; white-space: nowrap;">
+                            ⚡ Correlate Symptoms (Awareness Only)
+                        </button>
+                    </div>
+
+                    <!-- Results Container -->
+                    <div id="symptom-awareness-results" style="display: none; background: rgba(139, 92, 246, 0.03); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 10px; padding: 16px;">
+                        <!-- Filled dynamically by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW: HEALTH TIPS ================= -->
+            <section id="section-tips" class="section-view hidden" style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="widget-card" style="border-top: 3px solid #10b981;">
+                    <div style="margin-bottom: 16px;">
+                        <h2 style="font-size: 1.3rem; font-weight: 800; color: #10b981; margin: 0;">
+                            💡 Preventive Health &amp; Healthy Living Hub
+                        </h2>
+                        <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 3px;">
+                            Evidence-based guidelines across 8 vital domains to prevent infectious transmission, support metabolic balance, and maintain peak wellness.
+                        </p>
+                    </div>
+
+                    <div id="health-tips-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+                        <!-- Populated dynamically by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= DISEASE DETAIL MODAL ================= -->
+            <div id="disease-detail-modal" class="disease-modal-overlay hidden">
+                <div class="disease-modal-container">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <h3 id="modal-disease-title" style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #0284c7;">Disease Title</h3>
+                                <span id="modal-disease-category" class="badge" style="background: rgba(2, 132, 199, 0.12); color: #0284c7; font-size: 0.72rem;">Category</span>
+                            </div>
+                            <span id="modal-disease-aliases" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-top: 2px;">Aliases</span>
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="closeDiseaseModal()" style="font-size: 0.74rem; padding: 4px 10px;">✕ Close</button>
+                    </div>
+                    
+                    <div id="modal-disease-body" style="font-size: 0.78rem; line-height: 1.55; color: var(--text-primary); display: flex; flex-direction: column; gap: 12px;">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
+            </div>
 
             <!-- ================= VIEW 6: EMERGENCY ================= -->
             <section id="section-emergency" class="section-view hidden" style="display: flex; flex-direction: column; gap: 20px;">

@@ -1,0 +1,27 @@
+[
+  {
+    "q": "Can antibiotics cure viral infections like the flu or dengue?",
+    "a": "No. Antibiotics exclusively kill bacteria. They have zero efficacy against viruses like Influenza, Dengue, or COVID-19. Misusing antibiotics causes dangerous antibiotic resistance.",
+    "category": "General"
+  },
+  {
+    "q": "What should I do if my child has a febrile seizure?",
+    "a": "Stay calm. Place the child on their side on a soft surface. Loosen clothing. Do NOT put anything in their mouth. Tepid sponge the forehead. Most febrile seizures end within 2-3 minutes. Consult a pediatrician promptly.",
+    "category": "Pediatric"
+  },
+  {
+    "q": "How can I prevent dehydration during hot summer days?",
+    "a": "Drink 2.5 to 3.5 liters of clean water and fluids like buttermilk, coconut water, and ORS daily. Avoid direct sunlight between 11 AM and 4 PM, and monitor your urine color.",
+    "category": "Hydration"
+  },
+  {
+    "q": "Is fasting blood sugar of 115 mg/dL normal?",
+    "a": "Fasting blood sugar of 100 to 125 mg/dL indicates 'Prediabetes'. Normal fasting level is 70 to 99 mg/dL. Consult a physician for an HbA1c test and lifestyle interventions.",
+    "category": "Diabetes"
+  },
+  {
+    "q": "When should someone with high blood pressure seek emergency care?",
+    "a": "Seek emergency care immediately if BP exceeds 180/120 mmHg or if elevated BP is accompanied by severe headache, chest pain, shortness of breath, blurry vision, or numbness on one side.",
+    "category": "Cardiovascular"
+  }
+]
