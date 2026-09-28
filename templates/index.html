@@ -1162,136 +1162,267 @@
             </section>
 
             <!-- ================= VIEW 5: HEALTH DASHBOARD ================= -->
-            <section id="section-dashboard" class="section-view hidden" style="display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 20px;">
-                <div style="display: flex; flex-direction: column; gap: 15px;">
-                    <!-- Health Score Circular Gauge -->
-                    <div class="widget-card" style="text-align: center; position: relative;">
-                        <h3 style="margin-bottom: 10px;" data-i18n="dash_health_score_title">Overall Health Score</h3>
-                        <div style="position: relative; width: 110px; height: 110px; margin: 0 auto 10px auto;">
-                            <svg width="110" height="110" viewBox="0 0 100 100">
-                                <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,0.03)" stroke-width="7" fill="transparent"/>
-                                <circle id="health-score-ring" cx="50" cy="50" r="42" stroke="url(#health-glow-grad)" stroke-width="7" fill="transparent" stroke-dasharray="263.89" stroke-dashoffset="263.89" stroke-linecap="round" style="transition: stroke-dashoffset 0.6s ease-out; transform: rotate(-90deg); transform-origin: 50% 50%;"/>
-                                <defs>
-                                    <linearGradient id="health-glow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stop-color="#0284c7" />
-                                        <stop offset="100%" stop-color="#10b981" />
-                                    </linearGradient>
-                                </defs>
-                            </svg>
-                            <div id="health-score-num" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.6rem; font-weight: 800; color: var(--text-primary);">96%</div>
-                        </div>
-                        <div style="font-size: 0.72rem; color: var(--text-muted);" id="health-score-status" data-i18n="dash_score_opt">Clinical safety metrics calculated in optimal range.</div>
-                    </div>
-
-                    <!-- Clinical Vitals & Blood Pressure Form -->
-                    <div class="widget-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <h3 data-i18n="dash_log_vitals_title">Log Biometrics & BP</h3>
-                            <button type="button" class="btn btn-secondary" id="simulate-live-vitals-btn" style="font-size: 0.68rem; padding: 4px 8px;" data-i18n="dash_sim_live">🔴 Simulate Live</button>
-                        </div>
-                        <form id="vitals-form" style="display: flex; flex-direction: column; gap: 10px;">
-                            <div style="display: flex; gap: 10px;">
-                                <div style="flex: 1;">
-                                    <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;" data-i18n="lbl_sys_bp">Systolic BP (mmHg)</label>
-                                    <input type="number" id="vital-sys" placeholder="120" min="70" max="260" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
-                                </div>
-                                <div style="flex: 1;">
-                                    <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;" data-i18n="lbl_dia_bp">Diastolic BP (mmHg)</label>
-                                    <input type="number" id="vital-dia" placeholder="80" min="40" max="180" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
-                                </div>
+            <section id="section-dashboard" class="section-view hidden" style="display: flex; flex-direction: column; gap: 20px;">
+                
+                <!-- BLUETOOTH SMART HEALTH HUB & WIRELESS TELEMETRY GATEWAY -->
+                <div class="ble-device-banner" id="ble-main-banner">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.3rem; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);">
+                                📶
                             </div>
-
-                            <div style="display: flex; gap: 10px;">
-                                <div style="flex: 1;">
-                                    <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;" data-i18n="lbl_heart_rate">Heart Rate (BPM)</label>
-                                    <input type="number" id="vital-hr" placeholder="72" min="30" max="220" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
-                                </div>
-                                <div style="flex: 1;">
-                                    <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;" data-i18n="lbl_spo2">Oxygen SpO₂ (%)</label>
-                                    <input type="number" id="vital-spo2" placeholder="98" min="70" max="100" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
-                                </div>
-                            </div>
-
                             <div>
-                                <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;" data-i18n="lbl_body_temp">Body Temperature (°F)</label>
-                                <input type="number" step="0.1" id="vital-temp" placeholder="98.6" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <h3 style="font-size: 1.15rem; font-weight: 800; color: #0284c7; margin: 0;">Bluetooth Smart Health Hub</h3>
+                                    <span id="ble-connection-status" class="badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 0.72rem; padding: 2px 8px; border-radius: 12px;">🔴 Disconnected</span>
+                                </div>
+                                <p style="font-size: 0.76rem; color: var(--text-secondary); margin: 2px 0 0 0;">
+                                    Real-time wireless BLE 5.2 telemetry for continuous heart rate, SpO₂ pulse oximetry, thermometry &amp; AI hydration optimization.
+                                </p>
                             </div>
+                        </div>
 
-                            <button type="submit" class="btn btn-primary" style="width: 100%;" data-i18n="btn_calc_vitals">Calculate Biometrics & Save</button>
-                        </form>
-                        <div style="margin-top: 10px; font-size: 0.72rem; color: var(--text-secondary); text-align: center;" id="vitals-status" data-i18n="vitals_status_norm">Cardiovascular metrics normal & stable.</div>
+                        <!-- BLE Device Controls -->
+                        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+                            <button type="button" class="btn btn-primary" id="ble-connect-btn" style="font-size: 0.76rem; padding: 7px 14px; background: #0284c7;">
+                                📶 Pair Web Bluetooth Device
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="ble-simulate-btn" style="font-size: 0.76rem; padding: 7px 14px;">
+                                ⚡ Demo BLE Smart Stream
+                            </button>
+                            <button type="button" class="btn btn-secondary hidden" id="ble-disconnect-btn" style="font-size: 0.76rem; padding: 7px 14px; color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">
+                                ❌ Disconnect
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="ble-sound-toggle-btn" style="font-size: 0.76rem; padding: 7px 10px;">
+                                🔇 Pulse Sound: Off
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Connected Device Hardware Metrics Bar -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: rgba(0,0,0,0.03); border: 1px solid var(--border-glass); border-radius: 8px; padding: 8px 14px; font-size: 0.74rem;">
+                        <div><strong>Paired Hardware:</strong> <span id="ble-device-name" style="color: var(--text-primary); font-weight: 700;">No BLE Device Connected</span></div>
+                        <div><strong>Battery:</strong> <span id="ble-device-battery" style="color: #10b981; font-weight: 700;">--</span></div>
+                        <div><strong>Signal (RSSI):</strong> <span id="ble-device-rssi" style="color: var(--text-muted);">-- dBm</span></div>
+                        <div><strong>Protocol:</strong> <span style="color: #0284c7; font-weight: 600;">GATT Health Telemetry (Local Edge)</span></div>
+                    </div>
+
+                    <!-- 4 Interactive Advantages of Bluetooth Health Monitoring -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin-top: 14px;">
+                        <div class="ble-advantage-card">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="font-size: 1.1rem;">💓</span>
+                                <strong style="font-size: 0.78rem; color: #ef4444;">Live Heartbeat &amp; BPM Telemetry</strong>
+                            </div>
+                            <span style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.4;">
+                                High-frequency pulse rate detection identifies arrhythmias, tachycardia (&gt;100 BPM) and bradycardia in real time.
+                            </span>
+                        </div>
+                        <div class="ble-advantage-card">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="font-size: 1.1rem;">🫁</span>
+                                <strong style="font-size: 0.78rem; color: #0284c7;">Continuous SpO₂ Hypoxia Alert</strong>
+                            </div>
+                            <span style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.4;">
+                                Instant audible and visual alerts if peripheral blood oxygen drops below 94%, preventing silent clinical hypoxia.
+                            </span>
+                        </div>
+                        <div class="ble-advantage-card">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="font-size: 1.1rem;">🌡️</span>
+                                <strong style="font-size: 0.78rem; color: #f59e0b;">Dynamic Thermoregulation</strong>
+                            </div>
+                            <span style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.4;">
+                                Wireless skin probe tracking flags low-grade fever (99.5°F) and hyperpyrexia (&gt;101°F) before dehydration sets in.
+                            </span>
+                        </div>
+                        <div class="ble-advantage-card">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="font-size: 1.1rem;">💧</span>
+                                <strong style="font-size: 0.78rem; color: #10b981;">AI Metabolic Hydration Target</strong>
+                            </div>
+                            <span style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.4;">
+                                Generative algorithm dynamically adjusts water replenishment goals based on your physical exertion and body heat.
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 15px;">
-                    <!-- Accurate Telemetry Dashboard grid -->
-                    <div class="dashboard-vitals-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-                        <!-- Blood Pressure Telemetry -->
-                        <div class="vital-card" style="grid-column: span 2;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div class="vital-title" data-i18n="dash_bp_title">Blood Pressure Status</div>
-                                <span class="bp-stage-badge" id="dash-bp-stage" style="background: rgba(16,185,129,0.15); color: #10b981;">Normal (<120/80)</span>
+                <!-- MAIN BIOMETRICS & DASHBOARD SPLIT -->
+                <div style="display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 20px;">
+                    <!-- LEFT COLUMN -->
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <!-- Health Score Circular Gauge -->
+                        <div class="widget-card" style="text-align: center; position: relative;">
+                            <h3 style="margin-bottom: 10px;" data-i18n="dash_health_score_title">Overall Health Score</h3>
+                            <div style="position: relative; width: 110px; height: 110px; margin: 0 auto 10px auto;">
+                                <svg width="110" height="110" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,0.03)" stroke-width="7" fill="transparent"/>
+                                    <circle id="health-score-ring" cx="50" cy="50" r="42" stroke="url(#health-glow-grad)" stroke-width="7" fill="transparent" stroke-dasharray="263.89" stroke-dashoffset="263.89" stroke-linecap="round" style="transition: stroke-dashoffset 0.6s ease-out; transform: rotate(-90deg); transform-origin: 50% 50%;"/>
+                                    <defs>
+                                        <linearGradient id="health-glow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#0284c7" />
+                                            <stop offset="100%" stop-color="#10b981" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div id="health-score-num" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.6rem; font-weight: 800; color: var(--text-primary);">96%</div>
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 5px;">
-                                <div class="vital-value" id="dash-val-bp">120 / 80 <span style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted);">mmHg</span></div>
-                                <div style="font-size: 0.75rem; font-weight: 700; color: #10b981;" id="dash-bp-accuracy-score">96% Optimal Target</div>
-                            </div>
-                            
-                            <!-- Detailed clinical calculations: MAP & Pulse Pressure -->
-                            <div style="display: flex; gap: 15px; font-size: 0.72rem; color: var(--text-secondary); margin-top: 6px;">
-                                <span><strong>MAP:</strong> <span id="dash-bp-map">93.3 mmHg</span> (Norm: 70-100)</span>
-                                <span><strong>Pulse Pressure:</strong> <span id="dash-bp-pp">40 mmHg</span> (Norm: 30-50)</span>
+                            <div style="font-size: 0.72rem; color: var(--text-muted);" id="health-score-status" data-i18n="dash_score_opt">Clinical safety metrics calculated in optimal range.</div>
+                        </div>
+
+                        <!-- SMART WATER INTAKE TRACKER & AI HYDRATION SUGGESTIONS -->
+                        <div class="widget-card" style="border-top: 3px solid #38bdf8;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <div>
+                                    <h3 style="font-size: 1.05rem; font-weight: 700; color: #0284c7; margin: 0;">💧 Smart Water Intake Tracker</h3>
+                                    <p style="font-size: 0.72rem; color: var(--text-secondary); margin: 2px 0 0 0;">AI hydration optimizer synced with your real-time vitals.</p>
+                                </div>
+                                <span id="hydration-percent-badge" class="badge" style="background: rgba(2, 132, 199, 0.12); color: #0284c7; font-weight: 700; font-size: 0.78rem;">50% Done</span>
                             </div>
 
-                            <div class="bp-meter-container">
-                                <div class="bp-meter-bar">
-                                    <div class="bp-meter-fill" id="dash-bp-meter" style="width: 25%; background: #10b981;"></div>
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin: 10px 0 4px 0;">
+                                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-primary);">
+                                    <span id="hydration-current-val">1250</span> <span style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted);">/ <span id="hydration-target-val">2500</span> mL</span>
                                 </div>
-                                <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted);">
-                                    <span>Optimal</span>
-                                    <span>Elevated</span>
-                                    <span>Stage 1</span>
-                                    <span>Stage 2</span>
-                                    <span>Crisis</span>
-                                </div>
+                                <span style="font-size: 0.7rem; color: var(--text-muted);" id="hydration-glasses-text">~5 of 10 glasses</span>
+                            </div>
+
+                            <div class="hydration-progress-shell" style="margin-bottom: 12px;">
+                                <div class="hydration-progress-core" id="hydration-bar-fill" style="width: 50%;"></div>
+                            </div>
+
+                            <!-- Quick Log Buttons -->
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                                <button type="button" class="hydration-quick-btn" onclick="addWaterIntake(250)">+250 mL (1 Glass)</button>
+                                <button type="button" class="hydration-quick-btn" onclick="addWaterIntake(500)">+500 mL (1 Bottle)</button>
+                                <button type="button" class="hydration-quick-btn" onclick="resetWaterIntake()" style="color: #64748b; background: rgba(0,0,0,0.04);">🔄 Reset</button>
+                            </div>
+
+                            <!-- Generative AI Hydration Suggestion Output Box -->
+                            <div style="background: rgba(2, 132, 199, 0.05); border: 1px solid rgba(2, 132, 199, 0.2); border-radius: 8px; padding: 10px; font-size: 0.72rem; line-height: 1.45;">
+                                <strong style="color: #0284c7; display: flex; align-items: center; gap: 5px; margin-bottom: 3px;">
+                                    💡 AI Hydration Prescription:
+                                </strong>
+                                <span id="ai-hydration-advice" style="color: var(--text-secondary);">
+                                    At resting pulse (72 BPM) and standard body temp (98.6°F), baseline replenishment of 2,500 mL maintains cellular homeostasis. Take 250 mL in the next 45 minutes.
+                                </span>
                             </div>
                         </div>
 
-                        <!-- Heart Rate Telemetry & Live ECG Canvas -->
-                        <div class="vital-card">
-                            <div class="vital-title" style="display: flex; align-items: center; justify-content: space-between;">
-                                <span data-i18n="dash_hr_title">Heart Rate</span>
-                                <span class="heartbeat-pulse" style="width: 8px; height: 8px; background: #ef4444; border-radius: 50%; display: inline-block;"></span>
+                        <!-- Clinical Vitals & Blood Pressure Form -->
+                        <div class="widget-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <h3 data-i18n="dash_log_vitals_title">Manual Biometrics Override</h3>
+                                <button type="button" class="btn btn-secondary" id="simulate-live-vitals-btn" style="font-size: 0.68rem; padding: 4px 8px;" data-i18n="dash_sim_live">🔴 Simulate Live</button>
                             </div>
-                            <div class="vital-value" id="dash-val-hr">72 <span style="font-size: 0.75rem; font-weight: 500;">BPM</span></div>
-                            <div class="vital-badge" id="dash-status-hr" style="color: #10b981;">● Normal Resting</div>
-                            <!-- Real-time animated ECG pulse wave canvas -->
-                            <div class="ecg-canvas-container">
-                                <canvas id="ecg-canvas" width="220" height="75"></canvas>
-                            </div>
-                        </div>
+                            <form id="vitals-form" style="display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; gap: 10px;">
+                                    <div style="flex: 1;">
+                                        <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;" data-i18n="lbl_sys_bp">Systolic BP (mmHg)</label>
+                                        <input type="number" id="vital-sys" placeholder="120" min="70" max="260" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;" data-i18n="lbl_dia_bp">Diastolic BP (mmHg)</label>
+                                        <input type="number" id="vital-dia" placeholder="80" min="40" max="180" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
+                                    </div>
+                                </div>
 
-                        <!-- Oxygen SpO2 Telemetry -->
-                        <div class="vital-card">
-                            <div class="vital-title" data-i18n="dash_spo2_title">Oxygen Saturation (SpO₂)</div>
-                            <div class="vital-value" id="dash-val-spo2">98 <span style="font-size: 0.75rem; font-weight: 500;">%</span></div>
-                            <div class="vital-badge" id="dash-status-spo2" style="color: #10b981;">● Optimal Oxygenation</div>
-                            <div style="margin-top: 14px; font-size: 0.72rem; color: var(--text-muted);">
-                                <div><strong>Body Temp:</strong> <span id="dash-val-temp">98.6 °F</span></div>
-                                <div style="margin-top: 3px;"><strong>Risk Level:</strong> <span style="color: #10b981;" id="dash-val-risk">Low Cardiovascular Risk</span></div>
-                            </div>
+                                <div style="display: flex; gap: 10px;">
+                                    <div style="flex: 1;">
+                                        <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;" data-i18n="lbl_heart_rate">Heart Rate (BPM)</label>
+                                        <input type="number" id="vital-hr" placeholder="72" min="30" max="220" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;" data-i18n="lbl_spo2">Oxygen SpO₂ (%)</label>
+                                        <input type="number" id="vital-spo2" placeholder="98" min="70" max="100" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;" data-i18n="lbl_body_temp">Body Temperature (°F)</label>
+                                    <input type="number" step="0.1" id="vital-temp" placeholder="98.6" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
+                                </div>
+
+                                <button type="submit" class="btn btn-primary" style="width: 100%;" data-i18n="btn_calc_vitals">Calculate Biometrics &amp; Save</button>
+                            </form>
+                            <div style="margin-top: 10px; font-size: 0.72rem; color: var(--text-secondary); text-align: center;" id="vitals-status" data-i18n="vitals_status_norm">Cardiovascular metrics normal &amp; stable.</div>
                         </div>
                     </div>
 
-                    <!-- Vitals trend line -->
-                    <div class="widget-card" style="flex-grow: 1;">
-                        <h3 data-i18n="dash_trend_title">Continuous Biometric Trend</h3>
-                        <div style="height: 120px; position: relative; margin-top: 10px;">
-                            <canvas id="vitals-chart" style="width: 100%; height: 120px;"></canvas>
+                    <!-- RIGHT COLUMN -->
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <!-- Accurate Telemetry Dashboard grid -->
+                        <div class="dashboard-vitals-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                            <!-- Blood Pressure Telemetry -->
+                            <div class="vital-card" style="grid-column: span 2;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div class="vital-title" data-i18n="dash_bp_title">Blood Pressure Status</div>
+                                    <span class="bp-stage-badge" id="dash-bp-stage" style="background: rgba(16,185,129,0.15); color: #10b981;">Normal (&lt;120/80)</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 5px;">
+                                    <div class="vital-value" id="dash-val-bp">120 / 80 <span style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted);">mmHg</span></div>
+                                    <div style="font-size: 0.75rem; font-weight: 700; color: #10b981;" id="dash-bp-accuracy-score">96% Optimal Target</div>
+                                </div>
+                                
+                                <div style="display: flex; gap: 15px; font-size: 0.72rem; color: var(--text-secondary); margin-top: 6px;">
+                                    <span><strong>MAP:</strong> <span id="dash-bp-map">93.3 mmHg</span> (Norm: 70-100)</span>
+                                    <span><strong>Pulse Pressure:</strong> <span id="dash-bp-pp">40 mmHg</span> (Norm: 30-50)</span>
+                                </div>
+
+                                <div class="bp-meter-container">
+                                    <div class="bp-meter-bar">
+                                        <div class="bp-meter-fill" id="dash-bp-meter" style="width: 25%; background: #10b981;"></div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted);">
+                                        <span>Optimal</span>
+                                        <span>Elevated</span>
+                                        <span>Stage 1</span>
+                                        <span>Stage 2</span>
+                                        <span>Crisis</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Heart Rate Telemetry & Live ECG Canvas -->
+                            <div class="vital-card">
+                                <div class="vital-title" style="display: flex; align-items: center; justify-content: space-between;">
+                                    <span data-i18n="dash_hr_title">Heart Rate &amp; Pulse</span>
+                                    <span class="heartbeat-live-icon" id="dash-heart-icon">💓</span>
+                                </div>
+                                <div class="vital-value" id="dash-val-hr">72 <span style="font-size: 0.75rem; font-weight: 500;">BPM</span></div>
+                                <div class="vital-badge" id="dash-status-hr" style="color: #10b981;">● Normal Resting</div>
+                                <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 4px;">Zone: <span id="dash-hr-zone" style="color: #10b981; font-weight: 700;">Resting Zone (60-75)</span></div>
+                                <!-- Real-time animated ECG pulse wave canvas -->
+                                <div class="ecg-canvas-container" style="margin-top: 8px;">
+                                    <canvas id="ecg-canvas" width="220" height="75"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Oxygen SpO2 Telemetry -->
+                            <div class="vital-card">
+                                <div class="vital-title" style="display: flex; align-items: center; justify-content: space-between;">
+                                    <span data-i18n="dash_spo2_title">Oxygen Saturation (SpO₂)</span>
+                                    <span style="font-size: 1.1rem;">🫁</span>
+                                </div>
+                                <div class="vital-value" id="dash-val-spo2">98 <span style="font-size: 0.75rem; font-weight: 500;">%</span></div>
+                                <div class="vital-badge" id="dash-status-spo2" style="color: #10b981;">● Optimal Oxygenation</div>
+                                <div style="margin-top: 14px; font-size: 0.72rem; color: var(--text-muted);">
+                                    <div><strong>Body Temp:</strong> <span id="dash-val-temp" style="font-weight: 700; color: var(--text-primary);">98.6 °F (37.0 °C)</span></div>
+                                    <div style="margin-top: 3px;"><strong>Risk Level:</strong> <span style="color: #10b981; font-weight: 700;" id="dash-val-risk">Low Cardiovascular Risk</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vitals trend line -->
+                        <div class="widget-card" style="flex-grow: 1;">
+                            <h3 data-i18n="dash_trend_title">Continuous Biometric Trend</h3>
+                            <div style="height: 120px; position: relative; margin-top: 10px;">
+                                <canvas id="vitals-chart" style="width: 100%; height: 120px;"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
-            
 
                 <!-- MedSave AI-Style System Footer -->
                 <footer class="aura-footer" style="margin-top: 45px; border-top: 1px solid rgba(217, 119, 6, 0.25); background: transparent; padding: 32px 0 16px 0;">
@@ -1332,22 +1463,142 @@
             </section>
 
             <!-- ================= VIEW 6: EMERGENCY ================= -->
-            <section id="section-emergency" class="section-view hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="widget-card" style="border-left: 5px solid var(--accent-red); background: rgba(239, 68, 68, 0.02);">
-                    <h2 style="font-size: 1.3rem; color: #ef4444; font-weight: 800; margin-bottom: 10px;" data-i18n="sos_title">🚨 SOS Clinical Warnings</h2>
-                    <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 15px;" data-i18n="sos_desc">If you display severe symptoms like difficulty breathing, chest pain, or oxygen levels below 94%, please activate emergency services immediately.</p>
-                    
-                    <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 8px; padding: 15px; text-align: left; font-size: 0.78rem; line-height: 1.5; margin-bottom: 20px;">
-                        <strong style="color: #f87171; display: block; margin-bottom: 5px;" data-i18n="sos_directives_title">📋 Critical Emergency Directives:</strong>
-                        <ul style="margin-left: 15px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 5px;">
-                            <li data-i18n="sos_dir_1">Sit upright to assist lungs and respiration.</li>
-                            <li data-i18n="sos_dir_2">Minimize movement and avoid physical exertion.</li>
-                            <li data-i18n="sos_dir_3">Keep emergency phone contacts accessible.</li>
-                            <li data-i18n="sos_dir_4">Ventilate rooms and turn on fans.</li>
-                        </ul>
+            <section id="section-emergency" class="section-view hidden" style="display: flex; flex-direction: column; gap: 20px;">
+                
+                <!-- TOP EMERGENCY TRIAGE ROW: SOS ALERTS & GENERATIVE AI ASSISTANT -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- LEFT: SOS WARNINGS -->
+                    <div class="widget-card" style="border-left: 5px solid var(--accent-red); background: rgba(239, 68, 68, 0.02);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h2 style="font-size: 1.25rem; color: #ef4444; font-weight: 800; margin: 0;" data-i18n="sos_title">🚨 Emergency Clinical Triage &amp; SOS</h2>
+                            <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; font-weight: 800; font-size: 0.74rem;">CRITICAL RESPONSE</span>
+                        </div>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px;" data-i18n="sos_desc">
+                            Severe clinical symptoms (chest pressure, severe dyspnea, anaphylaxis, uncontrollable hemorrhage, SpO₂ &lt; 90%) require immediate emergency dispatch.
+                        </p>
+                        
+                        <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 8px; padding: 12px; font-size: 0.76rem; line-height: 1.5; margin-bottom: 16px;">
+                            <strong style="color: #f87171; display: block; margin-bottom: 4px;" data-i18n="sos_directives_title">📋 Life-Saving Golden Hour Directives:</strong>
+                            <ul style="margin-left: 15px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px;">
+                                <li data-i18n="sos_dir_1">Sit upright or recovery position based on breathing.</li>
+                                <li data-i18n="sos_dir_2">Minimize patient movement and avoid all physical exertion.</li>
+                                <li data-i18n="sos_dir_3">Do NOT give oral medicines if patient is unconscious.</li>
+                                <li data-i18n="sos_dir_4">Have emergency ambulance phone lines accessible.</li>
+                            </ul>
+                        </div>
+
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" id="sos-trigger-btn" style="background: #ef4444; flex: 1; font-size: 0.82rem; padding: 10px;" data-i18n="btn_trigger_sos">🚨 Trigger SOS Alarm</button>
+                            <a href="tel:108" class="btn btn-secondary" style="border-color: #ef4444; color: #ef4444; font-size: 0.82rem; padding: 10px 14px; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                                📞 Call 108
+                            </a>
+                        </div>
                     </div>
 
-                    <button class="btn btn-primary" id="sos-trigger-btn" style="background: #ef4444; width: 100%; font-size: 0.85rem; padding: 10px;" data-i18n="btn_trigger_sos">🚨 Trigger SOS Warning</button>
+                    <!-- RIGHT: GENERATIVE AI EMERGENCY PRESCRIPTION & TRIAGE ASSISTANT -->
+                    <div class="widget-card" style="border-top: 3px solid #0284c7;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <h3 style="font-size: 1.1rem; color: #0284c7; margin: 0; font-weight: 700;">⚡ Generative AI Emergency Triage</h3>
+                            <span class="badge" style="background: rgba(2, 132, 199, 0.12); color: #0284c7; font-size: 0.72rem;">Local AI Engine</span>
+                        </div>
+                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 10px;">
+                            Describe acute symptoms or choose a scenario to instantly generate emergency medicine recommendations &amp; dispatch advice.
+                        </p>
+
+                        <!-- Quick Scenario Buttons -->
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;">
+                            <button type="button" class="emergency-scenario-pill active" data-scenario="cardiac" onclick="selectEmergencyScenario('cardiac')">💔 Cardiac / Chest Pain</button>
+                            <button type="button" class="emergency-scenario-pill" data-scenario="asthma" onclick="selectEmergencyScenario('asthma')">🫁 Asthma Attack</button>
+                            <button type="button" class="emergency-scenario-pill" data-scenario="bleeding" onclick="selectEmergencyScenario('bleeding')">🩸 Severe Bleeding</button>
+                            <button type="button" class="emergency-scenario-pill" data-scenario="allergy" onclick="selectEmergencyScenario('allergy')">🐝 Anaphylaxis Shock</button>
+                            <button type="button" class="emergency-scenario-pill" data-scenario="fever" onclick="selectEmergencyScenario('fever')">🌡️ High Fever / Seizure</button>
+                            <button type="button" class="emergency-scenario-pill" data-scenario="poison" onclick="selectEmergencyScenario('poison')">🧪 Poison Ingestion</button>
+                        </div>
+
+                        <!-- Symptom Input & Generator -->
+                        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                            <input type="text" id="emergency-symptom-input" placeholder="Or type symptoms: e.g. severe crushing chest pain, sweating, left arm ache..." style="flex: 1; background: rgba(0,0,0,0.06); border: 1px solid var(--border-glass); padding: 8px 12px; border-radius: 6px; font-size: 0.78rem; color: var(--text-primary); outline: none;">
+                            <button type="button" class="btn btn-primary" id="generate-ai-emergency-btn" onclick="generateAiEmergencyPlan()" style="font-size: 0.75rem; padding: 8px 14px; white-space: nowrap;">
+                                ⚡ Generate AI Plan
+                            </button>
+                        </div>
+
+                        <!-- Live AI Generated Advice Strip -->
+                        <div id="ai-emergency-advice-box" style="background: rgba(239, 68, 68, 0.04); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 10px; font-size: 0.74rem; line-height: 1.45;">
+                            <strong style="color: #ef4444; display: block; margin-bottom: 3px;" id="ai-emergency-advice-title">
+                                🚨 AI Protocol: Acute Cardiac Emergency (Myocardial Infarction / Angina)
+                            </strong>
+                            <p id="ai-emergency-advice-text" style="color: var(--text-primary); margin: 0;">
+                                Administer Aspirin 300mg (chewed) + Sorbitrate 5mg (sublingual) immediately unless Systolic BP &lt; 90 mmHg. Seat patient in W-posture and dispatch 108 ambulance.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REQUIRED EMERGENCY MEDICINES & FIRST-AID DRUG PROTOCOLS -->
+                <div class="widget-card" id="emergency-medicines-card" style="border-top: 3px solid #ef4444;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                        <div>
+                            <h3 style="font-size: 1.15rem; font-weight: 800; color: #ef4444; margin: 0;" id="emergency-medicines-header">
+                                💊 Required Emergency Medicines: Cardiac Protocol
+                            </h3>
+                            <p style="font-size: 0.76rem; color: var(--text-secondary); margin-top: 2px;">
+                                First-line pharmacological interventions and life-saving dosages while awaiting specialized emergency ambulance transport.
+                            </p>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" class="btn btn-secondary" onclick="window.print()" style="font-size: 0.72rem; padding: 5px 12px;">
+                                🖨️ Print Emergency Dispatch Sheet
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic List of Required Medicines -->
+                    <div id="emergency-medicines-list" style="display: flex; flex-direction: column; gap: 8px;">
+                        <!-- Filled dynamically by JS -->
+                    </div>
+
+                    <!-- Contraindications Alert -->
+                    <div id="emergency-contraindications-box" style="margin-top: 12px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 10px; font-size: 0.72rem; color: #ef4444;">
+                        <strong style="display: block; margin-bottom: 3px;">⚠️ CRITICAL CLINICAL CONTRAINDICATIONS:</strong>
+                        <ul id="emergency-contraindications-list" style="margin-left: 18px; line-height: 1.45;">
+                            <!-- Filled dynamically by JS -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- NEARBY EMERGENCY HOSPITALS LOCATOR (OFFLINE DIRECTORY & GPS) -->
+                <div class="widget-card" style="border-top: 3px solid #10b981;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 15px;">
+                        <div>
+                            <h3 style="font-size: 1.15rem; font-weight: 800; color: #10b981; margin: 0;">
+                                🏥 Nearby Emergency Hospitals &amp; Trauma Centers
+                            </h3>
+                            <p style="font-size: 0.76rem; color: var(--text-secondary); margin-top: 2px;">
+                                Real-time emergency referral facilities with 24/7 ICU beds, blood banks &amp; direct ambulance dispatch lines.
+                            </p>
+                        </div>
+
+                        <!-- City selector and GPS locator -->
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-primary);">📍 City:</label>
+                            <select id="emergency-city-selector" onchange="changeEmergencyCity(this.value)" style="background: rgba(0,0,0,0.06); border: 1px solid var(--border-glass); border-radius: 6px; padding: 6px 12px; font-size: 0.78rem; color: var(--text-primary); outline: none; cursor: pointer;">
+                                <option value="hyderabad" selected>Hyderabad, Telangana</option>
+                                <option value="vijayawada">Vijayawada / Amaravati, AP</option>
+                                <option value="visakhapatnam">Visakhapatnam (Vizag), AP</option>
+                                <option value="bengaluru">Bengaluru, Karnataka</option>
+                                <option value="delhi">New Delhi / NCR</option>
+                            </select>
+                            <button type="button" class="btn btn-secondary" onclick="detectUserLocation()" style="font-size: 0.74rem; padding: 6px 12px;">
+                                🎯 Detect My GPS
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hospital Directory Grid -->
+                    <div id="emergency-hospitals-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px;">
+                        <!-- Filled dynamically by JS -->
+                    </div>
                 </div>
 
                 <div class="widget-card">
@@ -1378,7 +1629,6 @@
                         </div>
                     </div>
                 </div>
-            
 
                 <!-- MedSave AI-Style System Footer -->
                 <footer class="aura-footer" style="margin-top: 45px; border-top: 1px solid rgba(217, 119, 6, 0.25); background: transparent; padding: 32px 0 16px 0;">

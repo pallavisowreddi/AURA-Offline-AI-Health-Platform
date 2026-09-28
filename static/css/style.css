@@ -3449,3 +3449,168 @@ body.dark-theme .landing-attribution-box {
     }
 }
 
+/* =========================================================================
+   BLUETOOTH HEALTH HUB & LIVE TELEMETRY STYLES
+   ========================================================================= */
+
+.ble-device-banner {
+    background: linear-gradient(135deg, rgba(2, 132, 199, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%);
+    border: 1.5px solid rgba(2, 132, 199, 0.25);
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 20px rgba(2, 132, 199, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.ble-device-banner.connected {
+    border-color: rgba(16, 185, 129, 0.4);
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
+}
+
+.ble-pulse-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    background: #ef4444;
+    transition: background 0.3s ease;
+}
+
+.ble-pulse-indicator.active {
+    background: #10b981;
+    box-shadow: 0 0 12px #10b981;
+    animation: blePulseRing 1.8s infinite;
+}
+
+@keyframes blePulseRing {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.heartbeat-live-icon {
+    display: inline-block;
+    color: #ef4444;
+    font-size: 1.3rem;
+    animation: liveCardiacBeat 1s infinite;
+}
+
+@keyframes liveCardiacBeat {
+    0% { transform: scale(1); }
+    15% { transform: scale(1.28); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.18); }
+    60% { transform: scale(1); }
+    100% { transform: scale(1); }
+}
+
+/* Water Hydration Glass Bar */
+.hydration-progress-shell {
+    height: 16px;
+    background: rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+}
+
+.hydration-progress-core {
+    height: 100%;
+    background: linear-gradient(90deg, #38bdf8 0%, #0284c7 100%);
+    border-radius: 20px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 12px rgba(2, 132, 199, 0.4);
+}
+
+.hydration-quick-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-glass);
+    background: rgba(2, 132, 199, 0.08);
+    color: #0284c7;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.hydration-quick-btn:hover {
+    background: #0284c7;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* Advantage Cards Grid */
+.ble-advantage-card {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    transition: all 0.25s ease;
+}
+
+.ble-advantage-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(2, 132, 199, 0.4);
+    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.08);
+}
+
+/* =========================================================================
+   EMERGENCY HOSPITALS & MEDICINE PROTOCOL STYLES
+   ========================================================================= */
+
+.hospital-card-item {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    transition: all 0.25s ease;
+}
+
+.hospital-card-item:hover {
+    border-color: rgba(239, 68, 68, 0.35);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.08);
+    transform: translateY(-1px);
+}
+
+.emergency-scenario-pill {
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border-glass);
+    background: rgba(0, 0, 0, 0.04);
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.emergency-scenario-pill.active, .emergency-scenario-pill:hover {
+    background: #ef4444;
+    color: #ffffff;
+    border-color: #ef4444;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.emergency-med-row {
+    background: rgba(0, 0, 0, 0.02);
+    border-left: 4px solid #ef4444;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+

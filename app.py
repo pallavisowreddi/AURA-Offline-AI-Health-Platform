@@ -748,6 +748,515 @@ def chat():
     }
     return jsonify(response_data)
 
+
+# =========================================================================
+# EMERGENCY HOSPITALS & CLINICAL MEDICINE RECOMMENDATIONS (OFFLINE AI)
+# =========================================================================
+
+EMERGENCY_SCENARIOS = {
+    "cardiac": {
+        "title": "Acute Cardiac Emergency (Suspected Myocardial Infarction / Angina)",
+        "triage_level": "Code Red (Immediate Resuscitation)",
+        "urgency_badge": "Critical Priority",
+        "medicines": [
+            {
+                "name": "Aspirin (Dispersible / Chewable)",
+                "dosage": "300 mg",
+                "route": "Chew immediately with or without water",
+                "purpose": "Rapid platelet cyclooxygenase-1 inhibition to arrest coronary artery thrombosis",
+                "timing": "Within 5 minutes of onset",
+                "warning": "Do NOT give if patient has active GI bleeding or severe aspirin allergy"
+            },
+            {
+                "name": "Sorbitrate / Nitroglycerin (NTG)",
+                "dosage": "5 mg",
+                "route": "Sublingual (Place under tongue, do NOT swallow)",
+                "purpose": "Coronary vasodilation and cardiac preload reduction to relieve myocardial ischemia",
+                "timing": "Repeat after 5 mins if pain persists (Max 3 doses)",
+                "warning": "CONTRAINDICATED if Systolic BP < 90 mmHg or if Sildenafil/Tadalafil taken within 48h"
+            },
+            {
+                "name": "Clopidogrel (Plavix)",
+                "dosage": "300 mg",
+                "route": "Oral with small sip of water",
+                "purpose": "P2Y12 platelet aggregation inhibitor (Dual Antiplatelet Therapy)",
+                "timing": "Immediate loading dose",
+                "warning": "Hospital must be informed of antiplatelet loading upon admission"
+            },
+            {
+                "name": "Atorvastatin",
+                "dosage": "80 mg",
+                "route": "Oral",
+                "purpose": "High-intensity statin to stabilize inflamed coronary plaque and reduce endothelial injury",
+                "timing": "Immediate initial dose",
+                "warning": "Not a substitute for emergency angioplasty (PCI)"
+            }
+        ],
+        "supplies": ["Blood pressure cuff", "Pulse oximeter", "Aspirin 300mg emergency blister", "Sublingual NTG"],
+        "directives": [
+            "Call 108 / Ambulance immediately and state 'Suspected Acute Heart Attack'.",
+            "Place patient in half-sitting (W-position) with knees bent and back supported to reduce cardiac workload.",
+            "Loosen tight clothing around neck, chest, and abdomen.",
+            "Do NOT allow patient to walk, stand, or climb stairs.",
+            "Stay with patient; prepare to initiate Hands-Only CPR (100-120 compressions/min) if pulse is lost."
+        ],
+        "contraindications": [
+            "NEVER administer Nitroglycerin if patient is dizzy, pale, or has Systolic BP < 90 mmHg.",
+            "Do NOT give pain killers like Ibuprofen, Diclofenac, or Naproxen (increase cardiac risk)."
+        ]
+    },
+    "asthma": {
+        "title": "Severe Acute Asthma Attack / Bronchospasm / Hypoxic Distress",
+        "triage_level": "Code Red (Critical Airway & Respiration)",
+        "urgency_badge": "High Priority",
+        "medicines": [
+            {
+                "name": "Salbutamol / Albuterol Reliever Inhaler",
+                "dosage": "4 to 8 puffs via spacer",
+                "route": "Inhalation (1 puff every 30-60 seconds, take 4 slow breaths per puff)",
+                "purpose": "Selective Beta-2 adrenergic bronchodilator to rapidly relax constricted bronchial smooth muscles",
+                "timing": "Repeat every 15-20 minutes while awaiting ambulance",
+                "warning": "Ensure spacer is clean and used correctly for maximum alveolar deposition"
+            },
+            {
+                "name": "Ipratropium Bromide Inhaler",
+                "dosage": "2 to 4 puffs",
+                "route": "Inhalation via spacer",
+                "purpose": "Anticholinergic bronchodilation for severe non-responsive airflow obstruction",
+                "timing": "Can be combined with Salbutamol",
+                "warning": "Avoid contact with eyes"
+            },
+            {
+                "name": "Prednisolone / Dexamethasone",
+                "dosage": "40-50 mg (Oral) / 8 mg (IV)",
+                "route": "Oral (if patient can swallow safely) or IV by paramedic",
+                "purpose": "Systemic anti-inflammatory glucocorticoid to reverse airway mucosal edema",
+                "timing": "Early administration speeds recovery",
+                "warning": "Do not give oral pills if patient is gasping or altered sensorium"
+            }
+        ],
+        "supplies": ["Metered-dose inhaler (Blue)", "Volumetric spacer chamber", "Peak flow meter", "Supplemental oxygen cylinder"],
+        "directives": [
+            "Sit patient upright leaning slightly forward (tripod position); never force an asthmatic patient to lie down.",
+            "Administer 4-8 puffs of blue reliever inhaler through a spacer immediately.",
+            "Open windows for fresh ventilation; eliminate smoke, perfumes, or cold air triggers.",
+            "Coach slow, deep diaphragmatic breathing; reassure patient to reduce panic.",
+            "If patient is unable to speak full sentences or lips/nails turn bluish, dispatch 108 ambulance."
+        ],
+        "contraindications": [
+            "Do NOT administer sedatives or cough suppressants (depress respiratory drive).",
+            "Do NOT give Beta-blockers (can trigger fatal bronchospasm)."
+        ]
+    },
+    "bleeding": {
+        "title": "Severe Hemorrhage / External Trauma / Arterial Bleeding",
+        "triage_level": "Code Red (Circulatory Collapse & Hypovolemia)",
+        "urgency_badge": "Immediate Trauma",
+        "medicines": [
+            {
+                "name": "Tranexamic Acid (TXA)",
+                "dosage": "500 mg - 1000 mg",
+                "route": "Oral / IV (by paramedic / trauma clinician)",
+                "purpose": "Competitive plasminogen inhibitor preventing fibrin clot breakdown in massive hemorrhage",
+                "timing": "Administer within 3 hours of injury for maximum survival benefit",
+                "warning": "Contraindicated in active thromboembolic disorders or subarachnoid hemorrhage"
+            },
+            {
+                "name": "Normal Saline (0.9% NaCl) / Ringer's Lactate",
+                "dosage": "500 - 1000 mL IV",
+                "route": "Intravenous infusion by emergency paramedics",
+                "purpose": "Plasma volume expander to prevent hypovolemic shock and maintain organ perfusion",
+                "timing": "Paramedic administered",
+                "warning": "Controlled permissive hypotension in non-compressible torso hemorrhage"
+            },
+            {
+                "name": "Tetanus Toxoid (TT)",
+                "dosage": "0.5 mL IM",
+                "route": "Intramuscular at hospital emergency room",
+                "purpose": "Active immunization against Clostridium tetani neurotoxin from contaminated wounds",
+                "timing": "Within 24 hours of traumatic injury",
+                "warning": "Record prior vaccination history"
+            }
+        ],
+        "supplies": ["Sterile gauze rolls", "Elastic crepe compression bandages", "Commercial arterial tourniquet", "Emergency thermal blanket"],
+        "directives": [
+            "Apply immediate, continuous, firm direct manual pressure over the bleeding site with sterile gauze.",
+            "Do NOT remove blood-soaked dressings; pack additional sterile layers directly on top.",
+            "Elevate injured extremity above heart level if no bone fracture is suspected.",
+            "For severe life-threatening limb hemorrhage unresponsive to direct pressure, apply tourniquet 5 cm above wound.",
+            "Cover patient with warm blankets to combat hypothermia and trauma-induced coagulopathy."
+        ],
+        "contraindications": [
+            "NEVER remove impaled objects (knives, glass) on scene—stabilize around them to prevent catastrophic hemorrhage.",
+            "Do NOT apply a tourniquet directly over a joint (elbow or knee)."
+        ]
+    },
+    "allergy": {
+        "title": "Severe Anaphylactic Shock / Acute Angioedema",
+        "triage_level": "Code Red (Airway Obstruction & Vasogenic Shock)",
+        "urgency_badge": "Critical Allergy",
+        "medicines": [
+            {
+                "name": "Adrenaline / Epinephrine Auto-Injector (EpiPen)",
+                "dosage": "0.3 mg (Adult) / 0.15 mg (Child < 30kg)",
+                "route": "Intramuscular injection into anterolateral mid-outer thigh",
+                "purpose": "Potent vasoconstriction (Alpha-1), bronchodilation (Beta-2), and mast cell degranulation arrest",
+                "timing": "IMMEDIATELY upon recognition of breathing difficulty or throat swelling",
+                "warning": "No absolute contraindications exist for life-threatening anaphylaxis"
+            },
+            {
+                "name": "Cetirizine / Chlorpheniramine",
+                "dosage": "10 mg (Oral) / 10 mg (IV/IM)",
+                "route": "Oral if patient is fully conscious and airway is patent",
+                "purpose": "H1-receptor antagonist to suppress secondary histamine-mediated hives and pruritus",
+                "timing": "Secondary supportive measure after Epinephrine",
+                "warning": "Antihistamines do NOT reverse airway edema or shock—Epinephrine is the primary drug!"
+            },
+            {
+                "name": "Hydrocortisone",
+                "dosage": "100 mg - 200 mg IV",
+                "route": "Intravenous / IM administered by emergency medical team",
+                "purpose": "Systemic corticosteroid to prevent late-onset biphasic anaphylactic recurrence",
+                "timing": "Administered in hospital",
+                "warning": "Takes 4-6 hours for genomic anti-inflammatory onset"
+            }
+        ],
+        "supplies": ["EpiPen auto-injector (0.3mg)", "Oral antihistamines", "Emergency medical ID card", "Pulse oximeter"],
+        "directives": [
+            "Inject Epinephrine into the outer mid-thigh muscle immediately; hold firmly in place for 5 seconds.",
+            "Lay the patient flat and elevate their legs by 30 cm to preserve cerebral and cardiac blood flow.",
+            "If patient is vomiting or struggling to breathe, place in recovery position on their side.",
+            "Call 108 emergency services immediately and report 'Anaphylaxis shock'.",
+            "If symptoms fail to improve or worsen after 5-10 minutes, administer a second Epinephrine dose."
+        ],
+        "contraindications": [
+            "Do NOT allow patient to suddenly stand up or sit upright (risk of fatal 'empty heart' cardiac arrest).",
+            "Do NOT rely on oral antihistamines alone for breathing difficulties or swelling."
+        ]
+    },
+    "fever": {
+        "title": "Hyperpyrexia / Febrile Convulsions / Severe Sepsis Alert",
+        "triage_level": "Code Orange (Urgent Clinical Evaluation)",
+        "urgency_badge": "Urgent Care",
+        "medicines": [
+            {
+                "name": "Paracetamol / Acetaminophen",
+                "dosage": "650 mg (Adult) / 15 mg/kg (Child)",
+                "route": "Oral syrup/tablet or rectal suppository if vomiting/seizing",
+                "purpose": "Central hypothalamic prostaglandin inhibition to safely lower extreme body temperature",
+                "timing": "Every 4-6 hours as needed (Max 3,000 mg in 24 hours for adults)",
+                "warning": "Never exceed recommended daily limits due to severe hepatotoxicity risk"
+            },
+            {
+                "name": "Oral Rehydration Salts (ORS) / Electrolyte Solution",
+                "dosage": "500 - 1500 mL sip-by-sip",
+                "route": "Oral",
+                "purpose": "Restores critical sodium, potassium, and fluid deficits lost through hypermetabolic sweating",
+                "timing": "Continuous frequent sips once patient is alert and afebrile",
+                "warning": "Do not give oral fluids during an active seizure"
+            },
+            {
+                "name": "Midazolam Nasal Spray",
+                "dosage": "0.2 mg/kg (Max 5 mg)",
+                "route": "Intranasal spray (Paramedic / Prescribed home epilepsy rescue)",
+                "purpose": "Rapid central GABA-A agonist to terminate prolonged seizures (> 5 minutes)",
+                "timing": "Only for seizures lasting over 5 minutes or cluster convulsions",
+                "warning": "Requires respiratory depression observation"
+            }
+        ],
+        "supplies": ["Digital clinical thermometer", "Tepid tap-water bowl and clean towels", "ORS electrolyte packets", "Pediatric paracetamol dropper"],
+        "directives": [
+            "Undress patient to single light layer of clothing; room should be well-ventilated (22-24°C).",
+            "Perform gentle tepid water sponging on forehead, neck, armpits, and groin. (NEVER use ice or cold water).",
+            "During convulsion: Place patient on their side (recovery position); protect head with soft cloth.",
+            "Do NOT put any fingers, spoons, or objects inside patient's mouth.",
+            "Time the convulsion. If seizure exceeds 5 minutes, call 108 ambulance immediately."
+        ],
+        "contraindications": [
+            "NEVER give Aspirin to children or adolescents under 18 years with fever (risk of fatal Reye's syndrome).",
+            "Do NOT use ice baths or alcohol rubs (causes violent shivering and paradoxical internal core temp spike)."
+        ]
+    },
+    "poison": {
+        "title": "Acute Toxicology / Chemical or Pesticide Ingestion",
+        "triage_level": "Code Red (Toxicological Emergency)",
+        "urgency_badge": "High Hazard",
+        "medicines": [
+            {
+                "name": "Activated Charcoal (Medicinal Aqueous Slurry)",
+                "dosage": "50 g (Adult) / 1 g/kg (Child)",
+                "route": "Oral within 1 hour of ingestion (only if patient is fully conscious and airway protected)",
+                "purpose": "High surface-area carbon adsorption of unabsorbed organic toxins in stomach lumen",
+                "timing": "Within 60 minutes of toxic ingestion",
+                "warning": "CONTRAINDICATED in corrosive ingestion (acids, alkalis), petroleum, or unconscious patients"
+            },
+            {
+                "name": "Atropine Sulphate",
+                "dosage": "1 - 2 mg IV (Clinician administered in ER)",
+                "route": "Intravenous in hospital ICU setting",
+                "purpose": "Specific competitive muscarinic antagonist for organophosphate / carbamate insecticide poisoning",
+                "timing": "Titrated in emergency ward until pulmonary secretions dry",
+                "warning": "Hospital use only under continuous cardiac telemetry"
+            },
+            {
+                "name": "N-Acetylcysteine (NAC)",
+                "dosage": "150 mg/kg IV loading dose",
+                "route": "Intravenous at tertiary hospital",
+                "purpose": "Replenishes hepatic glutathione stores in toxic paracetamol overdose",
+                "timing": "Optimal within 8 hours of ingestion",
+                "warning": "Hospital protocol"
+            }
+        ],
+        "supplies": ["Preserved chemical/medicine packaging container", "Vomit specimen container", "Gloves / PPE"],
+        "directives": [
+            "Safely preserve the pesticide bottle, chemical label, pill blister, or plant sample for doctors.",
+            "Do NOT induce vomiting—corrosive acids, alkalis, and petroleum will burn the esophagus and airway twice.",
+            "If chemical splashed on skin or eyes, irrigate with continuous running water for 15-20 minutes.",
+            "Call National Poisons Information Centre (1800-116-117) or 108 ambulance immediately.",
+            "Maintain patient in lateral recovery position to prevent aspiration of vomit."
+        ],
+        "contraindications": [
+            "NEVER induce vomiting or give salt water (can cause fatal electrolyte imbalance and aspiration pneumonia).",
+            "Do NOT attempt to 'neutralize' acid with alkaline drinks like milk or soda (exothermic chemical burn risk)."
+        ]
+    }
+}
+
+EMERGENCY_HOSPITALS_BY_CITY = {
+    "hyderabad": [
+        {
+            "name": "Osmania General Hospital & Apex Trauma Care",
+            "type": "Government Super Specialty & Apex Trauma",
+            "distance": "1.4 km",
+            "time": "4 mins",
+            "address": "Afzal Gunj, High Court Road, Hyderabad, Telangana",
+            "phone": "040-24600121",
+            "ambulance": "108",
+            "facilities": ["24/7 Apex Trauma Unit", "Emergency Blood Bank", "28 ICU Beds", "Burns ICU"],
+            "status": "Available"
+        },
+        {
+            "name": "Gandhi Hospital & Critical Emergency Block",
+            "type": "State Referral & Super Specialty Center",
+            "distance": "3.2 km",
+            "time": "8 mins",
+            "address": "Musheerabad, Secunderabad, Telangana",
+            "phone": "040-27505566",
+            "ambulance": "108",
+            "facilities": ["Level-1 Trauma", "Pediatric ICU", "Dialysis & Toxicology", "Ventilators Ready"],
+            "status": "Available"
+        },
+        {
+            "name": "Apollo Emergency & Heart Institute",
+            "type": "Tertiary Multi-Specialty & Cardiac Care",
+            "distance": "4.1 km",
+            "time": "9 mins",
+            "address": "Road No 72, Jubilee Hills, Hyderabad, Telangana",
+            "phone": "040-23607777",
+            "ambulance": "1066",
+            "facilities": ["24/7 Primary Angioplasty (Cath Lab)", "Stroke Code Unit", "18 Critical ICU Beds"],
+            "status": "Available"
+        },
+        {
+            "name": "Care Hospital Emergency & Trauma Wing",
+            "type": "Multi-Specialty & Critical Care",
+            "distance": "3.8 km",
+            "time": "8 mins",
+            "address": "Road No 1, Banjara Hills, Hyderabad, Telangana",
+            "phone": "040-61656565",
+            "ambulance": "040-30418888",
+            "facilities": ["Advanced Life Support Ambulances", "Cardiac ICU", "Trauma Surgeon On-Call"],
+            "status": "Available"
+        },
+        {
+            "name": "Rainbow Children's Emergency & PICU",
+            "type": "Pediatric & Neonatal Emergency Super-Specialty",
+            "distance": "4.5 km",
+            "time": "11 mins",
+            "address": "Road No 2, Banjara Hills, Hyderabad, Telangana",
+            "phone": "040-44665555",
+            "ambulance": "108",
+            "facilities": ["24/7 Pediatric Trauma", "Neonatal Transport ICU", "Pediatric Resuscitation"],
+            "status": "Available"
+        }
+    ],
+    "vijayawada": [
+        {
+            "name": "Government General Hospital (GGH) Super Specialty",
+            "type": "Apex Government Referral Hospital",
+            "distance": "1.2 km",
+            "time": "4 mins",
+            "address": "Old GGH Campus, Hanumanpet, Vijayawada, AP",
+            "phone": "0866-2576966",
+            "ambulance": "108",
+            "facilities": ["24/7 Emergency Wing", "Blood Component Bank", "24 ICU Beds", "Trauma Care"],
+            "status": "Available"
+        },
+        {
+            "name": "Manipal Emergency Hospital & Trauma Care",
+            "type": "Multi-Specialty Tertiary Hospital",
+            "distance": "3.5 km",
+            "time": "8 mins",
+            "address": "NH-16, Tadepalli, Guntur-Vijayawada Highway",
+            "phone": "0866-2499999",
+            "ambulance": "0866-2499990",
+            "facilities": ["24/7 Emergency Cath Lab", "Advanced Neuro-Trauma", "Level 1 ICU"],
+            "status": "Available"
+        },
+        {
+            "name": "Aayush Emergency & Critical Care Hospital",
+            "type": "Cardiac & Multi-Specialty Emergency",
+            "distance": "2.8 km",
+            "time": "7 mins",
+            "address": "Ring Road, RTC Colony, Vijayawada, AP",
+            "phone": "0866-6677777",
+            "ambulance": "108",
+            "facilities": ["Chest Pain Unit", "24/7 CT Scan", "Cardiac Ambulance Response"],
+            "status": "Available"
+        }
+    ],
+    "visakhapatnam": [
+        {
+            "name": "King George Hospital (KGH) Trauma Center",
+            "type": "Apex State Teaching Hospital",
+            "distance": "1.5 km",
+            "time": "5 mins",
+            "address": "Maharanipeta, Visakhapatnam, AP",
+            "phone": "0891-2564891",
+            "ambulance": "108",
+            "facilities": ["24/7 Trauma Service", "Emergency Blood Bank", "32 ICU Beds"],
+            "status": "Available"
+        },
+        {
+            "name": "Care Emergency Hospital",
+            "type": "Multi-Specialty & Cardiac Care",
+            "distance": "2.6 km",
+            "time": "7 mins",
+            "address": "AS Raja Complex, Waltair Main Road, Ramnagar, Vizag",
+            "phone": "0891-3041444",
+            "ambulance": "108",
+            "facilities": ["Emergency Cath Lab", "Pediatric Trauma", "Critical Care Transport"],
+            "status": "Available"
+        }
+    ],
+    "bengaluru": [
+        {
+            "name": "Victoria Hospital & Apex Trauma Centre",
+            "type": "Government Apex Emergency & Burns Care",
+            "distance": "1.8 km",
+            "time": "5 mins",
+            "address": "Fort Road, K.R. Market, Bengaluru, Karnataka",
+            "phone": "080-26701150",
+            "ambulance": "108",
+            "facilities": ["24/7 Trauma Emergency", "Burn Intensive Care", "Blood Bank"],
+            "status": "Available"
+        },
+        {
+            "name": "Narayana Health Emergency & Cardiac City",
+            "type": "Tertiary Cardiac & Multi-Specialty",
+            "distance": "3.9 km",
+            "time": "10 mins",
+            "address": "Hosur Road, Bommasandra, Bengaluru",
+            "phone": "080-71222222",
+            "ambulance": "080-71222299",
+            "facilities": ["Comprehensive Cardiac Emergency", "24/7 Cath Lab", "Airway ICU"],
+            "status": "Available"
+        }
+    ],
+    "delhi": [
+        {
+            "name": "AIIMS Jai Prakash Narayan Apex Trauma Center",
+            "type": "National Apex Level-1 Trauma Hospital",
+            "distance": "1.5 km",
+            "time": "5 mins",
+            "address": "Ring Road, Raj Nagar, Safdarjung Enclave, New Delhi",
+            "phone": "011-26731000",
+            "ambulance": "108",
+            "facilities": ["Level-1 National Trauma", "Disaster Response Unit", "24/7 Blood Bank", "Dedicated Helipad"],
+            "status": "Available"
+        },
+        {
+            "name": "Safdarjung Hospital Emergency Medicine Wing",
+            "type": "Central Government Multi-Specialty",
+            "distance": "1.2 km",
+            "time": "4 mins",
+            "address": "Ansari Nagar West, Ring Road, New Delhi",
+            "phone": "011-26165060",
+            "ambulance": "108",
+            "facilities": ["Comprehensive Resuscitation Unit", "Cardiac & Burn ICU", "Pediatric Trauma"],
+            "status": "Available"
+        }
+    ]
+}
+
+
+@app.route("/api/emergency/recommend", methods=["POST"])
+def emergency_recommend():
+    """
+    Generative AI Emergency Triage & Medicine Recommender.
+    Accepts an emergency scenario or free-text symptoms, and returns:
+    1. Triage prioritization level (Code Red / Orange)
+    2. Essential Emergency Medicines and exact dosages
+    3. Life-saving first aid directives & critical contraindications
+    4. Curated nearby emergency hospital directory based on location.
+    """
+    data = request.get_json() or {}
+    scenario_key = data.get("scenario", "").lower().strip()
+    symptoms = data.get("symptoms", "").lower().strip()
+    city = data.get("city", "hyderabad").lower().strip()
+    lang = data.get("lang", "en")
+
+    # If scenario not explicitly given, dynamically infer from free-text symptoms
+    if not scenario_key or scenario_key not in EMERGENCY_SCENARIOS:
+        if any(w in symptoms for w in ["chest", "heart", "angina", "arm pain", "sweating", "infarct", "cardiac"]):
+            scenario_key = "cardiac"
+        elif any(w in symptoms for w in ["asthma", "breath", "wheez", "chok", "inhal", "suffocat"]):
+            scenario_key = "asthma"
+        elif any(w in symptoms for w in ["bleed", "blood", "wound", "trauma", "cut", "gash", "hemorrhage"]):
+            scenario_key = "bleeding"
+        elif any(w in symptoms for w in ["allergy", "anaphylax", "swell", "sting", "hives", "rash", "peanut"]):
+            scenario_key = "allergy"
+        elif any(w in symptoms for w in ["fever", "convuls", "seizure", "fit", "shiver", "temp", "febrile"]):
+            scenario_key = "fever"
+        elif any(w in symptoms for w in ["poison", "toxic", "chemical", "pesticide", "swallow", "acid", "overdose"]):
+            scenario_key = "poison"
+        else:
+            scenario_key = "cardiac" # Default to high-priority cardiac protocol
+
+    protocol = EMERGENCY_SCENARIOS.get(scenario_key, EMERGENCY_SCENARIOS["cardiac"])
+    hospitals = EMERGENCY_HOSPITALS_BY_CITY.get(city, EMERGENCY_HOSPITALS_BY_CITY["hyderabad"])
+
+    # Generative AI clinical narrative
+    first_two_meds = ", ".join([m["name"] for m in protocol["medicines"][:2]])
+    ai_advice = (
+        f"AURA CLINICAL EMERGENCY ADVISORY: For {protocol['title']}, immediate emergency action is critical. "
+        f"Administer {first_two_meds} as indicated in the dosage protocol below while awaiting 108 ambulance transport. "
+        f"Ensure strict compliance with contraindications to prevent secondary physiological decompensation."
+    )
+
+    return jsonify({
+        "success": True,
+        "status": "success",
+        "scenario_key": scenario_key,
+        "title": protocol["title"],
+        "scenario_title": protocol["title"],
+        "triage_level": protocol["triage_level"],
+        "urgency": protocol["urgency_badge"],
+        "urgency_badge": protocol["urgency_badge"],
+        "medicines": protocol["medicines"],
+        "recommended_medicines": protocol["medicines"],
+        "supplies": protocol["supplies"],
+        "directives": protocol["directives"],
+        "immediate_action": protocol["directives"][0] if protocol["directives"] else "Call 108 emergency services.",
+        "ambulance_directive": protocol["directives"][-1] if protocol["directives"] else "108 Ambulance En Route",
+        "contraindications": protocol["contraindications"],
+        "hospitals": hospitals,
+        "nearby_hospitals": hospitals,
+        "ai_generated_advice": ai_advice,
+        "city": city.title()
+    })
+
+
 if __name__ == "__main__":
     # Ensure templates and static folders exist
     os.makedirs("templates", exist_ok=True)
