@@ -3,8 +3,13 @@
 AURA Clinical Safety & Emergency Risk Detection Engine
 Deterministic safety checks that execute BEFORE any AI generation.
 Ensures zero medical hallucination, no unlawful diagnosis, and immediate life-saving alerts.
+Integrates biometric awareness alerts (SpO2, BP crisis, extreme HR, high fever).
 """
 import re
+import os
+import json
+
+CONFIG_PATH = os.path.join("config", "health_thresholds.json")
 
 EMERGENCY_INDICATORS = [
     {
@@ -15,9 +20,9 @@ EMERGENCY_INDICATORS = [
             r"\bangina\b", r"\bheart\s+pain\b", r"\bmyocardial\s+infarct\b",
             r"\bछाती\s+में\s+दर्द\b", r"\bहार्ट\s+अटैक\b", r"\bఛాతీ\s*నొప్పి\b", r"\bగుండె\s*పోటు\b"
         ],
-        "title": "🚨 URGENT MEDICAL EMERGENCY: Potential Acute Cardiac Event",
-        "directive": "Seat patient upright in W-posture with knees bent. Loosen tight collar. Administer Aspirin 300mg (chewed) + Sorbitrate 5mg (sublingual) if systolic BP > 90 mmHg. Dial 108 immediately.",
-        "contraindications": "Do NOT allow physical movement or walking. Do NOT give Sorbitrate if systolic BP < 90 mmHg or if patient has taken Sildenafil/Tadalafil in past 24h."
+        "title": "🚨 URGENT MEDICAL ATTENTION MAY BE NEEDED: Potential Acute Cardiac Event",
+        "directive": "Seat patient upright in W-posture with knees bent. Loosen tight collar. Avoid all exertion. Contact emergency services (108 / 112 / 911) immediately.",
+        "contraindications": "Do NOT allow physical movement or walking. Do NOT delay hospital transport."
     },
     {
         "category": "Severe Respiratory Distress",
@@ -26,8 +31,8 @@ EMERGENCY_INDICATORS = [
             r"\bgasping\s+for\s+air\b", r"\bblue\s+lips\b", r"\bcyanosis\b", r"\bsilent\s+chest\b",
             r"\bspo2\s+<\s*90\b", r"\bदम\s+घुट\s+रहा\b", r"\bसांस\s+नहीं\s+आ\s+रही\b", r"\bశ్వాస\s*ఆడటం\s*లేదు\b"
         ],
-        "title": "🚨 URGENT MEDICAL EMERGENCY: Severe Respiratory Compromise / Hypoxia",
-        "directive": "Keep patient completely upright. Loosen constricting neckwear. Administer 4-6 puffs of Salbutamol inhaler with spacer. Provide supplemental oxygen. Dial 108 immediately.",
+        "title": "🚨 URGENT MEDICAL ATTENTION MAY BE NEEDED: Severe Respiratory Compromise / Hypoxia",
+        "directive": "Keep patient completely upright. Loosen constricting neckwear. Provide prescribed fast-acting bronchodilator if available. Dial 108 / 112 immediately.",
         "contraindications": "Do NOT force patient to lie flat on back. Do NOT leave patient unattended."
     },
     {
@@ -37,9 +42,9 @@ EMERGENCY_INDICATORS = [
             r"\barterial\s+spurting\b", r"\bstab\s+wound\b", r"\bdeep\s+cut\s+bleeding\b",
             r"\bबहुत\s+खून\s+बह\s+रहा\b", r"\bతీవ్ర\s*రక్తస్రావం\b"
         ],
-        "title": "🚨 URGENT MEDICAL EMERGENCY: Severe Hemorrhage & Trauma",
-        "directive": "Apply firm, continuous direct pressure over the bleeding wound with a sterile hemostatic dressing or clean cloth. Elevate limb above heart level. Apply tourniquet 2-3 inches above wound if spurting limb bleed. Call 108.",
-        "contraindications": "Do NOT remove deeply impaled objects. Do NOT remove first dressing layer; add more layers over it."
+        "title": "🚨 URGENT MEDICAL ATTENTION MAY BE NEEDED: Severe Hemorrhage & Trauma",
+        "directive": "Apply firm, continuous direct pressure over the bleeding site with sterile dressing or clean cloth. Elevate limb above heart level. Call 108 / 112 immediately.",
+        "contraindications": "Do NOT remove deeply impaled objects. Do NOT remove first dressing layer; apply more absorbent layers over it."
     },
     {
         "category": "Anaphylaxis / Allergic Shock",
@@ -47,8 +52,8 @@ EMERGENCY_INDICATORS = [
             r"\banaphylaxis\b", r"\ballergic\s+shock\b", r"\bthroat\s+swelling\b",
             r"\bswollen\s+tongue\b", r"\bthroat\s+closing\b", r"\bbee\s+sting\s+shock\b"
         ],
-        "title": "🚨 URGENT MEDICAL EMERGENCY: Anaphylactic Airway Shock",
-        "directive": "Administer Epinephrine (Adrenaline) Auto-injector 0.3 mg IM into outer mid-thigh immediately. Lay patient flat with legs elevated unless dyspneic. Call 108 immediately.",
+        "title": "🚨 URGENT MEDICAL ATTENTION MAY BE NEEDED: Anaphylactic Airway Shock",
+        "directive": "Administer Epinephrine (Adrenaline) Auto-injector 0.3 mg IM into outer mid-thigh if prescribed and available. Lay patient flat with legs elevated unless dyspneic. Call 108 / 112 immediately.",
         "contraindications": "Do NOT delay Epinephrine administration. Antihistamines alone cannot reverse acute airway obstruction."
     },
     {
@@ -57,9 +62,9 @@ EMERGENCY_INDICATORS = [
             r"\bpoison\b", r"\bswallowed\s+poison\b", r"\bdrank\s+chemical\b", r"\bdrank\s+pesticide\b",
             r"\bacid\s+ingestion\b", r"\btoxic\s+overdose\b", r"\bजहर\s+खा\s+लिया\b", r"\bవిషం\s*తాగారు\b"
         ],
-        "title": "🚨 URGENT MEDICAL EMERGENCY: Acute Toxic Poison Ingestion",
-        "directive": "Place patient in recovery position on side. Preserve substance container for paramedics. Call National Poison Information Centre (1800-116-117) or 108 immediately.",
-        "contraindications": "Do NOT induce vomiting with corrosive acids, alkalis, or petroleum distillates (causes fatal esophageal rupture). Do NOT give oral liquids if drowsy."
+        "title": "🚨 URGENT MEDICAL ATTENTION MAY BE NEEDED: Acute Toxic Poison Ingestion",
+        "directive": "Place patient in recovery position on side. Preserve substance container for paramedics. Call National Poison Information Centre (1800-116-117) or 108 / 112 immediately.",
+        "contraindications": "Do NOT induce vomiting with corrosive acids, alkalis, or petroleum distillates. Do NOT give oral liquids if drowsy."
     },
     {
         "category": "Stroke / Neurological Deficit",
@@ -67,9 +72,9 @@ EMERGENCY_INDICATORS = [
             r"(?<!heat\s)\bstroke\b", r"\bfacial\s+droop\b", r"\bspeech\s+slurred\b", r"\bone\s+side\s+weakness\b",
             r"\bparalysis\b", r"\bthunderclap\s+headache\b", r"\bलकवा\b", r"\bపక్షవాతం\b"
         ],
-        "title": "🚨 URGENT MEDICAL EMERGENCY: Acute Stroke (F.A.S.T. Alert)",
-        "directive": "Note exact time of symptom onset (Thrombolytic window < 4.5 hours). Keep patient calm with head elevated 15-30 degrees. Transport to a certified Stroke / CT-equipped hospital via 108 ambulance immediately.",
-        "contraindications": "Do NOT give Aspirin or oral liquids until CT scan rules out hemorrhagic stroke. Do NOT delay hospital transport."
+        "title": "🚨 URGENT MEDICAL ATTENTION MAY BE NEEDED: Acute Stroke (F.A.S.T. Alert)",
+        "directive": "Note exact time of symptom onset (critical thrombolytic window). Keep patient calm with head elevated 15-30 degrees. Transport to CT-equipped emergency department via 108 / 112 immediately.",
+        "contraindications": "Do NOT give Aspirin or oral liquids until CT scan rules out intracranial hemorrhage. Do NOT delay hospital transport."
     }
 ]
 
@@ -94,21 +99,95 @@ def check_emergency(text):
                 }
     return False, None
 
+def check_biometric_alert(metric_type, value, secondary_value=None):
+    """
+    Evaluates recorded vitals against safety threshold limits from health_thresholds.json.
+    Returns: (is_alert: bool, alert_payload: dict or None)
+    """
+    metric_key = metric_type.lower()
+
+    if "spo2" in metric_key or "oxygen" in metric_key:
+        spo2 = float(value)
+        if spo2 < 90.0:
+            return True, {
+                "metric": "Oxygen Saturation (SpO₂)",
+                "value": f"{spo2}%",
+                "severity": "critical",
+                "title": "⚠️ URGENT MEDICAL ATTENTION MAY BE NEEDED: Hypoxemia Warning",
+                "message": f"Recorded SpO₂ of {spo2}% is below 90%, which is outside the safe awareness range. If accompanied by shortness of breath or blue lips, seek emergency medical care immediately."
+            }
+
+    elif "blood_pressure" in metric_key or metric_key == "bp":
+        sys = float(value)
+        dia = float(secondary_value) if secondary_value is not None else 80.0
+        if sys >= 180.0 or dia >= 120.0:
+            return True, {
+                "metric": "Blood Pressure",
+                "value": f"{int(sys)}/{int(dia)} mmHg",
+                "severity": "critical",
+                "title": "⚠️ URGENT MEDICAL ATTENTION MAY BE NEEDED: Hypertensive Crisis Range",
+                "message": f"Blood pressure reading of {int(sys)}/{int(dia)} mmHg is significantly elevated. If you experience chest pain, headache, numbness, or visual disturbances, contact emergency medical services immediately."
+            }
+
+    elif "heart_rate" in metric_key or metric_key == "hr":
+        hr = float(value)
+        if hr > 150.0:
+            return True, {
+                "metric": "Heart Rate",
+                "value": f"{int(hr)} BPM",
+                "severity": "alert",
+                "title": "⚠️ High Resting Heart Rate Warning",
+                "message": f"Heart rate of {int(hr)} BPM is markedly elevated. Rest for 5 minutes and repeat. If sustained or with chest discomfort, seek professional medical evaluation."
+            }
+        elif hr < 40.0:
+            return True, {
+                "metric": "Heart Rate",
+                "value": f"{int(hr)} BPM",
+                "severity": "alert",
+                "title": "⚠️ Severe Bradycardia Warning",
+                "message": f"Heart rate of {int(hr)} BPM is below expected resting limits. If accompanied by dizziness, faintness, or weakness, seek medical attention."
+            }
+
+    elif "temp" in metric_key:
+        temp = float(value)
+        if temp < 50:
+            temp = (temp * 9/5) + 32
+        if temp >= 104.0:
+            return True, {
+                "metric": "Body Temperature",
+                "value": f"{temp:.1f}°F",
+                "severity": "critical",
+                "title": "⚠️ High Fever (Hyperpyrexia) Warning",
+                "message": f"Body temperature of {temp:.1f}°F is high. Apply cool compresses, stay hydrated, and consult a physician promptly."
+            }
+
+    return False, None
+
 def format_emergency_response(alert_info):
-    """Formats an emergency alert card in Markdown."""
-    return f"""### {alert_info['title']}
+    """Formats an emergency alert card in Markdown adhering strictly to Section 27 specifications."""
+    return f"""# ⚠️ URGENT MEDICAL ATTENTION MAY BE NEEDED
 
-> **⚠️ IMMEDIATE LIFE-SAVING DIRECTIVE:**
-> {alert_info['directive']}
+The information you entered may describe a potentially serious situation.
 
-**🛑 CRITICAL CONTRAINDICATIONS:**
-- {alert_info['contraindications']}
-
-**🚑 DISPATCH 108 AMBULANCE NOW:**
-Please contact your local emergency response service (**108** / **112**) or proceed immediately to the nearest tertiary emergency department. Do not rely on an AI chatbot for life-threatening acute emergencies.
+**Do not rely on this platform or chatbot for diagnosis or emergency treatment.**
+**Please seek immediate professional medical attention or contact your local emergency medical service.**
 
 ---
-*⚠️ **Medical Disclaimer:** Educational emergency triage only. Does not replace professional clinical evaluation or emergency paramedic dispatch.*
+
+### {alert_info['title']}
+
+> **Immediate Safety Guidance:**
+> {alert_info['directive']}
+
+**🛑 Critical Precautions:**
+- {alert_info['contraindications']}
+
+**🚑 Emergency Dispatch Numbers:**
+- **National Emergency Number:** `112`
+- **Ambulance / Medical Emergency:** `108` / `102` (India) / `911` (US)
+- **National Poison Information Centre:** `1800-116-117`
+
+*If you are with someone who is unconscious, having severe breathing difficulty, experiencing crushing chest pain, having a seizure, or experiencing another life-threatening emergency, seek emergency help immediately. Do not wait.*
 """
 
 def validate_medical_response(response_text):
@@ -136,7 +215,7 @@ def validate_medical_response(response_text):
         cleaned = re.sub(pat, rep, cleaned, flags=re.IGNORECASE)
 
     # Ensure mandatory educational disclaimer
-    disclaimer = "\n\n---\n*⚠️ **Medical Disclaimer:** Educational health-awareness information only. This platform does not provide medical diagnosis, write prescriptions, or replace consultation with a licensed healthcare professional.*"
+    disclaimer = "\n\n---\n*⚠️ **Medical Disclaimer:** Educational health-awareness information only. In an emergency or severe situation, call 108 / 112 or visit an emergency room immediately. This platform does not provide medical diagnosis, write prescriptions, or replace consultation with a licensed healthcare professional.*"
     if "Medical Disclaimer" not in cleaned:
         cleaned += disclaimer
 

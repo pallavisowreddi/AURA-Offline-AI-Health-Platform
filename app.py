@@ -5,8 +5,12 @@ import model_helper
 import json
 from core import database
 from core.rag_engine import rag_engine
+from datetime import datetime
 from core import safety
-from core import symptom_service
+from core.disease_prediction_service import prediction_service
+from models.health_analytics.analytics_engine import HealthAnalyticsEngine
+
+analytics_engine = HealthAnalyticsEngine()
 
 # Initialize Local SQLite Database & Semantic RAG Vector Space
 database.init_db()
@@ -278,6 +282,50 @@ def chat():
         response_data["source"] = "Local Clinical Emergency Safety Protocol"
         response_data["confidence"] = "Immediate Critical Triage"
         database.add_message(conv_id, "assistant", emergency_card, metadata={"is_emergency": True})
+        return jsonify(response_data)
+
+    # -------------------------------------------------------------------------
+    # STEP 0.65: LOCAL BIOMETRIC TELEMETRY QUERY HANDLER (OFFLINE SQLITE)
+    # -------------------------------------------------------------------------
+    vital_intent_words = ["heart rate", "pulse", "spo2", "oxygen", "blood pressure", "bp", "temperature", "temp", "vitals", "reading", "readings", "device", "devices"]
+    query_intent_words = ["what", "how", "show", "tell", "check", "latest", "current", "last", "my", "recent", "any"]
+    if any(k in message_lower for k in vital_intent_words) and any(q in message_lower for q in query_intent_words):
+        vitals = database.get_latest_vitals()
+        hr_info = vitals.get("heart_rate")
+        spo2_info = vitals.get("spo2")
+        bp_info = vitals.get("blood_pressure")
+        temp_info = vitals.get("body_temperature")
+        
+        bio_reply = "### 🩺 Local Biometric Telemetry Summary\n\n"
+        found_any = False
+        
+        if hr_info:
+            found_any = True
+            bio_reply += f"- **❤️ Heart Rate:** {int(hr_info['value'])} BPM *(Source: {hr_info['source_type']} at {hr_info['timestamp'][:16].replace('T', ' ')})*\n"
+        if spo2_info:
+            found_any = True
+            bio_reply += f"- **🫁 Oxygen SpO₂:** {spo2_info['value']}% *(Source: {spo2_info['source_type']} at {spo2_info['timestamp'][:16].replace('T', ' ')})*\n"
+        if bp_info:
+            found_any = True
+            sec = f"/{int(bp_info['secondary_value'])}" if bp_info.get("secondary_value") else ""
+            bio_reply += f"- **🩺 Blood Pressure:** {int(bp_info['value'])}{sec} mmHg *(Source: {bp_info['source_type']} at {bp_info['timestamp'][:16].replace('T', ' ')})*\n"
+        if temp_info:
+            found_any = True
+            bio_reply += f"- **🌡️ Body Temperature:** {temp_info['value']:.1f}°F *(Source: {temp_info['source_type']} at {temp_info['timestamp'][:16].replace('T', ' ')})*\n"
+            
+        if not found_any:
+            bio_reply += (
+                "No live or manual biometric measurements have been recorded yet on this device.\n\n"
+                "You can log your measurements anytime in the **Live Health** section using "
+                "**[ Log Biometrics & BP ]** or connect a compatible BLE device."
+            )
+        else:
+            bio_reply += "\n\n*⚠️ **Medical Disclaimer:** All biometrics are processed and stored locally on this offline device. Not a clinical medical diagnosis. Consult a physician for medical evaluation.*"
+            
+        response_data["response"] = bio_reply
+        response_data["source"] = "Local SQLite Biometrics Telemetry"
+        response_data["confidence"] = "Local Recorded Readings"
+        database.add_message(conv_id, "assistant", bio_reply, metadata={"vitals_query": True})
         return jsonify(response_data)
 
     # -------------------------------------------------------------------------
@@ -848,7 +896,7 @@ def api_get_disease_detail(disease_id):
 
 @app.route("/api/symptoms", methods=["GET"])
 def api_get_symptoms():
-    """Returns all symptoms for the Symptom Explorer."""
+    """Returns all symptoms for Disease Prediction."""
     category = request.args.get("category", "all")
     syms = database.get_all_symptoms(category=category)
     return jsonify({
@@ -857,18 +905,312 @@ def api_get_symptoms():
         "symptoms": syms
     })
 
-@app.route("/api/symptom-awareness", methods=["POST"])
-def api_symptom_awareness():
+@app.route("/api/predict/disease", methods=["POST"])
+def api_predict_disease():
     """
-    Symptom Awareness & Educational Correlation.
-    Adheres strictly to WHO guidelines: educational awareness, NOT medical diagnosis.
+    Dedicated multi-class Disease Prediction from selectable symptoms or natural language.
+    Returns top 3 condition possibilities with calibrated confidence, local RAG details, and educational disclaimers.
     """
     data = request.get_json() or {}
     symptoms = data.get("symptoms", [])
-    notes = data.get("notes", "")
-    lang = data.get("lang", "en")
-    result = symptom_service.analyze_symptoms_for_awareness(symptoms, user_notes=notes, lang=lang)
+    nl_text = data.get("natural_language", "") or data.get("text", "")
+    user_id = data.get("user_id", "local_user")
+    result = prediction_service.predict(symptoms_list=symptoms, natural_language_text=nl_text, user_id=user_id)
     return jsonify(result)
+
+@app.route("/api/biometrics/measurement", methods=["POST"])
+def api_save_measurement():
+    """Receives and validates a live or manual biometric measurement (single or composite bundle)."""
+    data = request.get_json() or {}
+    source_type = data.get("source_type", "MANUAL_ENTRY")
+    device_id = data.get("device_id") or data.get("device_name")
+    signal_quality = data.get("signal_quality") or data.get("quality_assessment", "Good")
+    notes = data.get("notes", "")
+
+    # Check if this is a composite payload (e.g. from manual entry form or multi-sensor stream)
+    composite_keys = ["systolic_bp", "heart_rate", "spo2", "body_temperature"]
+    if any(k in data for k in composite_keys):
+        saved_ids = []
+        alerts = []
+        evaluations = {}
+
+        # 1. Blood Pressure
+        if data.get("systolic_bp") is not None:
+            try:
+                sys_val = float(data["systolic_bp"])
+                dia_val = float(data.get("diastolic_bp", 80))
+                is_alert, alert_p = safety.check_biometric_alert("blood_pressure", sys_val, dia_val)
+                if is_alert:
+                    database.log_emergency_event(trigger_type="biometric_blood_pressure", description=alert_p.get("message", ""))
+                    alerts.append(alert_p)
+                m_id = database.save_measurement(
+                    metric_type="blood_pressure",
+                    value=sys_val,
+                    secondary_value=dia_val,
+                    unit="mmHg",
+                    source_type=source_type,
+                    device_id=device_id,
+                    signal_quality=signal_quality,
+                    notes=notes
+                )
+                saved_ids.append(m_id)
+                evaluations["blood_pressure"] = analytics_engine.evaluate_measurement_awareness("blood_pressure", sys_val, dia_val)
+            except (ValueError, TypeError):
+                pass
+
+        # 2. Heart Rate
+        if data.get("heart_rate") is not None:
+            try:
+                hr_val = float(data["heart_rate"])
+                is_alert, alert_p = safety.check_biometric_alert("heart_rate", hr_val)
+                if is_alert:
+                    database.log_emergency_event(trigger_type="biometric_heart_rate", description=alert_p.get("message", ""))
+                    alerts.append(alert_p)
+                m_id = database.save_measurement(
+                    metric_type="heart_rate",
+                    value=hr_val,
+                    unit="BPM",
+                    source_type=source_type,
+                    device_id=device_id,
+                    signal_quality=signal_quality,
+                    notes=notes
+                )
+                saved_ids.append(m_id)
+                evaluations["heart_rate"] = analytics_engine.evaluate_measurement_awareness("heart_rate", hr_val)
+            except (ValueError, TypeError):
+                pass
+
+        # 3. SpO2
+        if data.get("spo2") is not None:
+            try:
+                spo2_val = float(data["spo2"])
+                is_alert, alert_p = safety.check_biometric_alert("spo2", spo2_val)
+                if is_alert:
+                    database.log_emergency_event(trigger_type="biometric_spo2", description=alert_p.get("message", ""))
+                    alerts.append(alert_p)
+                m_id = database.save_measurement(
+                    metric_type="spo2",
+                    value=spo2_val,
+                    unit="%",
+                    source_type=source_type,
+                    device_id=device_id,
+                    signal_quality=signal_quality,
+                    notes=notes
+                )
+                saved_ids.append(m_id)
+                evaluations["spo2"] = analytics_engine.evaluate_measurement_awareness("spo2", spo2_val)
+            except (ValueError, TypeError):
+                pass
+
+        # 4. Body Temperature
+        if data.get("body_temperature") is not None:
+            try:
+                temp_val = float(data["body_temperature"])
+                is_alert, alert_p = safety.check_biometric_alert("body_temperature", temp_val)
+                if is_alert:
+                    database.log_emergency_event(trigger_type="biometric_body_temperature", description=alert_p.get("message", ""))
+                    alerts.append(alert_p)
+                m_id = database.save_measurement(
+                    metric_type="body_temperature",
+                    value=temp_val,
+                    unit="°F",
+                    source_type=source_type,
+                    device_id=device_id,
+                    signal_quality=signal_quality,
+                    notes=notes
+                )
+                saved_ids.append(m_id)
+                evaluations["body_temperature"] = analytics_engine.evaluate_measurement_awareness("body_temperature", temp_val)
+            except (ValueError, TypeError):
+                pass
+
+        return jsonify({
+            "status": "success",
+            "measurement_id": saved_ids[0] if saved_ids else None,
+            "saved_ids": saved_ids,
+            "alerts": alerts,
+            "evaluations": evaluations,
+            "source_type": source_type
+        }), 201
+
+    # Single metric handling
+    metric_type = data.get("metric_type", "").strip().lower()
+    value = data.get("value")
+    unit = data.get("unit", "")
+    sec_value = data.get("secondary_value")
+
+    if not metric_type or value is None:
+        return jsonify({"status": "error", "message": "Missing metric_type or value"}), 400
+
+    try:
+        val_float = float(value)
+        sec_float = float(sec_value) if sec_value is not None else None
+    except (ValueError, TypeError):
+        return jsonify({"status": "error", "message": "Invalid numeric measurement value"}), 400
+
+    # Safety biometric alert check
+    is_alert, alert_payload = safety.check_biometric_alert(metric_type, val_float, sec_float)
+    if is_alert:
+        database.log_emergency_event(trigger_type=f"biometric_{metric_type}", description=alert_payload.get("message", ""))
+
+    # Evaluate awareness status
+    awareness = analytics_engine.evaluate_measurement_awareness(metric_type, val_float, sec_float)
+
+    # Save to SQLite
+    meas_id = database.save_measurement(
+        metric_type=metric_type,
+        value=val_float,
+        unit=unit,
+        secondary_value=sec_float,
+        source_type=source_type,
+        device_id=device_id,
+        signal_quality=signal_quality,
+        notes=notes
+    )
+
+    alerts = [alert_payload] if is_alert else []
+
+    return jsonify({
+        "status": "success",
+        "id": meas_id,
+        "measurement_id": meas_id,
+        "awareness": awareness,
+        "alert": alert_payload,
+        "alerts": alerts,
+        "source_type": source_type
+    }), 201
+
+@app.route("/api/biometrics/latest", methods=["GET"])
+def api_get_latest_vitals():
+    """Returns the latest reading for each of the 4 primary biometrics with analytical evaluations."""
+    vitals = database.get_latest_vitals()
+    evaluated = {}
+    for k, v in vitals.items():
+        if v:
+            awareness = analytics_engine.evaluate_measurement_awareness(
+                v["metric_type"], v["value"], v.get("secondary_value")
+            )
+            v_copy = dict(v)
+            v_copy["awareness"] = awareness
+            evaluated[k] = v_copy
+        else:
+            evaluated[k] = None
+    return jsonify({
+        "status": "success",
+        "vitals": evaluated
+    })
+
+@app.route("/api/biometrics/history", methods=["GET"])
+def api_get_biometrics_history():
+    """Retrieves historical biometric measurements."""
+    metric_type = request.args.get("metric_type", "all")
+    limit = int(request.args.get("limit", 50))
+    source_type = request.args.get("source_type", None)
+    records = database.get_measurements(metric_type=metric_type, limit=limit, source_type=source_type)
+    return jsonify({
+        "status": "success",
+        "count": len(records),
+        "measurements": records
+    })
+
+@app.route("/api/biometrics/trends", methods=["GET"])
+def api_get_biometrics_trends():
+    """Returns time-series telemetry for local trends canvas charts with statistics."""
+    metric_type = request.args.get("metric_type", "heart_rate")
+    days = int(request.args.get("days", 7))
+    trends = database.get_vitals_trends(metric_type, days=days)
+    vals = [r["value"] for r in trends]
+    stats = analytics_engine.compute_summary_statistics(vals)
+    direction = analytics_engine.compute_trend(vals)
+    anomalies = analytics_engine.detect_anomalies(vals)
+    return jsonify({
+        "status": "success",
+        "metric_type": metric_type,
+        "days": days,
+        "data": trends,
+        "statistics": stats,
+        "trend_direction": direction,
+        "anomalies_detected": sum(anomalies) if anomalies else 0
+    })
+
+@app.route("/api/biometrics/session", methods=["POST"])
+def api_biometrics_session():
+    """Handles start and stop of live monitoring sessions."""
+    data = request.get_json() or {}
+    action = data.get("action", "start")
+    if action == "start":
+        session_id = database.save_monitoring_session()
+        return jsonify({"status": "success", "session_id": session_id})
+    else:
+        session_id = data.get("session_id")
+        avg_hr = data.get("avg_hr")
+        avg_spo2 = data.get("avg_spo2")
+        count = data.get("readings_count", 0)
+        notes = data.get("notes", "")
+        if session_id:
+            database.stop_monitoring_session(session_id, avg_hr, avg_spo2, count, notes)
+        return jsonify({"status": "success", "message": "Session completed"})
+
+@app.route("/api/biometrics/devices", methods=["GET"])
+def api_get_devices():
+    """Returns list of discovered and connected BLE devices."""
+    devs = database.get_devices()
+    return jsonify({
+        "status": "success",
+        "devices": devs
+    })
+
+@app.route("/api/biometrics/device", methods=["POST"])
+def api_register_device():
+    """Registers or updates a discovered BLE device."""
+    data = request.get_json() or {}
+    name = data.get("device_name", "Unknown BLE Device")
+    dev_type = data.get("device_type", "Health Sensor")
+    mac = data.get("mac_or_uuid", "00:00:00:00:00:00")
+    dev_id = database.register_or_update_device(name, dev_type, mac)
+    return jsonify({"status": "success", "device_id": dev_id})
+
+@app.route("/api/reports/generate", methods=["POST"])
+def api_generate_report():
+    """Generates local health summary report export in JSON, CSV, or formatted text."""
+    data = request.get_json() or {}
+    export_format = data.get("format", "json").lower()
+    days = int(data.get("days", 30))
+
+    latest = database.get_latest_vitals()
+    measurements = database.get_measurements(limit=200)
+    predictions = database.get_disease_predictions(limit=10)
+
+    report_payload = {
+        "platform": "AURA Offline AI Public Health Platform",
+        "report_type": "Educational Personal Health Summary (Non-Diagnostic Monitoring)",
+        "generated_at": datetime.now().isoformat(),
+        "date_range_days": days,
+        "disclaimer": "Educational monitoring report — not a medical diagnosis. Consult a qualified medical professional for health evaluations.",
+        "latest_vitals": latest,
+        "recent_measurements_count": len(measurements),
+        "measurements_sample": measurements[:50],
+        "recent_disease_predictions": predictions
+    }
+
+    if export_format == "csv":
+        lines = ["timestamp,metric_type,value,secondary_value,unit,source_type,signal_quality"]
+        for m in measurements:
+            lines.append(f"{m.get('timestamp')},{m.get('metric_type')},{m.get('value')},{m.get('secondary_value') or ''},{m.get('unit')},{m.get('source_type')},{m.get('signal_quality')}")
+        return jsonify({
+            "status": "success",
+            "format": "csv",
+            "content": "\n".join(lines),
+            "filename": f"aura_health_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        })
+
+    return jsonify({
+        "status": "success",
+        "format": "json",
+        "report": report_payload,
+        "filename": f"aura_health_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    })
+
 
 @app.route("/api/health-tips", methods=["GET"])
 def api_health_tips():

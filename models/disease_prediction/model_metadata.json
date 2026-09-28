@@ -1,0 +1,13 @@
+{
+  "model_name": "Naive Bayes",
+  "model_version": "1.0",
+  "training_dataset": "Disease Symptom Prediction Dataset (Kaggle)",
+  "training_date": "2026-09-28",
+  "evaluation_metrics": {
+    "accuracy": 0.9949,
+    "macro_f1": 0.9949,
+    "weighted_f1": 0.9949
+  },
+  "classes_count": 34,
+  "features_count": 67
+}

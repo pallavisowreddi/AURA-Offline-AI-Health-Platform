@@ -207,16 +207,15 @@
         </div>
         
         <nav class="nav-links">
-            <button class="nav-item active" data-tab="home" data-i18n="nav_home">Home</button>
-            <button class="nav-item" data-tab="prediction" data-i18n="nav_prediction">AI Chat Assistant</button>
+            <button class="nav-item active" data-tab="home" data-i18n="nav_home">Dashboard</button>
+            <button class="nav-item" data-tab="prediction" data-i18n="nav_prediction">AI Health Chat</button>
+            <button class="nav-item" data-tab="disease-prediction" data-i18n="nav_disease_prediction">🧬 Disease Prediction</button>
+            <button class="nav-item" data-tab="live-health" data-i18n="nav_live_health">❤️ Live Health</button>
             <button class="nav-item" data-tab="diseases" data-i18n="nav_diseases">🦠 Disease Library</button>
-            <button class="nav-item" data-tab="symptoms" data-i18n="nav_symptoms">🔍 Symptom Explorer</button>
-            <button class="nav-item" data-tab="tips" data-i18n="nav_tips">💡 Health Tips</button>
             <button class="nav-item" data-tab="reports" data-i18n="nav_reports">Medical Reports</button>
             <button class="nav-item" data-tab="vaccines" data-i18n="nav_vaccines">Vaccination</button>
-            <button class="nav-item" data-tab="dashboard" data-i18n="nav_dashboard">Health Dashboard</button>
-            <button class="nav-item" data-tab="emergency" data-i18n="nav_emergency">Emergency</button>
-            <button class="nav-item" data-tab="settings" data-i18n="nav_settings">Settings</button>
+            <button class="nav-item" data-tab="emergency" data-i18n="nav_emergency">🚨 Emergency & Safety</button>
+            <button class="nav-item" data-tab="settings" data-i18n="nav_settings">Privacy & Settings</button>
             <button class="nav-item" data-tab="about" data-i18n="nav_about">About</button>
         </nav>
         
@@ -280,28 +279,34 @@
             <div class="drawer-section-label">CLINICAL NAVIGATION</div>
             <div class="drawer-nav-list">
                 <button class="mobile-nav-item active" data-tab="home">
-                    <span class="m-icon">🏠</span> <span>Home</span>
+                    <span class="m-icon">🏠</span> <span>Dashboard</span>
                 </button>
                 <button class="mobile-nav-item" data-tab="prediction">
-                    <span class="m-icon">💬</span> <span>Disease Prediction</span>
+                    <span class="m-icon">💬</span> <span>AI Health Chat</span>
+                </button>
+                <button class="mobile-nav-item" data-tab="disease-prediction">
+                    <span class="m-icon">🧬</span> <span>Disease Prediction</span>
+                </button>
+                <button class="mobile-nav-item" data-tab="live-health">
+                    <span class="m-icon">❤️</span> <span>Live Health</span>
+                </button>
+                <button class="mobile-nav-item" data-tab="diseases">
+                    <span class="m-icon">🦠</span> <span>Disease Library</span>
                 </button>
                 <button class="mobile-nav-item" data-tab="reports">
-                    <span class="m-icon">📷</span> <span>Medical Reports &amp; Lab</span>
+                    <span class="m-icon">📷</span> <span>Medical Reports</span>
                 </button>
                 <button class="mobile-nav-item" data-tab="vaccines">
-                    <span class="m-icon">💉</span> <span>Vaccination Schedules</span>
-                </button>
-                <button class="mobile-nav-item" data-tab="dashboard">
-                    <span class="m-icon">📈</span> <span>Health Dashboard</span>
+                    <span class="m-icon">💉</span> <span>Vaccination</span>
                 </button>
                 <button class="mobile-nav-item" data-tab="emergency">
-                    <span class="m-icon">🚨</span> <span>Emergency Triage</span>
+                    <span class="m-icon">🚨</span> <span>Emergency &amp; Safety</span>
                 </button>
                 <button class="mobile-nav-item" data-tab="settings">
-                    <span class="m-icon">⚙️</span> <span>Settings</span>
+                    <span class="m-icon">⚙️</span> <span>Privacy &amp; Settings</span>
                 </button>
                 <button class="mobile-nav-item" data-tab="about">
-                    <span class="m-icon">ℹ️</span> <span>About AURA</span>
+                    <span class="m-icon">ℹ️</span> <span>About</span>
                 </button>
             </div>
 
@@ -1183,11 +1188,26 @@
             
             </section>
 
-            <!-- ================= VIEW 5: HEALTH DASHBOARD ================= -->
-            <section id="section-dashboard" class="section-view hidden" style="display: flex; flex-direction: column; gap: 20px;">
+            <!-- ================= VIEW: LIVE HEALTH MONITORING ================= -->
+            <section id="section-live-health" class="section-view hidden" style="display: flex; flex-direction: column; gap: 20px;">
                 
-                <!-- BLUETOOTH SMART HEALTH HUB & WIRELESS TELEMETRY GATEWAY -->
-                <div class="ble-device-banner" id="ble-main-banner">
+                <!-- BLUETOOTH / IOMT LIVE TELEMETRY HUB BANNER -->
+                <div class="ble-device-banner" id="ble-main-banner" style="border-top: 3px solid #0284c7;">
+                    
+                    <!-- DEMO DATA WARNING BANNER (shown only in demo simulation mode) -->
+                    <div id="ble-demo-banner" class="hidden" style="background: rgba(245, 158, 11, 0.12); border: 2px dashed #f59e0b; border-radius: 10px; padding: 12px 18px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.4rem;">⚠️</span>
+                            <div>
+                                <strong style="color: #b45309; font-size: 0.95rem; display: block;">DEMO DATA — NOT A REAL MEASUREMENT</strong>
+                                <span style="font-size: 0.74rem; color: var(--text-secondary);">Simulating IoMT benchmark telemetry. No real patient data is transmitted or claimed.</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="stopSimulationMode()" style="border-color: #f59e0b; color: #b45309; font-size: 0.74rem; padding: 5px 12px;">
+                            ⏹️ Stop Demo Simulator
+                        </button>
+                    </div>
+
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 12px;">
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.3rem; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);">
@@ -1195,24 +1215,37 @@
                             </div>
                             <div>
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <h3 style="font-size: 1.15rem; font-weight: 800; color: #0284c7; margin: 0;">Bluetooth Smart Health Hub</h3>
-                                    <span id="ble-connection-status" class="badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 0.72rem; padding: 2px 8px; border-radius: 12px;">🔴 Disconnected</span>
+                                    <h3 style="font-size: 1.2rem; font-weight: 800; color: #0284c7; margin: 0;">Live Health &amp; Biometric Telemetry Hub</h3>
+                                    <span id="ble-connection-status" class="badge" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 0.72rem; padding: 3px 10px; border-radius: 12px;">🔴 Disconnected</span>
+                                    <span id="ble-source-type-badge" class="badge-source-manual">MANUAL_ENTRY</span>
                                 </div>
                                 <p style="font-size: 0.76rem; color: var(--text-secondary); margin: 2px 0 0 0;">
-                                    Real-time wireless BLE 5.2 telemetry for continuous heart rate, SpO₂ pulse oximetry, thermometry &amp; AI hydration optimization.
+                                    Real-time wireless BLE 5.2 telemetry &amp; manual monitoring for Heart Rate, SpO₂, Blood Pressure &amp; Body Temperature.
                                 </p>
                             </div>
                         </div>
 
-                        <!-- BLE Device Controls -->
+                        <!-- BLE Device Action Buttons -->
                         <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+                            <button type="button" class="btn btn-secondary" id="ble-scan-btn" onclick="scanBleDevices()" style="font-size: 0.76rem; padding: 7px 12px;">
+                                🔍 Scan Devices
+                            </button>
                             <button type="button" class="btn btn-primary" id="ble-connect-btn" style="font-size: 0.76rem; padding: 7px 14px; background: #0284c7;">
-                                📶 Pair Web Bluetooth Device
+                                📶 Connect Device
                             </button>
-                            <button type="button" class="btn btn-secondary" id="ble-simulate-btn" style="font-size: 0.76rem; padding: 7px 14px;">
-                                ⚡ Demo BLE Smart Stream
+                            <button type="button" class="btn btn-secondary" id="ble-start-session-btn" onclick="startLiveMonitoringSession()" style="font-size: 0.76rem; padding: 7px 12px; color: #10b981; border-color: rgba(16, 185, 129, 0.4);">
+                                ▶️ Start Live Monitoring
                             </button>
-                            <button type="button" class="btn btn-secondary hidden" id="ble-disconnect-btn" style="font-size: 0.76rem; padding: 7px 14px; color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">
+                            <button type="button" class="btn btn-secondary hidden" id="ble-stop-session-btn" onclick="stopLiveMonitoringSession()" style="font-size: 0.76rem; padding: 7px 12px; color: #ef4444; border-color: rgba(239, 68, 68, 0.4);">
+                                ⏹️ Stop Monitoring
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="open-log-vitals-btn" onclick="document.getElementById('manual-biometrics-card').scrollIntoView({behavior:'smooth'})" style="font-size: 0.76rem; padding: 7px 12px;">
+                                📝 Log Biometrics &amp; BP
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="ble-simulate-btn" style="font-size: 0.76rem; padding: 7px 12px;">
+                                ⚡ Run Demo Simulation
+                            </button>
+                            <button type="button" class="btn btn-secondary hidden" id="ble-disconnect-btn" style="font-size: 0.76rem; padding: 7px 12px; color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">
                                 ❌ Disconnect
                             </button>
                             <button type="button" class="btn btn-secondary" id="ble-sound-toggle-btn" style="font-size: 0.76rem; padding: 7px 10px;">
@@ -1226,224 +1259,281 @@
                         <div><strong>Paired Hardware:</strong> <span id="ble-device-name" style="color: var(--text-primary); font-weight: 700;">No BLE Device Connected</span></div>
                         <div><strong>Battery:</strong> <span id="ble-device-battery" style="color: #10b981; font-weight: 700;">--</span></div>
                         <div><strong>Signal (RSSI):</strong> <span id="ble-device-rssi" style="color: var(--text-muted);">-- dBm</span></div>
-                        <div><strong>Protocol:</strong> <span style="color: #0284c7; font-weight: 600;">GATT Health Telemetry (Local Edge)</span></div>
+                        <div><strong>Active Session:</strong> <span id="session-timer-display" style="color: #0284c7; font-weight: 700;">Idle (00:00)</span></div>
+                        <div><strong>Protocol:</strong> <span style="color: #0284c7; font-weight: 600;">GATT Standard Services (0x180D, 0x1810, 0x1809, 0x1822)</span></div>
+                    </div>
+                </div>
+
+                <!-- 4 EXACT BIOMETRIC CATEGORIES GRID -->
+                <div class="dashboard-vitals-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    
+                    <!-- 1. HEART RATE CARD -->
+                    <div class="vital-card" style="border-top: 3px solid #ef4444; padding: 16px; background: var(--bg-card); border-radius: 12px; border-left: 1px solid var(--border-glass); border-right: 1px solid var(--border-glass); border-bottom: 1px solid var(--border-glass);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span class="heartbeat-live-icon" id="dash-heart-icon" style="font-size: 1.3rem;">❤️</span>
+                                <strong style="font-size: 1rem; color: #ef4444;">HEART RATE</strong>
+                            </div>
+                            <span class="badge" id="dash-status-hr" style="background: rgba(16,185,129,0.12); color: #10b981; font-size: 0.7rem; font-weight: 700;">● Normal Resting</span>
+                        </div>
+                        <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0 4px 0;">
+                            <div class="vital-value" id="dash-val-hr" style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary);">72</div>
+                            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">BPM</span>
+                        </div>
+                        <div style="font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 8px;">
+                            <strong>Quality:</strong> <span id="dash-quality-hr" style="color: #10b981; font-weight: 600;">Good Signal</span> | 
+                            <strong>Source:</strong> <span id="dash-source-hr" class="badge-source-manual">MANUAL_ENTRY</span>
+                        </div>
+                        <div class="ecg-canvas-container" style="height: 65px; background: rgba(0,0,0,0.03); border-radius: 6px; overflow: hidden;">
+                            <canvas id="ecg-canvas" width="300" height="65" style="width: 100%; height: 65px;"></canvas>
+                        </div>
+                        <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 6px; line-height: 1.35;">
+                            <em>Educational note: Normal adult resting heart rate is 60–100 BPM. A single measurement does not prove cardiovascular health or disease.</em>
+                        </div>
                     </div>
 
-                    <!-- 4 Interactive Advantages of Bluetooth Health Monitoring -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin-top: 14px;">
-                        <div class="ble-advantage-card">
+                    <!-- 2. OXYGEN SpO2 CARD -->
+                    <div class="vital-card" style="border-top: 3px solid #0284c7; padding: 16px; background: var(--bg-card); border-radius: 12px; border-left: 1px solid var(--border-glass); border-right: 1px solid var(--border-glass); border-bottom: 1px solid var(--border-glass);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                             <div style="display: flex; align-items: center; gap: 6px;">
-                                <span style="font-size: 1.1rem;">💓</span>
-                                <strong style="font-size: 0.78rem; color: #ef4444;">Live Heartbeat &amp; BPM Telemetry</strong>
+                                <span style="font-size: 1.3rem;">🫁</span>
+                                <strong style="font-size: 1rem; color: #0284c7;">OXYGEN SpO₂</strong>
                             </div>
-                            <span style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.4;">
-                                High-frequency pulse rate detection identifies arrhythmias, tachycardia (&gt;100 BPM) and bradycardia in real time.
-                            </span>
+                            <span class="badge" id="dash-status-spo2" style="background: rgba(16,185,129,0.12); color: #10b981; font-size: 0.7rem; font-weight: 700;">● Optimal Oxygenation</span>
                         </div>
-                        <div class="ble-advantage-card">
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <span style="font-size: 1.1rem;">🫁</span>
-                                <strong style="font-size: 0.78rem; color: #0284c7;">Continuous SpO₂ Hypoxia Alert</strong>
-                            </div>
-                            <span style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.4;">
-                                Instant audible and visual alerts if peripheral blood oxygen drops below 94%, preventing silent clinical hypoxia.
-                            </span>
+                        <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0 4px 0;">
+                            <div class="vital-value" id="dash-val-spo2" style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary);">98</div>
+                            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">%</span>
+                            <span style="font-size: 0.74rem; color: var(--text-muted); margin-left: auto;">Pulse: <strong id="dash-spo2-pulse" style="color: var(--text-primary);">72</strong> BPM</span>
                         </div>
-                        <div class="ble-advantage-card">
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <span style="font-size: 1.1rem;">🌡️</span>
-                                <strong style="font-size: 0.78rem; color: #f59e0b;">Dynamic Thermoregulation</strong>
-                            </div>
-                            <span style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.4;">
-                                Wireless skin probe tracking flags low-grade fever (99.5°F) and hyperpyrexia (&gt;101°F) before dehydration sets in.
-                            </span>
+                        <div style="font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 8px;">
+                            <strong>Quality:</strong> <span id="dash-quality-spo2" style="color: #10b981; font-weight: 600;">Good Signal</span> | 
+                            <strong>Source:</strong> <span id="dash-source-spo2" class="badge-source-manual">MANUAL_ENTRY</span>
                         </div>
-                        <div class="ble-advantage-card">
+                        <div style="background: rgba(2, 132, 199, 0.05); border: 1px solid rgba(2, 132, 199, 0.15); border-radius: 6px; padding: 8px; font-size: 0.7rem; line-height: 1.4; color: var(--text-secondary);">
+                            <strong>⚠️ Measurement Guidance:</strong> Pulse-oximeter readings can be affected by movement, sensor placement, circulation, temperature and device limitations. Follow device instructions.
+                        </div>
+                    </div>
+
+                    <!-- 3. BLOOD PRESSURE CARD -->
+                    <div class="vital-card" style="border-top: 3px solid #10b981; padding: 16px; background: var(--bg-card); border-radius: 12px; border-left: 1px solid var(--border-glass); border-right: 1px solid var(--border-glass); border-bottom: 1px solid var(--border-glass);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                             <div style="display: flex; align-items: center; gap: 6px;">
-                                <span style="font-size: 1.1rem;">💧</span>
-                                <strong style="font-size: 0.78rem; color: #10b981;">AI Metabolic Hydration Target</strong>
+                                <span style="font-size: 1.3rem;">🩺</span>
+                                <strong style="font-size: 1rem; color: #10b981;">BLOOD PRESSURE</strong>
                             </div>
-                            <span style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.4;">
-                                Generative algorithm dynamically adjusts water replenishment goals based on your physical exertion and body heat.
-                            </span>
+                            <span class="badge" id="dash-bp-stage" style="background: rgba(16,185,129,0.12); color: #10b981; font-size: 0.7rem; font-weight: 700;">Normal (&lt;120/80)</span>
+                        </div>
+                        <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0 4px 0;">
+                            <div class="vital-value" id="dash-val-bp" style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary);">120 / 80</div>
+                            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">mmHg</span>
+                        </div>
+                        <div style="display: flex; gap: 12px; font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 8px;">
+                            <span>Systolic: <strong id="dash-bp-sys" style="color: var(--text-primary);">120</strong></span>
+                            <span>Diastolic: <strong id="dash-bp-dia" style="color: var(--text-primary);">80</strong></span>
+                            <span>MAP: <strong id="dash-bp-map" style="color: var(--text-primary);">93 mmHg</strong></span>
+                        </div>
+                        <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 6px; padding: 8px; font-size: 0.7rem; line-height: 1.4; color: var(--text-secondary);">
+                            <strong>💡 Medical Architecture Rule:</strong> Bluetooth does NOT calculate BP from HR or SpO₂. A compatible BP monitor transmits measured BP. Alternatively, log BP via the Manual Entry form below.
+                        </div>
+                    </div>
+
+                    <!-- 4. BODY TEMPERATURE CARD -->
+                    <div class="vital-card" style="border-top: 3px solid #f59e0b; padding: 16px; background: var(--bg-card); border-radius: 12px; border-left: 1px solid var(--border-glass); border-right: 1px solid var(--border-glass); border-bottom: 1px solid var(--border-glass);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="font-size: 1.3rem;">🌡️</span>
+                                <strong style="font-size: 1rem; color: #f59e0b;">BODY TEMPERATURE</strong>
+                            </div>
+                            <span class="badge" id="dash-status-temp" style="background: rgba(16,185,129,0.12); color: #10b981; font-size: 0.7rem; font-weight: 700;">Normal (98.4°F)</span>
+                        </div>
+                        <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0 4px 0;">
+                            <div class="vital-value" id="dash-val-temp-num" style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary);">98.4</div>
+                            <span id="dash-temp-unit" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">°F</span>
+                            <button type="button" class="btn btn-secondary" onclick="toggleTempUnit()" style="font-size: 0.68rem; padding: 2px 8px; margin-left: auto;">
+                                Toggle °C / °F
+                            </button>
+                        </div>
+                        <div style="font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 8px;">
+                            <strong>Canonical Celsius:</strong> <span id="dash-val-temp-c" style="font-weight: 600;">36.9 °C</span> | 
+                            <strong>Source:</strong> <span id="dash-source-temp" class="badge-source-manual">MANUAL_ENTRY</span>
+                        </div>
+                        <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 6px; padding: 8px; font-size: 0.7rem; line-height: 1.4; color: var(--text-secondary);">
+                            <strong>Normal Range:</strong> 97.0°F – 99.0°F (36.1°C – 37.2°C). Temperatures ≥100.4°F represent pyrexia (fever).
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- SPLIT SECTION: MANUAL ENTRY FORM & REAL-TIME TRENDS -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    
+                    <!-- MANUAL ENTRY: LOG BIOMETRICS & BP -->
+                    <div class="widget-card" id="manual-biometrics-card" style="border-top: 3px solid #0284c7;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div>
+                                <h3 style="font-size: 1.15rem; font-weight: 800; color: #0284c7; margin: 0;">
+                                    📝 Log Biometrics &amp; BP (Manual Entry)
+                                </h3>
+                                <p style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 2px;">
+                                    No Bluetooth device needed. Input clinical measurements directly to save to your local database.
+                                </p>
+                            </div>
+                            <span class="badge-source-manual">MANUALLY ENTERED</span>
+                        </div>
+
+                        <form id="manual-log-form" onsubmit="handleManualBiometricsSubmit(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <div>
+                                    <label style="font-size: 0.72rem; font-weight: 700; color: var(--text-primary); display: block; margin-bottom: 3px;">Systolic BP (mmHg)</label>
+                                    <input type="number" id="manual-sys-bp" placeholder="120" min="70" max="240" required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); color: var(--text-primary); font-size: 0.8rem; outline: none;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.72rem; font-weight: 700; color: var(--text-primary); display: block; margin-bottom: 3px;">Diastolic BP (mmHg)</label>
+                                    <input type="number" id="manual-dia-bp" placeholder="80" min="40" max="140" required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); color: var(--text-primary); font-size: 0.8rem; outline: none;">
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <div>
+                                    <label style="font-size: 0.72rem; font-weight: 700; color: var(--text-primary); display: block; margin-bottom: 3px;">Heart Rate (BPM)</label>
+                                    <input type="number" id="manual-hr" placeholder="72" min="30" max="220" required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); color: var(--text-primary); font-size: 0.8rem; outline: none;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.72rem; font-weight: 700; color: var(--text-primary); display: block; margin-bottom: 3px;">Oxygen SpO₂ (%)</label>
+                                    <input type="number" id="manual-spo2" placeholder="98" min="70" max="100" required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); color: var(--text-primary); font-size: 0.8rem; outline: none;">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label style="font-size: 0.72rem; font-weight: 700; color: var(--text-primary); display: block; margin-bottom: 3px;">Body Temperature (°F)</label>
+                                <input type="number" step="0.1" id="manual-temp" placeholder="98.4" min="93" max="108" required style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); color: var(--text-primary); font-size: 0.8rem; outline: none;">
+                            </div>
+
+                            <div>
+                                <label style="font-size: 0.72rem; font-weight: 700; color: var(--text-primary); display: block; margin-bottom: 3px;">Clinical Notes (Optional)</label>
+                                <input type="text" id="manual-notes" placeholder="E.g. resting measurement, after light walk..." style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); color: var(--text-primary); font-size: 0.8rem; outline: none;">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="background: #0284c7; padding: 10px; font-weight: 700; font-size: 0.82rem; margin-top: 4px;">
+                                💾 Save Reading to Local Database
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- HEALTH TRENDS CANVAS & ANALYTICS -->
+                    <div class="widget-card" style="border-top: 3px solid #10b981; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <h3 style="font-size: 1.15rem; font-weight: 800; color: #10b981; margin: 0;">
+                                    📈 Health Trends (Local Analytics)
+                                </h3>
+                                <div style="display: flex; gap: 4px;">
+                                    <button type="button" class="btn btn-secondary active" id="trend-time-today" onclick="setTrendsTimeframe(1)" style="font-size: 0.68rem; padding: 3px 8px;">Today</button>
+                                    <button type="button" class="btn btn-secondary" id="trend-time-7d" onclick="setTrendsTimeframe(7)" style="font-size: 0.68rem; padding: 3px 8px;">7 Days</button>
+                                    <button type="button" class="btn btn-secondary" id="trend-time-30d" onclick="setTrendsTimeframe(30)" style="font-size: 0.68rem; padding: 3px 8px;">30 Days</button>
+                                </div>
+                            </div>
+
+                            <!-- Metric Selector Pills -->
+                            <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
+                                <button type="button" class="disease-filter-chip active" id="chip-metric-hr" onclick="selectTrendMetric('heart_rate')">❤️ Heart Rate</button>
+                                <button type="button" class="disease-filter-chip" id="chip-metric-spo2" onclick="selectTrendMetric('spo2')">🫁 SpO₂</button>
+                                <button type="button" class="disease-filter-chip" id="chip-metric-bp" onclick="selectTrendMetric('blood_pressure')">🩺 Blood Pressure</button>
+                                <button type="button" class="disease-filter-chip" id="chip-metric-temp" onclick="selectTrendMetric('body_temperature')">🌡️ Temperature</button>
+                            </div>
+
+                            <!-- Interactive Trends Canvas -->
+                            <div style="height: 150px; background: rgba(0,0,0,0.02); border-radius: 8px; border: 1px solid var(--border-glass); padding: 8px; margin-bottom: 12px; position: relative;">
+                                <canvas id="live-health-trends-canvas" width="460" height="134" style="width: 100%; height: 100%;"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Statistical Summary Box -->
+                        <div id="trends-stats-summary" style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px; padding: 10px; font-size: 0.72rem; display: flex; justify-content: space-around; text-align: center;">
+                            <div><strong style="display: block; color: var(--text-muted);">Mean:</strong><span id="stat-mean" style="color: var(--text-primary); font-weight: 700;">--</span></div>
+                            <div><strong style="display: block; color: var(--text-muted);">Min:</strong><span id="stat-min" style="color: var(--text-primary); font-weight: 700;">--</span></div>
+                            <div><strong style="display: block; color: var(--text-muted);">Max:</strong><span id="stat-max" style="color: var(--text-primary); font-weight: 700;">--</span></div>
+                            <div><strong style="display: block; color: var(--text-muted);">Trend:</strong><span id="stat-trend" style="color: #10b981; font-weight: 700;">Stable</span></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- MAIN BIOMETRICS & DASHBOARD SPLIT -->
-                <div style="display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 20px;">
-                    <!-- LEFT COLUMN -->
-                    <div style="display: flex; flex-direction: column; gap: 15px;">
-                        <!-- Health Score Circular Gauge -->
-                        <div class="widget-card" style="text-align: center; position: relative;">
-                            <h3 style="margin-bottom: 10px;" data-i18n="dash_health_score_title">Overall Health Score</h3>
-                            <div style="position: relative; width: 110px; height: 110px; margin: 0 auto 10px auto;">
-                                <svg width="110" height="110" viewBox="0 0 100 100">
-                                    <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,0.03)" stroke-width="7" fill="transparent"/>
-                                    <circle id="health-score-ring" cx="50" cy="50" r="42" stroke="url(#health-glow-grad)" stroke-width="7" fill="transparent" stroke-dasharray="263.89" stroke-dashoffset="263.89" stroke-linecap="round" style="transition: stroke-dashoffset 0.6s ease-out; transform: rotate(-90deg); transform-origin: 50% 50%;"/>
-                                    <defs>
-                                        <linearGradient id="health-glow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                            <stop offset="0%" stop-color="#0284c7" />
-                                            <stop offset="100%" stop-color="#10b981" />
-                                        </linearGradient>
-                                    </defs>
-                                </svg>
-                                <div id="health-score-num" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.6rem; font-weight: 800; color: var(--text-primary);">96%</div>
+                <!-- HEALTH HISTORY TABLE & PERSONAL TIMELINE -->
+                <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px;">
+                    
+                    <!-- HEALTH HISTORY TABLE -->
+                    <div class="widget-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <div>
+                                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin: 0;">
+                                    📋 Local Health History
+                                </h3>
+                                <p style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 2px;">
+                                    Audit trail of readings stored offline in SQLite.
+                                </p>
                             </div>
-                            <div style="font-size: 0.72rem; color: var(--text-muted);" id="health-score-status" data-i18n="dash_score_opt">Clinical safety metrics calculated in optimal range.</div>
-                        </div>
-
-                        <!-- SMART WATER INTAKE TRACKER & AI HYDRATION SUGGESTIONS -->
-                        <div class="widget-card" style="border-top: 3px solid #38bdf8;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <div>
-                                    <h3 style="font-size: 1.05rem; font-weight: 700; color: #0284c7; margin: 0;">💧 Smart Water Intake Tracker</h3>
-                                    <p style="font-size: 0.72rem; color: var(--text-secondary); margin: 2px 0 0 0;">AI hydration optimizer synced with your real-time vitals.</p>
-                                </div>
-                                <span id="hydration-percent-badge" class="badge" style="background: rgba(2, 132, 199, 0.12); color: #0284c7; font-weight: 700; font-size: 0.78rem;">50% Done</span>
-                            </div>
-
-                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin: 10px 0 4px 0;">
-                                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-primary);">
-                                    <span id="hydration-current-val">1250</span> <span style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted);">/ <span id="hydration-target-val">2500</span> mL</span>
-                                </div>
-                                <span style="font-size: 0.7rem; color: var(--text-muted);" id="hydration-glasses-text">~5 of 10 glasses</span>
-                            </div>
-
-                            <div class="hydration-progress-shell" style="margin-bottom: 12px;">
-                                <div class="hydration-progress-core" id="hydration-bar-fill" style="width: 50%;"></div>
-                            </div>
-
-                            <!-- Quick Log Buttons -->
-                            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
-                                <button type="button" class="hydration-quick-btn" onclick="addWaterIntake(250)">+250 mL (1 Glass)</button>
-                                <button type="button" class="hydration-quick-btn" onclick="addWaterIntake(500)">+500 mL (1 Bottle)</button>
-                                <button type="button" class="hydration-quick-btn" onclick="resetWaterIntake()" style="color: #64748b; background: rgba(0,0,0,0.04);">🔄 Reset</button>
-                            </div>
-
-                            <!-- Generative AI Hydration Suggestion Output Box -->
-                            <div style="background: rgba(2, 132, 199, 0.05); border: 1px solid rgba(2, 132, 199, 0.2); border-radius: 8px; padding: 10px; font-size: 0.72rem; line-height: 1.45;">
-                                <strong style="color: #0284c7; display: flex; align-items: center; gap: 5px; margin-bottom: 3px;">
-                                    💡 AI Hydration Prescription:
-                                </strong>
-                                <span id="ai-hydration-advice" style="color: var(--text-secondary);">
-                                    At resting pulse (72 BPM) and standard body temp (98.6°F), baseline replenishment of 2,500 mL maintains cellular homeostasis. Take 250 mL in the next 45 minutes.
-                                </span>
+                            <div style="display: flex; gap: 8px;">
+                                <select id="history-filter-source" onchange="loadHealthHistory()" style="padding: 4px 8px; font-size: 0.72rem; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); color: var(--text-primary); outline: none;">
+                                    <option value="all">All Sources</option>
+                                    <option value="REAL_DEVICE">Real Device</option>
+                                    <option value="SIMULATED">Simulated</option>
+                                    <option value="MANUAL_ENTRY">Manual Entry</option>
+                                </select>
                             </div>
                         </div>
 
-                        <!-- Clinical Vitals & Blood Pressure Form -->
-                        <div class="widget-card">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <h3 data-i18n="dash_log_vitals_title">Manual Biometrics Override</h3>
-                                <button type="button" class="btn btn-secondary" id="simulate-live-vitals-btn" style="font-size: 0.68rem; padding: 4px 8px;" data-i18n="dash_sim_live">🔴 Simulate Live</button>
-                            </div>
-                            <form id="vitals-form" style="display: flex; flex-direction: column; gap: 10px;">
-                                <div style="display: flex; gap: 10px;">
-                                    <div style="flex: 1;">
-                                        <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;" data-i18n="lbl_sys_bp">Systolic BP (mmHg)</label>
-                                        <input type="number" id="vital-sys" placeholder="120" min="70" max="260" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
-                                    </div>
-                                    <div style="flex: 1;">
-                                        <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;" data-i18n="lbl_dia_bp">Diastolic BP (mmHg)</label>
-                                        <input type="number" id="vital-dia" placeholder="80" min="40" max="180" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
-                                    </div>
-                                </div>
-
-                                <div style="display: flex; gap: 10px;">
-                                    <div style="flex: 1;">
-                                        <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;" data-i18n="lbl_heart_rate">Heart Rate (BPM)</label>
-                                        <input type="number" id="vital-hr" placeholder="72" min="30" max="220" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
-                                    </div>
-                                    <div style="flex: 1;">
-                                        <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;" data-i18n="lbl_spo2">Oxygen SpO₂ (%)</label>
-                                        <input type="number" id="vital-spo2" placeholder="98" min="70" max="100" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px; display: block;" data-i18n="lbl_body_temp">Body Temperature (°F)</label>
-                                    <input type="number" step="0.1" id="vital-temp" placeholder="98.6" required style="width: 100%; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glass); padding: 8px 10px; border-radius: 6px; color: var(--text-primary); font-size: 0.82rem; outline: none;">
-                                </div>
-
-                                <button type="submit" class="btn btn-primary" style="width: 100%;" data-i18n="btn_calc_vitals">Calculate Biometrics &amp; Save</button>
-                            </form>
-                            <div style="margin-top: 10px; font-size: 0.72rem; color: var(--text-secondary); text-align: center;" id="vitals-status" data-i18n="vitals_status_norm">Cardiovascular metrics normal &amp; stable.</div>
+                        <div style="max-height: 260px; overflow-y: auto;">
+                            <table class="health-history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date &amp; Time</th>
+                                        <th>Metric</th>
+                                        <th>Value</th>
+                                        <th>Quality</th>
+                                        <th>Provenance Source</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="health-history-tbody">
+                                    <!-- Rendered dynamically by JS -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <!-- RIGHT COLUMN -->
-                    <div style="display: flex; flex-direction: column; gap: 15px;">
-                        <!-- Accurate Telemetry Dashboard grid -->
-                        <div class="dashboard-vitals-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-                            <!-- Blood Pressure Telemetry -->
-                            <div class="vital-card" style="grid-column: span 2;">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <div class="vital-title" data-i18n="dash_bp_title">Blood Pressure Status</div>
-                                    <span class="bp-stage-badge" id="dash-bp-stage" style="background: rgba(16,185,129,0.15); color: #10b981;">Normal (&lt;120/80)</span>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 5px;">
-                                    <div class="vital-value" id="dash-val-bp">120 / 80 <span style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted);">mmHg</span></div>
-                                    <div style="font-size: 0.75rem; font-weight: 700; color: #10b981;" id="dash-bp-accuracy-score">96% Optimal Target</div>
-                                </div>
-                                
-                                <div style="display: flex; gap: 15px; font-size: 0.72rem; color: var(--text-secondary); margin-top: 6px;">
-                                    <span><strong>MAP:</strong> <span id="dash-bp-map">93.3 mmHg</span> (Norm: 70-100)</span>
-                                    <span><strong>Pulse Pressure:</strong> <span id="dash-bp-pp">40 mmHg</span> (Norm: 30-50)</span>
-                                </div>
-
-                                <div class="bp-meter-container">
-                                    <div class="bp-meter-bar">
-                                        <div class="bp-meter-fill" id="dash-bp-meter" style="width: 25%; background: #10b981;"></div>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted);">
-                                        <span>Optimal</span>
-                                        <span>Elevated</span>
-                                        <span>Stage 1</span>
-                                        <span>Stage 2</span>
-                                        <span>Crisis</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Heart Rate Telemetry & Live ECG Canvas -->
-                            <div class="vital-card">
-                                <div class="vital-title" style="display: flex; align-items: center; justify-content: space-between;">
-                                    <span data-i18n="dash_hr_title">Heart Rate &amp; Pulse</span>
-                                    <span class="heartbeat-live-icon" id="dash-heart-icon">💓</span>
-                                </div>
-                                <div class="vital-value" id="dash-val-hr">72 <span style="font-size: 0.75rem; font-weight: 500;">BPM</span></div>
-                                <div class="vital-badge" id="dash-status-hr" style="color: #10b981;">● Normal Resting</div>
-                                <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 4px;">Zone: <span id="dash-hr-zone" style="color: #10b981; font-weight: 700;">Resting Zone (60-75)</span></div>
-                                <!-- Real-time animated ECG pulse wave canvas -->
-                                <div class="ecg-canvas-container" style="margin-top: 8px;">
-                                    <canvas id="ecg-canvas" width="220" height="75"></canvas>
-                                </div>
-                            </div>
-
-                            <!-- Oxygen SpO2 Telemetry -->
-                            <div class="vital-card">
-                                <div class="vital-title" style="display: flex; align-items: center; justify-content: space-between;">
-                                    <span data-i18n="dash_spo2_title">Oxygen Saturation (SpO₂)</span>
-                                    <span style="font-size: 1.1rem;">🫁</span>
-                                </div>
-                                <div class="vital-value" id="dash-val-spo2">98 <span style="font-size: 0.75rem; font-weight: 500;">%</span></div>
-                                <div class="vital-badge" id="dash-status-spo2" style="color: #10b981;">● Optimal Oxygenation</div>
-                                <div style="margin-top: 14px; font-size: 0.72rem; color: var(--text-muted);">
-                                    <div><strong>Body Temp:</strong> <span id="dash-val-temp" style="font-weight: 700; color: var(--text-primary);">98.6 °F (37.0 °C)</span></div>
-                                    <div style="margin-top: 3px;"><strong>Risk Level:</strong> <span style="color: #10b981; font-weight: 700;" id="dash-val-risk">Low Cardiovascular Risk</span></div>
-                                </div>
+                    <!-- PERSONAL HEALTH TIMELINE & REPORT EXPORT -->
+                    <div class="widget-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin-bottom: 10px;">
+                                ⏱️ Personal Health Timeline
+                            </h3>
+                            <div class="health-timeline-stream" id="health-timeline-stream">
+                                <!-- Rendered dynamically by JS -->
                             </div>
                         </div>
 
-                        <!-- Vitals trend line -->
-                        <div class="widget-card" style="flex-grow: 1;">
-                            <h3 data-i18n="dash_trend_title">Continuous Biometric Trend</h3>
-                            <div style="height: 120px; position: relative; margin-top: 10px;">
-                                <canvas id="vitals-chart" style="width: 100%; height: 120px;"></canvas>
+                        <!-- Local Health Data Export Panel -->
+                        <div style="border-top: 1px solid var(--border-glass); padding-top: 12px; margin-top: 12px;">
+                            <strong style="font-size: 0.76rem; color: var(--text-primary); display: block; margin-bottom: 8px;">
+                                💾 Export Local Health Summary (100% Offline):
+                            </strong>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button type="button" class="btn btn-secondary" onclick="exportHealthData('csv')" style="font-size: 0.72rem; padding: 6px 12px;">
+                                    📄 Export CSV
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="exportHealthData('json')" style="font-size: 0.72rem; padding: 6px 12px;">
+                                    💾 Export JSON
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="window.print()" style="font-size: 0.72rem; padding: 6px 12px;">
+                                    🖨️ Print / Save PDF
+                                </button>
                             </div>
+                            <span style="font-size: 0.68rem; color: var(--text-muted); display: block; margin-top: 6px;">
+                                Educational monitoring report — not a clinical medical diagnosis.
+                            </span>
                         </div>
                     </div>
+
                 </div>
 
                 <!-- MedSave AI-Style System Footer -->
@@ -1526,46 +1616,63 @@
                 </div>
             </section>
 
-            <!-- ================= VIEW: SYMPTOM EXPLORER ================= -->
-            <section id="section-symptoms" class="section-view hidden" style="display: flex; flex-direction: column; gap: 20px;">
-                <div class="widget-card" style="border-top: 3px solid #8b5cf6;">
+            <!-- ================= VIEW: DISEASE PREDICTION ================= -->
+            <section id="section-disease-prediction" class="section-view hidden" style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="widget-card" style="border-top: 3px solid #0284c7;">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
                         <div>
-                            <h2 style="font-size: 1.3rem; font-weight: 800; color: #8b5cf6; margin: 0;">
-                                🔍 Symptom Awareness Explorer
-                            </h2>
-                            <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 3px;">
-                                Select symptoms to review potential health associations, warning signs, and care guidance. 
-                                <strong style="color: #ef4444;">Strictly educational; this is NOT a medical diagnosis.</strong>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <h2 style="font-size: 1.35rem; font-weight: 800; color: #0284c7; margin: 0;">
+                                    🧬 Disease Prediction &amp; ML Risk Assessment
+                                </h2>
+                                <span class="badge" style="background: rgba(2, 132, 199, 0.12); color: #0284c7; font-size: 0.72rem; font-weight: 700;">Naive Bayes ML | F1: 99.5%</span>
+                            </div>
+                            <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 4px;">
+                                Multi-symptom risk analysis powered by offline machine learning (Kaggle Disease Symptom Prediction dataset, 34 conditions).
+                                <strong style="color: #ef4444;">Educational health awareness only; this is NOT a medical diagnosis.</strong>
                             </p>
                         </div>
-                        <button type="button" class="btn btn-secondary" onclick="clearSelectedSymptoms()" style="font-size: 0.72rem; padding: 5px 10px;">
+                        <button type="button" class="btn btn-secondary" onclick="clearSelectedDiseaseSymptoms()" style="font-size: 0.72rem; padding: 5px 12px;">
                             Clear Selection
                         </button>
                     </div>
 
+                    <!-- Natural Language Symptom Input -->
+                    <div style="margin-bottom: 14px;">
+                        <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-primary); display: block; margin-bottom: 5px;">
+                            💬 Describe your symptoms in plain text (Natural Language):
+                        </label>
+                        <textarea id="disease-pred-nl-input" rows="2" placeholder="E.g., 'I have had high fever, severe headache, and joint pain since yesterday'..." style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); color: var(--text-primary); font-size: 0.8rem; outline: none; font-family: inherit; resize: vertical;"></textarea>
+                    </div>
+
                     <!-- Selected Symptoms Pill Box -->
-                    <div id="selected-symptoms-tray" style="min-height: 42px; background: rgba(0,0,0,0.03); border: 1px dashed var(--border-glass); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
-                        <span style="font-size: 0.74rem; color: var(--text-muted);">No symptoms selected yet. Click any symptom pill below to add it:</span>
+                    <div style="margin-bottom: 14px;">
+                        <label style="font-size: 0.74rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Selected Symptoms Tray:</label>
+                        <div id="disease-selected-tray" style="min-height: 42px; background: rgba(0,0,0,0.02); border: 1px dashed var(--border-glass); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <span style="font-size: 0.74rem; color: var(--text-muted);">No symptoms selected yet. Click pills below or type above.</span>
+                        </div>
                     </div>
 
                     <!-- Filter pills category & grid -->
-                    <div style="margin-bottom: 14px;">
-                        <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-primary); display: block; margin-bottom: 6px;">Available Symptoms Directory (52+ Symptoms):</label>
-                        <div id="symptoms-pills-grid" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 240px; overflow-y: auto; padding: 6px; border: 1px solid var(--border-glass); border-radius: 8px;">
+                    <div style="margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-primary);">Click to Select Symptoms (52+ Clinical Indicators):</label>
+                            <input type="text" id="disease-symptom-search" placeholder="🔍 Quick search symptom..." style="padding: 4px 10px; font-size: 0.72rem; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); color: var(--text-primary); outline: none;">
+                        </div>
+                        <div id="disease-symptoms-chips-grid" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 200px; overflow-y: auto; padding: 8px; border: 1px solid var(--border-glass); border-radius: 8px; background: rgba(0,0,0,0.01);">
                             <!-- Populated dynamically by JS -->
                         </div>
                     </div>
 
-                    <div style="display: flex; gap: 10px; margin-bottom: 16px;">
-                        <input type="text" id="symptom-notes-input" placeholder="Optional notes: e.g. started 2 days ago, worse at night..." style="flex: 1; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.03); color: var(--text-primary); font-size: 0.78rem; outline: none;">
-                        <button type="button" class="btn btn-primary" onclick="runSymptomAwarenessAnalysis()" style="background: #8b5cf6; font-size: 0.78rem; padding: 9px 16px; white-space: nowrap;">
-                            ⚡ Correlate Symptoms (Awareness Only)
+                    <!-- Predict Button -->
+                    <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+                        <button type="button" class="btn btn-primary" id="btn-run-disease-prediction" onclick="runDiseasePrediction()" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); font-size: 0.84rem; padding: 10px 24px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);">
+                            ⚡ Predict Possible Conditions
                         </button>
                     </div>
 
                     <!-- Results Container -->
-                    <div id="symptom-awareness-results" style="display: none; background: rgba(139, 92, 246, 0.03); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 10px; padding: 16px;">
+                    <div id="disease-prediction-results" style="display: none;">
                         <!-- Filled dynamically by JS -->
                     </div>
                 </div>
@@ -1609,15 +1716,32 @@
                 </div>
             </div>
 
-            <!-- ================= VIEW 6: EMERGENCY ================= -->
+            <!-- ================= VIEW: EMERGENCY & SAFETY ================= -->
             <section id="section-emergency" class="section-view hidden" style="display: flex; flex-direction: column; gap: 20px;">
                 
+                <!-- PROMINENT EMERGENCY WARNING BANNER (Section 25) -->
+                <div class="widget-card" style="border: 2px solid #ef4444; background: rgba(239, 68, 68, 0.04); border-radius: 12px; padding: 18px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                        <span style="font-size: 1.6rem;">🚨</span>
+                        <h2 style="font-size: 1.3rem; font-weight: 800; color: #ef4444; margin: 0;">EMERGENCY WARNING</h2>
+                    </div>
+                    <p style="font-size: 0.84rem; color: var(--text-primary); line-height: 1.55; margin: 0 0 10px 0;">
+                        If someone has severe or rapidly worsening symptoms, <strong>do not rely on this website or chatbot for diagnosis</strong>.
+                        Seek immediate professional medical attention or contact the appropriate local emergency medical service immediately.
+                    </p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; font-size: 0.76rem; font-weight: 700;">📞 National Emergency: 112</span>
+                        <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; font-size: 0.76rem; font-weight: 700;">🚑 Ambulance: 108 / 102</span>
+                        <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; font-size: 0.76rem; font-weight: 700;">🧪 Poison Control: 1800-116-117</span>
+                    </div>
+                </div>
+
                 <!-- TOP EMERGENCY TRIAGE ROW: SOS ALERTS & GENERATIVE AI ASSISTANT -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <!-- LEFT: SOS WARNINGS -->
                     <div class="widget-card" style="border-left: 5px solid var(--accent-red); background: rgba(239, 68, 68, 0.02);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <h2 style="font-size: 1.25rem; color: #ef4444; font-weight: 800; margin: 0;" data-i18n="sos_title">🚨 Emergency Clinical Triage &amp; SOS</h2>
+                            <h2 style="font-size: 1.25rem; color: #ef4444; font-weight: 800; margin: 0;" data-i18n="sos_title">🚨 Emergency &amp; Safety Protocol</h2>
                             <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; font-weight: 800; font-size: 0.74rem;">CRITICAL RESPONSE</span>
                         </div>
                         <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px;" data-i18n="sos_desc">

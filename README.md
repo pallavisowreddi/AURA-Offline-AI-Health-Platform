@@ -110,22 +110,30 @@
   * 🥗 **Lifestyle**: GERD (Acid Reflux), Dehydration & Heat Exhaustion
 * Interactive modal displaying complete pathophysiology, prevention, warning signs, and FAQs.
 
-### 6. 🔍 Symptom Explorer
-* Directory of **52+ categorized symptoms** with multi-select toggle pills.
-* Instant non-diagnostic correlation analysis mapping symptom clusters to potential medical conditions with red-flag warnings.
+### 6. 🧬 Disease Prediction & Risk Assessment
+* Multi-symptom risk analysis driven by an offline machine learning classifier (Comparative training across 5 models; Naive Bayes selected with Macro F1: 0.9949).
+* Trained on the **Kaggle Disease Symptom Prediction dataset** covering 34 conditions and 52+ clinical indicators.
+* Dual input modes: Clickable symptom chips with real-time search filtering + free-text Natural Language processing.
+* Outputs top 3 condition possibilities with calibrated confidence percentages, linkable disease guide cards, red-flag warning signs, and non-diagnostic disclaimers.
 
 ### 7. 💡 Preventive Health & Wellness Hub
 * Evidence-based guidance across **8 vital health domains**: Mosquito Prevention, Water & Food Hygiene, Hydration, Respiratory Hygiene, Cardiovascular Health, Diabetes & Metabolism, Immunization Defenses, and Sleep/Mental Rest.
 
-### 8. 📶 Bluetooth Smart Health Hub & Water Tracker
-* Connects to BLE smartwatches/bands via **Web Bluetooth API** (GATT `0x180D` Heart Rate, `0x1809` Thermometer).
-* Built-in **PulseBand Pro 4G BLE Simulator** with Web Audio API cardiac pulse beeps.
-* Dynamic AI Hydration Advisor adjusting water targets based on real-time body temperature and heart rate.
+### 8. ❤️ Live Health & Biometric Telemetry Hub
+* Primary navigation supporting 4 exact biometric categories:
+  1. **Heart Rate (BPM)** with live animated ECG canvas waveform and bradycardia/tachycardia detection.
+  2. **Oxygen SpO₂ (%)** with pulse synchronization and clinical hypoxemia alerts.
+  3. **Blood Pressure (Systolic / Diastolic mmHg + Pulse)** with MAP calculation and AHA stage classification.
+  4. **Body Temperature (°F / °C)** with toggleable units and fever/hypothermia staging.
+* Wireless **Web Bluetooth API** (GATT services `0x180D`, `0x1809`, `0x1810`, `0x1822`) and built-in **IoMT Benchmark Simulator** with prominent demo provenance banner.
+* **Strict Medical Rule**: Bluetooth does NOT calculate BP from HR or SpO₂. Measured BP is received from a compatible BP monitor or logged via the Manual Entry form.
+* **Data Provenance Badges**: Every reading displays an explicit source badge (`REAL_DEVICE`, `SIMULATED`, `MANUAL_ENTRY`, `DATASET`).
+* **Health Trends & History**: Pure HTML5 canvas trend charts (100% offline, zero CDN dependencies), local SQLite audit trail, personal health timeline, and offline CSV/JSON export.
 
-### 9. 🏥 Emergency Hub & Medicine Recommender
-* Generative AI acute triage assistant with 6 scenario quick pills and free-text symptom analysis.
-* First-line emergency medicines (Aspirin + Sorbitrate for cardiac, Salbutamol for asthma, Epinephrine for anaphylaxis) with dosages and contraindications.
-* Verified offline hospital directories for **Hyderabad**, **Vijayawada**, **Visakhapatnam**, **Bengaluru**, and **Delhi** with GPS auto-detection.
+### 9. 🚨 Emergency & Safety Hub
+* Deterministic safety engine executes *before* AI generation for acute emergencies (chest pain, dyspnea, stroke FAST, severe bleeding, anaphylaxis).
+* Prominent red emergency banner with one-tap emergency call buttons (112, 108, 102, 911).
+* First-line emergency guidance and offline hospital directories for **Hyderabad**, **Vijayawada**, **Visakhapatnam**, **Bengaluru**, and **Delhi** with GPS auto-detection.
 
 ---
 
@@ -197,7 +205,7 @@ To verify for project expo juries that AURA operates completely without internet
    * *"What are the symptoms and prevention for dengue?"*
    * Observe immediate local RAG response with source attribution.
 6. Open the **Disease Library** and search for *"Malaria"* or filter by *"Respiratory"*.
-7. Open the **Symptom Explorer**, select *"Fever"*, *"Headache"*, and *"Joint Pain"*, and click *"Correlate Symptoms"*.
+7. Open the **Disease Prediction** section, select *"Fever"*, *"Headache"*, and *"Joint Pain"* (or describe them in natural language), and click *"Predict Possible Conditions"* to view calibrated top 3 probabilities from our local Naive Bayes classifier.
 8. Verify that all features execute with **zero network latency** and **zero external API calls**.
 
 ---

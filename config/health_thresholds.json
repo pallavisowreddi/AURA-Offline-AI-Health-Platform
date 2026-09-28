@@ -1,0 +1,68 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-09-28",
+  "disclaimer": "These thresholds are for educational health awareness and triage prioritization only. They do not constitute clinical diagnosis or replacement for a physician's evaluation.",
+  "sources": [
+    "American Heart Association (AHA) Blood Pressure Guidelines",
+    "World Health Organization (WHO) Pulse Oximetry Guidelines",
+    "Centers for Disease Control and Prevention (CDC) Vital Signs & Fever Guidelines"
+  ],
+  "educational_ranges": {
+    "heart_rate_bpm": {
+      "unit": "BPM",
+      "bradycardia": {"min": 30, "max": 59, "status": "Low (Bradycardia)", "severity": "warning"},
+      "normal": {"min": 60, "max": 100, "status": "Normal Resting Rate", "severity": "normal"},
+      "elevated": {"min": 101, "max": 130, "status": "Elevated / Mild Tachycardia", "severity": "warning"},
+      "tachycardia_high": {"min": 131, "max": 220, "status": "Significant Tachycardia", "severity": "alert"}
+    },
+    "oxygen_saturation_spo2": {
+      "unit": "%",
+      "normal": {"min": 95, "max": 100, "status": "Normal Blood Oxygenation", "severity": "normal"},
+      "mild_hypoxia": {"min": 90, "max": 94, "status": "Mild Hypoxemia", "severity": "warning"},
+      "severe_hypoxia": {"min": 70, "max": 89, "status": "Severe Hypoxemia — Urgent Attention", "severity": "critical"}
+    },
+    "blood_pressure_mmhg": {
+      "unit": "mmHg",
+      "normal": {"systolic_max": 119, "diastolic_max": 79, "status": "Normal BP", "severity": "normal"},
+      "elevated": {"systolic_min": 120, "systolic_max": 129, "diastolic_max": 79, "status": "Elevated BP", "severity": "info"},
+      "stage_1_hypertension": {"systolic_min": 130, "systolic_max": 139, "diastolic_min": 80, "diastolic_max": 89, "status": "Stage 1 Hypertension Range", "severity": "warning"},
+      "stage_2_hypertension": {"systolic_min": 140, "systolic_max": 179, "diastolic_min": 90, "diastolic_max": 119, "status": "Stage 2 Hypertension Range", "severity": "warning"},
+      "hypertensive_crisis": {"systolic_min": 180, "diastolic_min": 120, "status": "Hypertensive Crisis Range — Seek Emergency Care", "severity": "critical"}
+    },
+    "body_temperature_f": {
+      "unit": "°F",
+      "hypothermia": {"min": 93.0, "max": 95.0, "status": "Hypothermia Range", "severity": "warning"},
+      "normal": {"min": 97.0, "max": 99.0, "status": "Normal Body Temperature", "severity": "normal"},
+      "low_grade_fever": {"min": 99.1, "max": 100.4, "status": "Low-Grade Temperature Elevation", "severity": "info"},
+      "fever": {"min": 100.5, "max": 103.9, "status": "Fever (Pyrexia)", "severity": "warning"},
+      "high_fever_critical": {"min": 104.0, "max": 108.0, "status": "High Fever (Hyperpyrexia) — Prompt Care Needed", "severity": "critical"}
+    }
+  },
+  "emergency_symptom_triggers": [
+    "severe chest pain",
+    "chest pressure",
+    "radiating pain down left arm",
+    "severe difficulty breathing",
+    "gasping for air",
+    "unconsciousness",
+    "fainting",
+    "unresponsive",
+    "severe bleeding",
+    "coughing up blood",
+    "seizure",
+    "sudden confusion",
+    "facial droop",
+    "slurred speech",
+    "arm weakness",
+    "severe allergic reaction",
+    "throat swelling",
+    "anaphylaxis",
+    "swallowed poison",
+    "ingested chemicals"
+  ],
+  "device_measurement_quality": {
+    "acceptable_signal_levels": ["Good", "Moderate"],
+    "unacceptable_signal_levels": ["Poor", "Noisy", "Sensor Displaced"],
+    "guidance": "Pulse-oximeter and biometric readings can be affected by movement, sensor placement, peripheral circulation, ambient temperature, skin pigmentation, and device battery limitations. Always confirm sensor contact and repeat measurement according to manufacturer guidelines."
+  }
+}

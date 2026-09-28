@@ -183,7 +183,7 @@ class LocalRagEngine:
                     "**Suggested topics to explore:**\n"
                     "- Ask about specific conditions: *Dengue, Malaria, Tuberculosis, Diabetes, Hypertension, Asthma, Cholera*\n"
                     "- Explore symptoms: *Fever, headache, cough, shortness of breath, joint pain*\n"
-                    "- Or visit the **Disease Library** and **Symptom Explorer** tabs in the sidebar for full guides."
+                    "- Or visit the **Disease Library** and **Disease Prediction** tabs in the sidebar for full guides."
                 )
 
         primary_doc = retrieved_docs[0]
@@ -191,7 +191,17 @@ class LocalRagEngine:
         category = primary_doc["category"]
         content = primary_doc["content"]
 
-        # Parse key blocks if it's a disease document
+        # Look for disease profile from database if available
+        disease_record = None
+        disease_matches = database.get_all_diseases(search_query=title)
+        if disease_matches:
+            for dm in disease_matches:
+                if dm["name"].lower() == title.lower() or title.lower() in dm["name"].lower():
+                    disease_record = dm
+                    break
+            if not disease_record:
+                disease_record = disease_matches[0]
+
         overview_match = re.search(r":\s*(.*?)(?=\nSymptoms:|\nCauses:|$)", content, re.DOTALL)
         symptoms_match = re.search(r"Symptoms:\s*(.*?)(?=\nCauses:|\nTransmission:|$)", content, re.DOTALL)
         prevention_match = re.search(r"Prevention:\s*(.*?)(?=\nGeneral Care:|\nWarning Signs:|$)", content, re.DOTALL)
@@ -203,6 +213,30 @@ class LocalRagEngine:
         prevention_str = prevention_match.group(1).strip() if prevention_match else ""
         warning_str = warning_match.group(1).strip() if warning_match else ""
         care_str = care_match.group(1).strip() if care_match else ""
+
+        # Fallback to disease record if parsed strings are missing (e.g. when top doc was MedQuAD QA)
+        if disease_record:
+            raw = disease_record.get("raw", {})
+            if not overview or "Clinical Question" in overview:
+                overview = disease_record.get("overview", "")
+            if not symptoms_str and raw.get("common_symptoms"):
+                symptoms_str = ", ".join(raw["common_symptoms"])
+            if not prevention_str and raw.get("prevention"):
+                prevention_str = ", ".join(raw["prevention"])
+            if not warning_str and raw.get("warning_signs"):
+                warning_str = ", ".join(raw["warning_signs"])
+            if not care_str:
+                care_str = disease_record.get("when_to_seek_medical_help", "")
+
+        # Extract MedQuAD QA items from retrieved docs
+        medquad_items = []
+        for d in retrieved_docs:
+            if d.get("doc_type") == "medquad_qa":
+                c = d["content"]
+                q_match = re.search(r"Clinical Question:\s*(.*?)(?=\nVerified Medical Guidance:|$)", c, re.DOTALL)
+                a_match = re.search(r"Verified Medical Guidance:\s*(.*?)(?=\nFocus:|$)", c, re.DOTALL)
+                if q_match and a_match:
+                    medquad_items.append((q_match.group(1).strip(), a_match.group(1).strip()))
 
         # Build clean Health Awareness Card in Markdown
         md = f"### 🩺 {title} Awareness Guide\n"
@@ -234,6 +268,11 @@ class LocalRagEngine:
 
         if care_str:
             md += f"> **🏥 When to Seek Medical Evaluation:**\n> {care_str}\n\n"
+
+        if medquad_items:
+            md += "#### 🔬 Verified Clinical Guidance (MedQuAD QA)\n"
+            for q, a in medquad_items[:2]:
+                md += f"- **Question:** {q}\n  **Guidance:** {a}\n\n"
 
         md += f"---\n**Information Source:** `{primary_doc['source']}`"
         return md

@@ -2,17 +2,20 @@
 """
 AURA Offline AI Health Platform - Local SQLite Database Engine
 100% Offline, zero external network dependency.
+Supports conversations, disease knowledge, MedQuAD RAG indexing,
+biometric telemetry measurements, monitoring sessions, disease predictions, and BLE devices.
 """
 import os
 import json
 import sqlite3
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 DB_PATH = os.path.join("data", "aura_health.db")
 
 def get_db_connection():
     """Returns a SQLite connection with dict-like row factory."""
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
@@ -20,7 +23,6 @@ def get_db_connection():
 
 def init_db():
     """Initializes schema and seeds local knowledge base tables."""
-    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -105,6 +107,78 @@ def init_db():
     )
     """)
 
+    # 8. Biometric Telemetry Measurements table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS measurements (
+        id TEXT PRIMARY KEY,
+        user_id TEXT DEFAULT 'local_user',
+        device_id TEXT,
+        metric_type TEXT NOT NULL,
+        value REAL NOT NULL,
+        secondary_value REAL,
+        unit TEXT NOT NULL,
+        timestamp TEXT NOT NULL,
+        source_type TEXT NOT NULL,
+        signal_quality TEXT DEFAULT 'Good',
+        notes TEXT
+    )
+    """)
+
+    # 9. Monitoring Sessions table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS monitoring_sessions (
+        id TEXT PRIMARY KEY,
+        user_id TEXT DEFAULT 'local_user',
+        start_time TEXT NOT NULL,
+        end_time TEXT,
+        session_type TEXT DEFAULT 'live_biometrics',
+        avg_hr REAL,
+        avg_spo2 REAL,
+        readings_count INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'active',
+        notes TEXT
+    )
+    """)
+
+    # 10. Disease Predictions table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS disease_predictions (
+        id TEXT PRIMARY KEY,
+        user_id TEXT DEFAULT 'local_user',
+        symptoms TEXT NOT NULL,
+        predicted_condition TEXT NOT NULL,
+        confidence REAL NOT NULL,
+        top_conditions_json TEXT NOT NULL,
+        model_version TEXT DEFAULT '1.0',
+        timestamp TEXT NOT NULL,
+        disclaimer_acknowledged INTEGER DEFAULT 1
+    )
+    """)
+
+    # 11. Devices table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS devices (
+        id TEXT PRIMARY KEY,
+        device_name TEXT NOT NULL,
+        device_type TEXT NOT NULL,
+        mac_or_uuid TEXT NOT NULL,
+        last_connected TEXT NOT NULL,
+        is_active INTEGER DEFAULT 1
+    )
+    """)
+
+    # 12. Emergency Events table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS emergency_events (
+        id TEXT PRIMARY KEY,
+        user_id TEXT DEFAULT 'local_user',
+        trigger_type TEXT NOT NULL,
+        description TEXT NOT NULL,
+        timestamp TEXT NOT NULL,
+        resolved INTEGER DEFAULT 0
+    )
+    """)
+
     conn.commit()
 
     # Seed data if tables are empty
@@ -112,7 +186,7 @@ def init_db():
     conn.close()
 
 def seed_knowledge_base(conn):
-    """Seeds diseases, symptoms, health tips, and RAG knowledge documents from data/ JSON files."""
+    """Seeds diseases, symptoms, health tips, emergency guidelines, and MedQuAD into knowledge documents."""
     cursor = conn.cursor()
 
     # Seed Diseases
@@ -136,7 +210,6 @@ def seed_knowledge_base(conn):
                 json.dumps(d, ensure_ascii=False)
             ))
             
-            # Also insert RAG document for this disease
             content = f"{d.get('name')} ({d.get('category')}): {d.get('overview')}\nSymptoms: {', '.join(d.get('common_symptoms', []))}\nCauses: {', '.join(d.get('causes', []))}\nTransmission: {', '.join(d.get('transmission', []))}\nPrevention: {', '.join(d.get('prevention', []))}\nGeneral Care: {', '.join(d.get('general_care_information', []))}\nWarning Signs: {', '.join(d.get('warning_signs', []))}\nWhen to Seek Help: {d.get('when_to_seek_medical_help', '')}"
             cursor.execute("""
             INSERT OR REPLACE INTO knowledge_documents (id, title, category, doc_type, content, source)
@@ -181,7 +254,7 @@ def seed_knowledge_base(conn):
                 f"Local Health Knowledge Base → Symptoms → {s.get('name')}"
             ))
 
-    # Seed Health Tips into Knowledge Documents
+    # Seed Health Tips
     if os.path.exists("data/health_tips.json"):
         with open("data/health_tips.json", "r", encoding="utf-8") as f:
             tips_data = json.load(f)
@@ -199,7 +272,7 @@ def seed_knowledge_base(conn):
                 f"Local Health Knowledge Base → Prevention → {tip.get('category')}"
             ))
 
-    # Seed Emergency Guidelines into Knowledge Documents
+    # Seed Emergency Guidelines
     if os.path.exists("data/emergency_guidelines.json"):
         with open("data/emergency_guidelines.json", "r", encoding="utf-8") as f:
             emer_data = json.load(f)
@@ -233,6 +306,25 @@ def seed_knowledge_base(conn):
                 "faq",
                 content,
                 "Local Health Knowledge Base → Health FAQs"
+            ))
+
+    # Seed MedQuAD
+    medquad_path = "data/medquad/medquad_rag_knowledge.json"
+    if os.path.exists(medquad_path):
+        with open(medquad_path, "r", encoding="utf-8") as f:
+            mq_data = json.load(f)
+        for entry in mq_data:
+            content = f"Medical Topic: {entry.get('topic')}\nClinical Question: {entry.get('question')}\nVerified Medical Guidance: {entry.get('answer')}\nFocus: {entry.get('focus')}"
+            cursor.execute("""
+            INSERT OR REPLACE INTO knowledge_documents (id, title, category, doc_type, content, source)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                f"doc_mq_{entry.get('id')}",
+                entry.get("topic"),
+                entry.get("category", "Clinical RAG"),
+                "medquad_qa",
+                content,
+                f"Local Health Knowledge Base → MedQuAD Knowledge Repository → {entry.get('source')}"
             ))
 
     conn.commit()
@@ -301,7 +393,6 @@ def add_message(conv_id, role, content, metadata=None):
     now = datetime.now().isoformat()
     meta_str = json.dumps(metadata) if metadata else None
     
-    # Check if conversation exists; if not, create it
     c = conn.execute("SELECT id FROM conversations WHERE id = ?", (conv_id,)).fetchone()
     if not c:
         auto_title = content[:30] + ("..." if len(content) > 30 else "")
@@ -364,7 +455,7 @@ def get_disease_by_id(disease_id):
     return res
 
 def get_all_symptoms(category=None):
-    """Returns all symptoms for Symptom Explorer."""
+    """Returns all symptoms for Disease Prediction selection."""
     conn = get_db_connection()
     if category and category.lower() != "all":
         rows = conn.execute("SELECT * FROM symptoms WHERE LOWER(category) = ? ORDER BY name ASC", (category.lower(),)).fetchall()
@@ -386,19 +477,235 @@ def get_knowledge_documents():
     conn.close()
     return docs
 
+
+# ============================================================================
+# BIOMETRICS & LIVE HEALTH CRUD
+# ============================================================================
+
+def save_measurement(metric_type, value, unit, secondary_value=None, source_type="MANUAL_ENTRY",
+                     device_id=None, signal_quality="Good", notes="", user_id="local_user"):
+    """
+    Saves a biometric measurement into SQLite.
+    source_type must be one of: 'REAL_DEVICE', 'SIMULATED', 'MANUAL_ENTRY', 'DATASET'
+    """
+    valid_sources = ["REAL_DEVICE", "SIMULATED", "MANUAL_ENTRY", "DATASET"]
+    if source_type not in valid_sources:
+        source_type = "MANUAL_ENTRY"
+
+    conn = get_db_connection()
+    meas_id = str(uuid.uuid4())
+    now = datetime.now().isoformat()
+
+    conn.execute("""
+    INSERT INTO measurements (id, user_id, device_id, metric_type, value, secondary_value, unit, timestamp, source_type, signal_quality, notes)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        meas_id,
+        user_id,
+        device_id,
+        metric_type.lower(),
+        float(value),
+        float(secondary_value) if secondary_value is not None else None,
+        unit,
+        now,
+        source_type,
+        signal_quality,
+        notes
+    ))
+    conn.commit()
+    conn.close()
+    return meas_id
+
+def get_measurements(metric_type=None, limit=50, source_type=None):
+    """Retrieves biometric measurements with optional filtering."""
+    conn = get_db_connection()
+    query = "SELECT * FROM measurements"
+    params = []
+    conds = []
+
+    if metric_type and metric_type.lower() != "all":
+        conds.append("metric_type = ?")
+        params.append(metric_type.lower())
+
+    if source_type:
+        conds.append("source_type = ?")
+        params.append(source_type)
+
+    if conds:
+        query += " WHERE " + " AND ".join(conds)
+
+    query += " ORDER BY timestamp DESC LIMIT ?"
+    params.append(limit)
+
+    rows = conn.execute(query, params).fetchall()
+    results = [dict(r) for r in rows]
+    conn.close()
+    return results
+
+def get_latest_vitals():
+    """Returns the most recent reading for each of the 4 primary biometrics."""
+    conn = get_db_connection()
+    metrics = ["heart_rate", "spo2", "blood_pressure", "body_temperature"]
+    latest = {}
+
+    for m in metrics:
+        row = conn.execute("""
+        SELECT * FROM measurements WHERE metric_type = ? ORDER BY timestamp DESC LIMIT 1
+        """, (m,)).fetchone()
+        if row:
+            latest[m] = dict(row)
+        else:
+            latest[m] = None
+
+    conn.close()
+    return latest
+
+def get_vitals_trends(metric_type, days=7):
+    """Returns timestamped series of measurements for trends graphing."""
+    conn = get_db_connection()
+    cutoff = (datetime.now() - timedelta(days=days)).isoformat()
+    rows = conn.execute("""
+    SELECT timestamp, value, secondary_value, unit, source_type
+    FROM measurements
+    WHERE metric_type = ? AND timestamp >= ?
+    ORDER BY timestamp ASC
+    """, (metric_type.lower(), cutoff)).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def save_monitoring_session(session_type="live_biometrics", user_id="local_user"):
+    """Starts a monitoring session and returns its ID."""
+    conn = get_db_connection()
+    session_id = str(uuid.uuid4())
+    now = datetime.now().isoformat()
+    conn.execute("""
+    INSERT INTO monitoring_sessions (id, user_id, start_time, session_type, status)
+    VALUES (?, ?, ?, ?, 'active')
+    """, (session_id, user_id, now, session_type))
+    conn.commit()
+    conn.close()
+    return session_id
+
+def stop_monitoring_session(session_id, avg_hr=None, avg_spo2=None, readings_count=0, notes=""):
+    """Closes an active monitoring session with summary telemetry."""
+    conn = get_db_connection()
+    now = datetime.now().isoformat()
+    conn.execute("""
+    UPDATE monitoring_sessions
+    SET end_time = ?, avg_hr = ?, avg_spo2 = ?, readings_count = ?, status = 'completed', notes = ?
+    WHERE id = ?
+    """, (now, avg_hr, avg_spo2, readings_count, notes, session_id))
+    conn.commit()
+    conn.close()
+    return True
+
+
+# ============================================================================
+# DISEASE PREDICTIONS CRUD
+# ============================================================================
+
+def save_disease_prediction(symptoms, predicted_condition, confidence, top_conditions,
+                            model_version="1.0", user_id="local_user"):
+    """Stores a symptom prediction event with model version and top possibilities."""
+    conn = get_db_connection()
+    pred_id = str(uuid.uuid4())
+    now = datetime.now().isoformat()
+    conn.execute("""
+    INSERT INTO disease_predictions (id, user_id, symptoms, predicted_condition, confidence, top_conditions_json, model_version, timestamp)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        pred_id,
+        user_id,
+        ", ".join(symptoms) if isinstance(symptoms, list) else str(symptoms),
+        predicted_condition,
+        float(confidence),
+        json.dumps(top_conditions, ensure_ascii=False),
+        model_version,
+        now
+    ))
+    conn.commit()
+    conn.close()
+    return pred_id
+
+def get_disease_predictions(limit=20):
+    """Retrieves previous prediction records."""
+    conn = get_db_connection()
+    rows = conn.execute("""
+    SELECT * FROM disease_predictions ORDER BY timestamp DESC LIMIT ?
+    """, (limit,)).fetchall()
+    results = []
+    for r in rows:
+        d = dict(r)
+        d["top_conditions"] = json.loads(d["top_conditions_json"])
+        results.append(d)
+    conn.close()
+    return results
+
+
+# ============================================================================
+# DEVICES & EMERGENCY LOGS
+# ============================================================================
+
+def register_or_update_device(device_name, device_type, mac_or_uuid):
+    """Registers or updates a discovered BLE device."""
+    conn = get_db_connection()
+    row = conn.execute("SELECT id FROM devices WHERE mac_or_uuid = ?", (mac_or_uuid,)).fetchone()
+    now = datetime.now().isoformat()
+    if row:
+        dev_id = row[0]
+        conn.execute("""
+        UPDATE devices SET device_name = ?, device_type = ?, last_connected = ?, is_active = 1 WHERE id = ?
+        """, (device_name, device_type, now, dev_id))
+    else:
+        dev_id = str(uuid.uuid4())
+        conn.execute("""
+        INSERT INTO devices (id, device_name, device_type, mac_or_uuid, last_connected, is_active)
+        VALUES (?, ?, ?, ?, ?, 1)
+        """, (dev_id, device_name, device_type, mac_or_uuid, now))
+    conn.commit()
+    conn.close()
+    return dev_id
+
+def get_devices():
+    """Lists registered devices."""
+    conn = get_db_connection()
+    rows = conn.execute("SELECT * FROM devices ORDER BY last_connected DESC").fetchall()
+    devices = [dict(r) for r in rows]
+    conn.close()
+    return devices
+
+def log_emergency_event(trigger_type, description, user_id="local_user"):
+    """Logs a triggered emergency event in the audit trail."""
+    conn = get_db_connection()
+    event_id = str(uuid.uuid4())
+    now = datetime.now().isoformat()
+    conn.execute("""
+    INSERT INTO emergency_events (id, user_id, trigger_type, description, timestamp, resolved)
+    VALUES (?, ?, ?, ?, ?, 0)
+    """, (event_id, user_id, trigger_type, description, now))
+    conn.commit()
+    conn.close()
+    return event_id
+
 def get_database_stats():
-    """Returns statistics for dashboard (total diseases, symptoms, knowledge docs, conversations)."""
+    """Returns statistics for dashboard (diseases, symptoms, knowledge docs, measurements, predictions)."""
     conn = get_db_connection()
     diseases_count = conn.execute("SELECT COUNT(*) FROM diseases").fetchone()[0]
     symptoms_count = conn.execute("SELECT COUNT(*) FROM symptoms").fetchone()[0]
     docs_count = conn.execute("SELECT COUNT(*) FROM knowledge_documents").fetchone()[0]
     convs_count = conn.execute("SELECT COUNT(*) FROM conversations").fetchone()[0]
+    meas_count = conn.execute("SELECT COUNT(*) FROM measurements").fetchone()[0]
+    preds_count = conn.execute("SELECT COUNT(*) FROM disease_predictions").fetchone()[0]
+    devices_count = conn.execute("SELECT COUNT(*) FROM devices").fetchone()[0]
     conn.close()
     return {
         "diseases_count": diseases_count,
         "symptoms_count": symptoms_count,
         "knowledge_docs_count": docs_count,
         "conversations_count": convs_count,
+        "measurements_count": meas_count,
+        "predictions_count": preds_count,
+        "devices_count": devices_count,
         "mode": "offline",
         "database": "sqlite_local"
     }

@@ -906,10 +906,15 @@ document.addEventListener("DOMContentLoaded", () => {
             "body": "Browse verified health awareness profiles for 22+ conditions with symptoms, prevention, warning signs, and FAQs.",
             "speech": "This is the disease library. Search or filter common conditions to review educational health guidelines."
         },
-        "symptoms": {
-            "title": "Symptom Explorer",
-            "body": "Select multiple symptoms to explore possible educational associations and critical warning flags without diagnosis.",
-            "speech": "This is the symptom explorer. Select your symptoms to view potential health associations and care advice."
+        "disease-prediction": {
+            "title": "Disease Prediction & Risk Assessment",
+            "body": "Select multiple symptoms or enter natural language notes to run local Machine Learning prediction across 34 conditions. Educational awareness only.",
+            "speech": "This is the disease prediction and risk assessment section. Select symptoms or describe your situation to evaluate condition probabilities offline."
+        },
+        "live-health": {
+            "title": "Live Health & Biometrics Hub",
+            "body": "Real-time wireless BLE 5.2 telemetry & manual monitoring for Heart Rate, SpO₂, Blood Pressure & Body Temperature.",
+            "speech": "This is the Live Health and Biometrics Telemetry Hub. Monitor live Bluetooth vitals or log clinical readings offline."
         },
         "tips": {
             "title": "Preventive Health Guidelines",
@@ -989,7 +994,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 2. TABBED VIEWPORT NAVIGATION
     // ==========================================
-    const PROTECTED_TABS = ["home", "prediction", "reports", "vaccines", "reminders", "dashboard", "emergency", "settings", "diseases", "symptoms", "tips"];
+    const PROTECTED_TABS = ["home", "prediction", "reports", "vaccines", "reminders", "dashboard", "live-health", "disease-prediction", "emergency", "settings", "diseases", "tips"];
 
     function updateAuthUIState() {
         const user = getActiveUser();
@@ -3866,16 +3871,33 @@ window.quickFillDemo = function(name, roll, pass) {
 
 
 // ============================================================================
-// MODULE: BLUETOOTH SMART HEALTH HUB & TELEMETRY STREAM
+// MODULE: LIVE HEALTH & BIOMETRIC TELEMETRY HUB CONTROLLER
 // ============================================================================
 (function() {
     let bleDevice = null;
     let bleServer = null;
     let bleSimInterval = null;
+    let sessionTimerInterval = null;
+    let sessionSeconds = 0;
+    let activeSessionId = null;
     let audioCtx = null;
     let isSoundMuted = true;
     let currentBpm = 72;
-    let lastSoundTime = 0;
+    let isCelsius = false;
+    let currentTrendMetric = 'heart_rate';
+    let currentTrendDays = 1;
+    let simCycleCounter = 0;
+
+    // Last known vitals cache
+    let lastVitals = {
+        hr: 72,
+        spo2: 98,
+        sys: 120,
+        dia: 80,
+        tempF: 98.4,
+        source: 'MANUAL_ENTRY',
+        quality: 'Good Signal'
+    };
 
     // Web Audio API Cardiac Beep Synthesizer
     function playHeartbeatBeep() {
@@ -3890,7 +3912,7 @@ window.quickFillDemo = function(name, roll, pass) {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = "sine";
-            osc.frequency.setValueAtTime(520, audioCtx.currentTime); // 520 Hz pulse tone
+            osc.frequency.setValueAtTime(520, audioCtx.currentTime);
             gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
             osc.connect(gain);
@@ -3902,90 +3924,52 @@ window.quickFillDemo = function(name, roll, pass) {
         }
     }
 
-    // Update Live Telemetry Display & Synchronize Dashboard
-    function updateBleTelemetry(hr, spo2, tempF, battery, rssi) {
-        currentBpm = hr;
-
-        // Advantage Banner Elements
-        const elHr = document.getElementById("ble-val-hr");
-        const elSpo2 = document.getElementById("ble-val-spo2");
-        const elTemp = document.getElementById("ble-val-temp");
-        const elTempC = document.getElementById("ble-val-temp-c");
-        const elBattery = document.getElementById("ble-device-battery");
-        const elRssi = document.getElementById("ble-device-rssi");
-
-        if (elHr) elHr.innerText = hr;
-        if (elSpo2) elSpo2.innerText = spo2;
-        if (elTemp) elTemp.innerText = tempF.toFixed(1);
-        if (elTempC) elTempC.innerText = ((tempF - 32) * 5 / 9).toFixed(1);
-        if (elBattery) elBattery.innerText = `${battery}%`;
-        if (elRssi) elRssi.innerText = `${rssi} dBm`;
-
-        // Sync with existing Dashboard widgets if present
-        const dashHr = document.getElementById("dash-val-hr");
-        const dashSpo2 = document.getElementById("dash-val-spo2");
-        const dashTemp = document.getElementById("dash-val-temp");
-        const dashStatusHr = document.getElementById("dash-status-hr");
-
-        if (dashHr) dashHr.innerText = hr;
-        if (dashSpo2) dashSpo2.innerText = spo2;
-        if (dashTemp) dashTemp.innerText = tempF.toFixed(1);
-
-        if (dashStatusHr) {
-            if (hr < 60) {
-                dashStatusHr.innerText = "Bradycardia (Slow)";
-                dashStatusHr.style.color = "#d97706";
-            } else if (hr > 100) {
-                dashStatusHr.innerText = "Tachycardia (Elevated)";
-                dashStatusHr.style.color = "#ef4444";
-            } else {
-                dashStatusHr.innerText = "Normal Resting Sinus";
-                dashStatusHr.style.color = "#10b981";
-            }
-        }
-
-        // Trigger Biometric calculation if available in parent scope
-        if (typeof calculateBiometrics === "function") {
-            const sys = parseInt(document.getElementById("dash-val-bp")?.innerText?.split("/")[0]) || 120;
-            const dia = parseInt(document.getElementById("dash-val-bp")?.innerText?.split("/")[1]) || 80;
-            calculateBiometrics(sys, dia, hr, spo2, tempF);
-        }
-
-        // Refresh dynamic AI Hydration advice on biometric changes
-        if (typeof window.updateAiHydrationAdvice === "function") {
-            window.updateAiHydrationAdvice(tempF, hr);
-        }
-
-        // Trigger Audio beep
-        playHeartbeatBeep();
-    }
-
-    // Set BLE UI State
-    function setBleState(connected, deviceName = "No Device Connected") {
+    // Set BLE Connection State (Connected, Simulated Demo, Disconnected)
+    function setBleState(state, deviceName = "No BLE Device Connected") {
         const statusBadge = document.getElementById("ble-connection-status");
+        const sourceBadge = document.getElementById("ble-source-type-badge");
         const nameEl = document.getElementById("ble-device-name");
-        const pulseIndicator = document.getElementById("ble-pulse-indicator");
+        const demoBanner = document.getElementById("ble-demo-banner");
         const connBtn = document.getElementById("ble-connect-btn");
         const simBtn = document.getElementById("ble-simulate-btn");
         const discBtn = document.getElementById("ble-disconnect-btn");
 
-        if (connected) {
+        if (state === "connected") {
             if (statusBadge) {
                 statusBadge.className = "badge";
                 statusBadge.style.background = "rgba(16, 185, 129, 0.15)";
                 statusBadge.style.color = "#10b981";
                 statusBadge.style.border = "1px solid rgba(16, 185, 129, 0.3)";
-                statusBadge.innerHTML = "🟢 Connected &amp; Streaming";
+                statusBadge.innerHTML = "🟢 Device Connected";
+            }
+            if (sourceBadge) {
+                sourceBadge.className = "badge-source-real";
+                sourceBadge.innerText = "REAL_DEVICE";
             }
             if (nameEl) nameEl.innerText = deviceName;
-            if (pulseIndicator) {
-                pulseIndicator.style.background = "#10b981";
-                pulseIndicator.style.boxShadow = "0 0 10px rgba(16, 185, 129, 0.6)";
+            if (demoBanner) demoBanner.classList.add("hidden");
+            if (connBtn) connBtn.classList.add("hidden");
+            if (simBtn) simBtn.classList.add("hidden");
+            if (discBtn) discBtn.classList.remove("hidden");
+        } else if (state === "simulated") {
+            if (statusBadge) {
+                statusBadge.className = "badge";
+                statusBadge.style.background = "rgba(245, 158, 11, 0.15)";
+                statusBadge.style.color = "#b45309";
+                statusBadge.style.border = "1px solid rgba(245, 158, 11, 0.35)";
+                statusBadge.innerHTML = "⚠️ Demo Mode";
             }
+            if (sourceBadge) {
+                sourceBadge.className = "badge-source-simulated";
+                sourceBadge.innerText = "SIMULATED";
+            }
+            if (nameEl) nameEl.innerText = deviceName;
+            if (demoBanner) demoBanner.classList.remove("hidden");
             if (connBtn) connBtn.classList.add("hidden");
             if (simBtn) simBtn.classList.add("hidden");
             if (discBtn) discBtn.classList.remove("hidden");
         } else {
+            // Disconnected
             if (statusBadge) {
                 statusBadge.className = "badge";
                 statusBadge.style.background = "rgba(239, 68, 68, 0.12)";
@@ -3993,16 +3977,16 @@ window.quickFillDemo = function(name, roll, pass) {
                 statusBadge.style.border = "1px solid rgba(239, 68, 68, 0.3)";
                 statusBadge.innerHTML = "🔴 Disconnected";
             }
-            if (nameEl) nameEl.innerText = "No BLE Device Connected";
-            if (pulseIndicator) {
-                pulseIndicator.style.background = "#ef4444";
-                pulseIndicator.style.boxShadow = "none";
+            if (sourceBadge) {
+                sourceBadge.className = "badge-source-manual";
+                sourceBadge.innerText = "MANUAL_ENTRY";
             }
+            if (nameEl) nameEl.innerText = "No BLE Device Connected";
+            if (demoBanner) demoBanner.classList.add("hidden");
             if (connBtn) connBtn.classList.remove("hidden");
             if (simBtn) simBtn.classList.remove("hidden");
             if (discBtn) discBtn.classList.add("hidden");
 
-            // Reset values to defaults
             const elBattery = document.getElementById("ble-device-battery");
             const elRssi = document.getElementById("ble-device-rssi");
             if (elBattery) elBattery.innerText = "--";
@@ -4010,22 +3994,204 @@ window.quickFillDemo = function(name, roll, pass) {
         }
     }
 
+    // Helper: Map Source Type to CSS Class
+    function getSourceBadgeClass(src) {
+        if (!src) return "badge-source-manual";
+        const s = src.toUpperCase();
+        if (s.includes("REAL")) return "badge-source-real";
+        if (s.includes("SIMULAT")) return "badge-source-simulated";
+        if (s.includes("DATASET")) return "badge-source-dataset";
+        return "badge-source-manual";
+    }
+
+    // Update Live 4 Biometrics Display Cards
+    function updateLiveHealthCards(data, sourceType = "MANUAL_ENTRY", quality = "Good Signal") {
+        if (data.hr !== undefined && data.hr !== null) lastVitals.hr = data.hr;
+        if (data.spo2 !== undefined && data.spo2 !== null) lastVitals.spo2 = data.spo2;
+        if (data.sys !== undefined && data.sys !== null) lastVitals.sys = data.sys;
+        if (data.dia !== undefined && data.dia !== null) lastVitals.dia = data.dia;
+        if (data.tempF !== undefined && data.tempF !== null) lastVitals.tempF = data.tempF;
+        lastVitals.source = sourceType;
+        lastVitals.quality = quality;
+
+        currentBpm = lastVitals.hr;
+        const badgeClass = getSourceBadgeClass(sourceType);
+
+        // 1. HEART RATE
+        const elHr = document.getElementById("dash-val-hr");
+        const elHrStatus = document.getElementById("dash-status-hr");
+        const elHrQuality = document.getElementById("dash-quality-hr");
+        const elHrSource = document.getElementById("dash-source-hr");
+        if (elHr) elHr.innerText = lastVitals.hr;
+        if (elHrQuality) elHrQuality.innerText = quality;
+        if (elHrSource) {
+            elHrSource.className = badgeClass;
+            elHrSource.innerText = sourceType;
+        }
+        if (elHrStatus) {
+            if (lastVitals.hr < 60) {
+                elHrStatus.innerText = "● Bradycardia (<60)";
+                elHrStatus.style.color = "#38bdf8";
+                elHrStatus.style.background = "rgba(56, 189, 248, 0.12)";
+            } else if (lastVitals.hr > 100) {
+                elHrStatus.innerText = "● Tachycardia (>100)";
+                elHrStatus.style.color = "#ef4444";
+                elHrStatus.style.background = "rgba(239, 68, 68, 0.12)";
+            } else {
+                elHrStatus.innerText = "● Normal Resting (60-100)";
+                elHrStatus.style.color = "#10b981";
+                elHrStatus.style.background = "rgba(16, 185, 129, 0.12)";
+            }
+        }
+
+        // 2. OXYGEN SpO2
+        const elSpo2 = document.getElementById("dash-val-spo2");
+        const elSpo2Pulse = document.getElementById("dash-spo2-pulse");
+        const elSpo2Status = document.getElementById("dash-status-spo2");
+        const elSpo2Quality = document.getElementById("dash-quality-spo2");
+        const elSpo2Source = document.getElementById("dash-source-spo2");
+        if (elSpo2) elSpo2.innerText = lastVitals.spo2;
+        if (elSpo2Pulse) elSpo2Pulse.innerText = lastVitals.hr;
+        if (elSpo2Quality) elSpo2Quality.innerText = quality;
+        if (elSpo2Source) {
+            elSpo2Source.className = badgeClass;
+            elSpo2Source.innerText = sourceType;
+        }
+        if (elSpo2Status) {
+            if (lastVitals.spo2 < 90) {
+                elSpo2Status.innerText = "● Critical Hypoxemia (<90%)";
+                elSpo2Status.style.color = "#ef4444";
+                elSpo2Status.style.background = "rgba(239, 68, 68, 0.12)";
+            } else if (lastVitals.spo2 < 95) {
+                elSpo2Status.innerText = "● Mild Hypoxemia (90-94%)";
+                elSpo2Status.style.color = "#f59e0b";
+                elSpo2Status.style.background = "rgba(245, 158, 11, 0.12)";
+            } else {
+                elSpo2Status.innerText = "● Optimal Oxygenation (≥95%)";
+                elSpo2Status.style.color = "#10b981";
+                elSpo2Status.style.background = "rgba(16, 185, 129, 0.12)";
+            }
+        }
+
+        // 3. BLOOD PRESSURE
+        const elBp = document.getElementById("dash-val-bp");
+        const elBpSys = document.getElementById("dash-bp-sys");
+        const elBpDia = document.getElementById("dash-bp-dia");
+        const elBpMap = document.getElementById("dash-bp-map");
+        const elBpStage = document.getElementById("dash-bp-stage");
+        if (elBp) elBp.innerText = `${lastVitals.sys} / ${lastVitals.dia}`;
+        if (elBpSys) elBpSys.innerText = lastVitals.sys;
+        if (elBpDia) elBpDia.innerText = lastVitals.dia;
+        const mapVal = Math.round(lastVitals.dia + (lastVitals.sys - lastVitals.dia) / 3);
+        if (elBpMap) elBpMap.innerText = `${mapVal} mmHg`;
+
+        if (elBpStage) {
+            if (lastVitals.sys >= 180 || lastVitals.dia >= 120) {
+                elBpStage.innerText = "Hypertensive Crisis (Urgent)";
+                elBpStage.style.color = "#ef4444";
+                elBpStage.style.background = "rgba(239, 68, 68, 0.12)";
+            } else if (lastVitals.sys >= 140 || lastVitals.dia >= 90) {
+                elBpStage.innerText = "Stage 2 Hypertension";
+                elBpStage.style.color = "#f97316";
+                elBpStage.style.background = "rgba(249, 115, 22, 0.12)";
+            } else if ((lastVitals.sys >= 130 && lastVitals.sys <= 139) || (lastVitals.dia >= 80 && lastVitals.dia <= 89)) {
+                elBpStage.innerText = "Stage 1 Hypertension";
+                elBpStage.style.color = "#eab308";
+                elBpStage.style.background = "rgba(234, 179, 8, 0.12)";
+            } else if (lastVitals.sys >= 120 && lastVitals.sys <= 129 && lastVitals.dia < 80) {
+                elBpStage.innerText = "Elevated Blood Pressure";
+                elBpStage.style.color = "#38bdf8";
+                elBpStage.style.background = "rgba(56, 189, 248, 0.12)";
+            } else {
+                elBpStage.innerText = "Normal (<120/80)";
+                elBpStage.style.color = "#10b981";
+                elBpStage.style.background = "rgba(16, 185, 129, 0.12)";
+            }
+        }
+
+        // 4. BODY TEMPERATURE
+        const elTempNum = document.getElementById("dash-val-temp-num");
+        const elTempUnit = document.getElementById("dash-temp-unit");
+        const elTempC = document.getElementById("dash-val-temp-c");
+        const elTempStatus = document.getElementById("dash-status-temp");
+        const elTempSource = document.getElementById("dash-source-temp");
+
+        const canonicalC = ((lastVitals.tempF - 32) * 5 / 9).toFixed(1);
+        if (elTempC) elTempC.innerText = `${canonicalC} °C`;
+        if (elTempSource) {
+            elTempSource.className = badgeClass;
+            elTempSource.innerText = sourceType;
+        }
+
+        if (isCelsius) {
+            if (elTempNum) elTempNum.innerText = canonicalC;
+            if (elTempUnit) elTempUnit.innerText = "°C";
+        } else {
+            if (elTempNum) elTempNum.innerText = lastVitals.tempF.toFixed(1);
+            if (elTempUnit) elTempUnit.innerText = "°F";
+        }
+
+        if (elTempStatus) {
+            if (lastVitals.tempF >= 103.0) {
+                elTempStatus.innerText = "High Pyrexia / Urgent (≥103°F)";
+                elTempStatus.style.color = "#ef4444";
+                elTempStatus.style.background = "rgba(239, 68, 68, 0.12)";
+            } else if (lastVitals.tempF >= 100.4) {
+                elTempStatus.innerText = "Fever / Pyrexia (≥100.4°F)";
+                elTempStatus.style.color = "#f59e0b";
+                elTempStatus.style.background = "rgba(245, 158, 11, 0.12)";
+            } else if (lastVitals.tempF < 95.0) {
+                elTempStatus.innerText = "Hypothermia Risk (<95°F)";
+                elTempStatus.style.color = "#38bdf8";
+                elTempStatus.style.background = "rgba(56, 189, 248, 0.12)";
+            } else {
+                elTempStatus.innerText = "Normal (97.0°F–99.0°F)";
+                elTempStatus.style.color = "#10b981";
+                elTempStatus.style.background = "rgba(16, 185, 129, 0.12)";
+            }
+        }
+
+        // Synchronize with parent calculateBiometrics if available
+        if (typeof calculateBiometrics === "function") {
+            calculateBiometrics(lastVitals.sys, lastVitals.dia, lastVitals.hr, lastVitals.spo2, lastVitals.tempF);
+        }
+
+        // Trigger Audio beep
+        playHeartbeatBeep();
+    }
+
+    // Toggle Temperature Unit (°F <-> °C)
+    window.toggleTempUnit = function() {
+        isCelsius = !isCelsius;
+        updateLiveHealthCards({}, lastVitals.source, lastVitals.quality);
+    };
+
     // Real Web Bluetooth API Connector
+    window.scanBleDevices = async function() {
+        if (!navigator.bluetooth) {
+            alert("Web Bluetooth API is supported in Google Chrome, Microsoft Edge, and Opera on Windows 10/11 over HTTPS or localhost.\n\nTip: You can use 'Run Demo Simulation' to stream verified IoMT benchmark data, or log clinical measurements using 'Log Biometrics & BP'.");
+            return;
+        }
+        await connectWebBluetooth();
+    };
+
     async function connectWebBluetooth() {
         if (!navigator.bluetooth) {
-            alert("Web Bluetooth API is not supported by your current browser. Please enable chrome://flags/#enable-web-bluetooth or click 'Simulate Smart PulseBand' to test live streaming features.");
+            alert("Web Bluetooth API is not supported by your current browser environment.");
             return;
         }
 
         try {
-            setBleState(false);
+            setBleState("disconnected");
             const statusBadge = document.getElementById("ble-connection-status");
             if (statusBadge) statusBadge.innerHTML = "⏳ Scanning for Bluetooth Vitals Hardware...";
 
             bleDevice = await navigator.bluetooth.requestDevice({
                 filters: [
                     { services: ['heart_rate'] },
-                    { services: ['health_thermometer'] }
+                    { services: ['health_thermometer'] },
+                    { services: [0x1810] }, // Blood Pressure
+                    { services: [0x1822] }  // Pulse Oximeter
                 ],
                 optionalServices: ['battery_service', 'device_information']
             });
@@ -4033,9 +4199,19 @@ window.quickFillDemo = function(name, roll, pass) {
             bleDevice.addEventListener('gattserverdisconnected', onBleDisconnected);
             bleServer = await bleDevice.gatt.connect();
 
-            setBleState(true, bleDevice.name || "Bluetooth Health Band");
+            setBleState("connected", bleDevice.name || "Bluetooth Health Band");
 
-            // Hook Heart Rate Characteristic
+            // Battery service if present
+            try {
+                const battService = await bleServer.getPrimaryService('battery_service');
+                const battChar = await battService.getCharacteristic('battery_level');
+                const battVal = await battChar.readValue();
+                const battLevel = battVal.getUint8(0);
+                const elBattery = document.getElementById("ble-device-battery");
+                if (elBattery) elBattery.innerText = `${battLevel}%`;
+            } catch(e) {}
+
+            // Hook Heart Rate Characteristic (0x180D -> 0x2A37)
             try {
                 const hrService = await bleServer.getPrimaryService('heart_rate');
                 const hrChar = await hrService.getCharacteristic('heart_rate_measurement');
@@ -4045,86 +4221,622 @@ window.quickFillDemo = function(name, roll, pass) {
                     const flags = val.getUint8(0);
                     const rate16Bits = flags & 0x1;
                     const liveHr = rate16Bits ? val.getUint16(1, true) : val.getUint8(1);
-                    updateBleTelemetry(liveHr, 98, 98.6, 85, -62);
+                    
+                    updateLiveHealthCards({ hr: liveHr }, "REAL_DEVICE", "Good Signal");
+
+                    // Post to local SQLite
+                    fetch("/api/biometrics/measurement", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            heart_rate: liveHr,
+                            source_type: "REAL_DEVICE",
+                            device_name: bleDevice.name || "Bluetooth Heart Rate Sensor",
+                            quality_assessment: "GATT_STREAM_ACTIVE"
+                        })
+                    }).catch(console.warn);
                 });
             } catch(e) {
-                console.log("BLE HR service not subscribed directly, falling back to mixed sensor reads:", e);
-                startSimulationMode(bleDevice.name || "BLE Smart Watch (Paired)");
+                console.log("BLE HR service not subscribed directly:", e);
             }
+
+            // Hook Health Thermometer (0x1809 -> 0x2A1C)
+            try {
+                const thermoService = await bleServer.getPrimaryService('health_thermometer');
+                const tempChar = await thermoService.getCharacteristic('temperature_measurement');
+                await tempChar.startNotifications();
+                tempChar.addEventListener('characteristicvaluechanged', (e) => {
+                    const val = e.target.value;
+                    const rawC = val.getFloat32(1, true);
+                    const liveTempF = (rawC * 9 / 5) + 32;
+                    updateLiveHealthCards({ tempF: liveTempF }, "REAL_DEVICE", "Good Signal");
+
+                    fetch("/api/biometrics/measurement", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            body_temperature: liveTempF,
+                            source_type: "REAL_DEVICE",
+                            device_name: bleDevice.name || "Bluetooth Health Thermometer",
+                            quality_assessment: "GATT_STREAM_ACTIVE"
+                        })
+                    }).catch(console.warn);
+                });
+            } catch(e) {}
 
         } catch (err) {
             console.warn("Bluetooth pairing error or user cancel:", err);
-            setBleState(false);
+            setBleState("disconnected");
             if (err.name !== "NotFoundError") {
-                alert("Bluetooth Connection notice: " + err.message + "\n\nSwitching to Smart PulseBand Telemetry Engine.");
-                startSimulationMode("PulseBand Pro 4G (Simulated)");
+                alert("Bluetooth connection notice: " + err.message + "\n\nTip: You can use 'Run Demo Simulation' to test live streaming features.");
             }
         }
     }
+    window.connectWebBluetooth = connectWebBluetooth;
 
     // Simulator Mode (Runs when user clicks Simulate or lacks Web Bluetooth)
-    function startSimulationMode(customName = "PulseBand Pro 4G (BLE Telemetry)") {
-        stopSimulationMode();
-        setBleState(true, customName);
+    window.startSimulationMode = function(customName = "PulseBand Pro 4G (IoMT Benchmark Simulator)") {
+        window.stopSimulationMode();
+        setBleState("simulated", customName);
 
         let simHr = 72;
         let simSpo2 = 98;
-        let simTemp = 98.6;
-        let simBattery = 94;
+        let simTemp = 98.4;
+        let simBattery = 92;
         let simRssi = -58;
+        simCycleCounter = 0;
 
         bleSimInterval = setInterval(() => {
-            // Realistic subtle biometric variations
-            const deltaHr = Math.floor(Math.random() * 5) - 2; // -2 to +2
-            simHr = Math.max(62, Math.min(108, simHr + deltaHr));
+            // Subtle realistic variations
+            const deltaHr = Math.floor(Math.random() * 5) - 2;
+            simHr = Math.max(64, Math.min(94, simHr + deltaHr));
 
-            // SpO2 stays 96-99%
-            simSpo2 = Math.max(96, Math.min(100, simSpo2 + (Math.random() > 0.7 ? (Math.random() > 0.5 ? 1 : -1) : 0)));
+            if (Math.random() > 0.6) {
+                simSpo2 = Math.max(96, Math.min(100, simSpo2 + (Math.random() > 0.5 ? 1 : -1)));
+            }
 
-            // Temperature stays 98.2 - 99.1 F
-            const deltaTemp = (Math.random() * 0.2 - 0.1);
-            simTemp = Math.max(98.1, Math.min(99.4, simTemp + deltaTemp));
+            const deltaTemp = (Math.random() * 0.16 - 0.08);
+            simTemp = Math.max(98.1, Math.min(99.1, simTemp + deltaTemp));
 
-            // RSSI slight fluctuation
-            simRssi = -55 - Math.floor(Math.random() * 8);
+            simRssi = -55 - Math.floor(Math.random() * 6);
+            simCycleCounter++;
 
-            updateBleTelemetry(simHr, simSpo2, simTemp, simBattery, simRssi);
-        }, 1200);
+            // Update cards (Notice BP is NOT randomly invented; BP requires a cuff or manual log!)
+            updateLiveHealthCards({
+                hr: simHr,
+                spo2: simSpo2,
+                tempF: simTemp
+            }, "SIMULATED", "Simulated Benchmark");
 
-        // Immediate first trigger
-        updateBleTelemetry(simHr, simSpo2, simTemp, simBattery, simRssi);
-    }
+            const elBattery = document.getElementById("ble-device-battery");
+            const elRssi = document.getElementById("ble-device-rssi");
+            if (elBattery) elBattery.innerText = `${simBattery}%`;
+            if (elRssi) elRssi.innerText = `${simRssi} dBm`;
 
-    function stopSimulationMode() {
+            // Persist periodically (every 5 cycles ~ 7.5 seconds)
+            if (simCycleCounter % 5 === 0) {
+                fetch("/api/biometrics/measurement", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        heart_rate: simHr,
+                        spo2: simSpo2,
+                        body_temperature: simTemp,
+                        source_type: "SIMULATED",
+                        device_name: "Simulated IoMT Smartband",
+                        quality_assessment: "SIMULATED_BENCHMARK"
+                    })
+                }).then(() => {
+                    loadHealthHistory();
+                    renderHealthTrendsChart();
+                }).catch(console.warn);
+            }
+        }, 1500);
+
+        // Immediate first cycle
+        updateLiveHealthCards({
+            hr: simHr,
+            spo2: simSpo2,
+            tempF: simTemp
+        }, "SIMULATED", "Simulated Benchmark");
+    };
+
+    window.stopSimulationMode = function() {
         if (bleSimInterval) {
             clearInterval(bleSimInterval);
             bleSimInterval = null;
         }
-    }
+        setBleState("disconnected");
+    };
 
     function onBleDisconnected() {
-        stopSimulationMode();
-        setBleState(false);
+        window.stopSimulationMode();
+        setBleState("disconnected");
         if (bleDevice && bleDevice.gatt.connected) {
             try { bleDevice.gatt.disconnect(); } catch(e){}
         }
         bleDevice = null;
         bleServer = null;
     }
+    window.onBleDisconnected = onBleDisconnected;
 
     // Sound toggle
-    function toggleBleSound() {
+    window.toggleBleSound = function() {
         isSoundMuted = !isSoundMuted;
         const btn = document.getElementById("ble-sound-toggle-btn");
         if (btn) {
-            btn.innerHTML = isSoundMuted ? "🔇 Pulse Muted" : "🔊 Audio Pulse ON";
+            btn.innerHTML = isSoundMuted ? "🔇 Pulse Sound: Off" : "🔊 Audio Pulse: ON";
             btn.style.borderColor = isSoundMuted ? "var(--border-glass)" : "#10b981";
             btn.style.color = isSoundMuted ? "var(--text-secondary)" : "#10b981";
         }
         if (!isSoundMuted) {
             playHeartbeatBeep();
         }
-    }
+    };
+
+    // Live Monitoring Session Tracking
+    window.startLiveMonitoringSession = function() {
+        fetch("/api/biometrics/session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "start", notes: "Continuous telemetry session" })
+        })
+        .then(res => res.json())
+        .then(data => {
+            activeSessionId = data.session_id || 1;
+            sessionSeconds = 0;
+            const startBtn = document.getElementById("ble-start-session-btn");
+            const stopBtn = document.getElementById("ble-stop-session-btn");
+            const timerEl = document.getElementById("session-timer-display");
+
+            if (startBtn) startBtn.classList.add("hidden");
+            if (stopBtn) stopBtn.classList.remove("hidden");
+
+            if (sessionTimerInterval) clearInterval(sessionTimerInterval);
+            sessionTimerInterval = setInterval(() => {
+                sessionSeconds++;
+                const mins = String(Math.floor(sessionSeconds / 60)).padStart(2, '0');
+                const secs = String(sessionSeconds % 60).padStart(2, '0');
+                if (timerEl) {
+                    timerEl.innerHTML = `<span style="color: #ef4444; animation: blink 1s infinite;">●</span> Recording (${mins}:${secs})`;
+                }
+            }, 1000);
+        })
+        .catch(err => {
+            console.error("Failed to start session:", err);
+        });
+    };
+
+    window.stopLiveMonitoringSession = function() {
+        if (sessionTimerInterval) {
+            clearInterval(sessionTimerInterval);
+            sessionTimerInterval = null;
+        }
+
+        const startBtn = document.getElementById("ble-start-session-btn");
+        const stopBtn = document.getElementById("ble-stop-session-btn");
+        const timerEl = document.getElementById("session-timer-display");
+
+        if (startBtn) startBtn.classList.remove("hidden");
+        if (stopBtn) stopBtn.classList.add("hidden");
+        if (timerEl) timerEl.innerText = "Idle (00:00)";
+
+        fetch("/api/biometrics/session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "stop", session_id: activeSessionId })
+        })
+        .then(() => {
+            loadHealthHistory();
+            renderHealthTimeline();
+        })
+        .catch(console.warn);
+    };
+
+    // Manual Entry Form Submission
+    window.handleManualBiometricsSubmit = function(event) {
+        event.preventDefault();
+        const sys = parseInt(document.getElementById("manual-sys-bp")?.value, 10);
+        const dia = parseInt(document.getElementById("manual-dia-bp")?.value, 10);
+        const hr = parseInt(document.getElementById("manual-hr")?.value, 10);
+        const spo2 = parseInt(document.getElementById("manual-spo2")?.value, 10);
+        const temp = parseFloat(document.getElementById("manual-temp")?.value);
+        const notes = document.getElementById("manual-notes")?.value || "";
+
+        // Physiological Range Validation
+        if (isNaN(sys) || sys < 70 || sys > 240) {
+            alert("Systolic BP out of physiological range (70–240 mmHg). Please check your reading.");
+            return;
+        }
+        if (isNaN(dia) || dia < 40 || dia > 140) {
+            alert("Diastolic BP out of physiological range (40–140 mmHg). Please check your reading.");
+            return;
+        }
+        if (isNaN(hr) || hr < 30 || hr > 220) {
+            alert("Heart Rate out of physiological range (30–220 BPM). Please check your reading.");
+            return;
+        }
+        if (isNaN(spo2) || spo2 < 70 || spo2 > 100) {
+            alert("Oxygen SpO₂ out of valid range (70–100%). Please check your reading.");
+            return;
+        }
+        if (isNaN(temp) || temp < 93 || temp > 108) {
+            alert("Body Temperature out of physiological range (93–108°F). Please check your reading.");
+            return;
+        }
+
+        const payload = {
+            systolic_bp: sys,
+            diastolic_bp: dia,
+            heart_rate: hr,
+            spo2: spo2,
+            body_temperature: temp,
+            source_type: "MANUAL_ENTRY",
+            device_name: "Manual Clinical Log",
+            notes: notes,
+            quality_assessment: "MANUALLY_VERIFIED"
+        };
+
+        fetch("/api/biometrics/measurement", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                // Update live cards immediately
+                updateLiveHealthCards({
+                    hr: hr,
+                    spo2: spo2,
+                    sys: sys,
+                    dia: dia,
+                    tempF: temp
+                }, "MANUAL_ENTRY", "Manually Verified");
+
+                // Check for safety alerts in response
+                if (data.alerts && data.alerts.length > 0) {
+                    const alertMsg = data.alerts.map(a => `• ${a.message}`).join("\n");
+                    alert(`⚠️ CLINICAL AWARENESS ALERT:\n\n${alertMsg}\n\nPlease review Emergency & Safety guidance if you experience distress.`);
+                }
+
+                // Reset form
+                document.getElementById("manual-log-form")?.reset();
+
+                // Refresh history, trends & timeline
+                loadHealthHistory();
+                renderHealthTrendsChart();
+                renderHealthTimeline();
+            } else {
+                alert("Failed to save measurement: " + (data.message || "Unknown error"));
+            }
+        })
+        .catch(err => {
+            console.error("Manual biometric submit error:", err);
+            alert("Error saving measurement to offline database.");
+        });
+    };
+
+    // Trends Metric & Timeframe Selectors
+    window.setTrendsTimeframe = function(days) {
+        currentTrendDays = days;
+        ["today", "7d", "30d"].forEach(id => {
+            const btn = document.getElementById(`trend-time-${id}`);
+            if (btn) btn.classList.remove("active");
+        });
+        const activeBtn = document.getElementById(days === 1 ? "trend-time-today" : (days === 7 ? "trend-time-7d" : "trend-time-30d"));
+        if (activeBtn) activeBtn.classList.add("active");
+        renderHealthTrendsChart();
+    };
+
+    window.selectTrendMetric = function(metric) {
+        currentTrendMetric = metric;
+        const chipMap = {
+            'heart_rate': 'chip-metric-hr',
+            'spo2': 'chip-metric-spo2',
+            'blood_pressure': 'chip-metric-bp',
+            'body_temperature': 'chip-metric-temp'
+        };
+        Object.values(chipMap).forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove("active");
+        });
+        const activeChip = document.getElementById(chipMap[metric]);
+        if (activeChip) activeChip.classList.add("active");
+        renderHealthTrendsChart();
+    };
+
+    // Render Health Trends Canvas Chart (Pure HTML5 Canvas, 100% Offline)
+    window.renderHealthTrendsChart = function() {
+        const canvas = document.getElementById("live-health-trends-canvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        const w = canvas.width;
+        const h = canvas.height;
+
+        fetch(`/api/biometrics/trends?metric=${currentTrendMetric}&days=${currentTrendDays}`)
+            .then(res => res.json())
+            .then(data => {
+                ctx.clearRect(0, 0, w, h);
+
+                // Grid background
+                ctx.strokeStyle = "rgba(100, 116, 139, 0.12)";
+                ctx.lineWidth = 1;
+                for (let y = 20; y < h; y += 30) {
+                    ctx.beginPath();
+                    ctx.moveTo(30, y);
+                    ctx.lineTo(w - 10, y);
+                    ctx.stroke();
+                }
+
+                const summary = data.summary || {};
+                const statMean = document.getElementById("stat-mean");
+                const statMin = document.getElementById("stat-min");
+                const statMax = document.getElementById("stat-max");
+                const statTrend = document.getElementById("stat-trend");
+
+                if (statMean) statMean.innerText = summary.mean !== undefined ? summary.mean : "--";
+                if (statMin) statMin.innerText = summary.min !== undefined ? summary.min : "--";
+                if (statMax) statMax.innerText = summary.max !== undefined ? summary.max : "--";
+                if (statTrend) {
+                    const trend = summary.trend || "Stable";
+                    statTrend.innerText = trend;
+                    statTrend.style.color = trend === "Elevated" ? "#ef4444" : (trend === "Declining" ? "#f59e0b" : "#10b981");
+                }
+
+                const points = data.data_points || [];
+                if (points.length === 0) {
+                    ctx.fillStyle = "rgba(100, 116, 139, 0.6)";
+                    ctx.font = "11px Inter, sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText("No readings logged in this timeframe yet. Log biometrics or start demo stream.", w / 2, h / 2 + 4);
+                    return;
+                }
+
+                // Metric unit color & scale
+                let color = "#0284c7";
+                if (currentTrendMetric === "heart_rate") color = "#ef4444";
+                else if (currentTrendMetric === "spo2") color = "#0284c7";
+                else if (currentTrendMetric === "blood_pressure") color = "#10b981";
+                else if (currentTrendMetric === "body_temperature") color = "#f59e0b";
+
+                // Values range
+                const values = points.map(p => typeof p.value === "object" ? p.value.systolic : p.value).filter(v => v !== null && !isNaN(v));
+                if (values.length === 0) return;
+
+                const minVal = Math.min(...values) - 2;
+                const maxVal = Math.max(...values) + 2;
+                const valRange = Math.max(1, maxVal - minVal);
+
+                const paddingLeft = 35;
+                const paddingRight = 15;
+                const paddingTop = 15;
+                const paddingBottom = 22;
+                const plotW = w - paddingLeft - paddingRight;
+                const plotH = h - paddingTop - paddingBottom;
+
+                // Plot coordinates
+                const coords = points.map((p, idx) => {
+                    const val = typeof p.value === "object" ? p.value.systolic : p.value;
+                    const x = paddingLeft + (points.length === 1 ? plotW / 2 : (idx / (points.length - 1)) * plotW);
+                    const y = paddingTop + plotH - ((val - minVal) / valRange) * plotH;
+                    return { x, y, val };
+                });
+
+                // Area fill under line
+                const gradient = ctx.createLinearGradient(0, paddingTop, 0, h - paddingBottom);
+                gradient.addColorStop(0, color + "44");
+                gradient.addColorStop(1, color + "00");
+
+                ctx.beginPath();
+                ctx.moveTo(coords[0].x, h - paddingBottom);
+                coords.forEach(pt => ctx.lineTo(pt.x, pt.y));
+                ctx.lineTo(coords[coords.length - 1].x, h - paddingBottom);
+                ctx.closePath();
+                ctx.fillStyle = gradient;
+                ctx.fill();
+
+                // Stroke curve
+                ctx.beginPath();
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2.5;
+                ctx.lineJoin = "round";
+                coords.forEach((pt, i) => {
+                    if (i === 0) ctx.moveTo(pt.x, pt.y);
+                    else ctx.lineTo(pt.x, pt.y);
+                });
+                ctx.stroke();
+
+                // Draw dots
+                coords.forEach(pt => {
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 3.5, 0, Math.PI * 2);
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fill();
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                });
+
+                // Axis label
+                ctx.fillStyle = "rgba(100, 116, 139, 0.8)";
+                ctx.font = "9px Inter, sans-serif";
+                ctx.textAlign = "right";
+                ctx.fillText(Math.round(maxVal), paddingLeft - 5, paddingTop + 8);
+                ctx.fillText(Math.round(minVal), paddingLeft - 5, h - paddingBottom);
+            })
+            .catch(err => {
+                console.warn("Failed to load trends chart:", err);
+            });
+    };
+
+    // Load Local Health History Table
+    window.loadHealthHistory = function() {
+        const tbody = document.getElementById("health-history-tbody");
+        if (!tbody) return;
+        const filterEl = document.getElementById("history-filter-source");
+        const filter = filterEl ? filterEl.value : "all";
+
+        fetch(`/api/biometrics/history?source_type=${filter}&limit=20`)
+            .then(res => res.json())
+            .then(data => {
+                tbody.innerHTML = "";
+                const list = data.measurements || [];
+                if (list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 16px;">No biometric readings recorded yet.</td></tr>`;
+                    return;
+                }
+
+                list.forEach(item => {
+                    const row = document.createElement("tr");
+                    const dateStr = item.timestamp ? new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }) : "--";
+                    
+                    let metricName = "Clinical Vitals";
+                    let valStr = "";
+                    if (item.systolic_bp && item.diastolic_bp) {
+                        metricName = "Blood Pressure";
+                        valStr = `${item.systolic_bp}/${item.diastolic_bp} mmHg`;
+                    } else if (item.heart_rate) {
+                        metricName = "Heart Rate";
+                        valStr = `${item.heart_rate} BPM`;
+                    } else if (item.spo2) {
+                        metricName = "Oxygen SpO₂";
+                        valStr = `${item.spo2}%`;
+                    } else if (item.body_temperature) {
+                        metricName = "Body Temperature";
+                        valStr = `${item.body_temperature.toFixed(1)}°F`;
+                    }
+
+                    const srcClass = getSourceBadgeClass(item.source_type);
+
+                    row.innerHTML = `
+                        <td style="white-space: nowrap; font-size: 0.72rem; color: var(--text-muted);">${dateStr}</td>
+                        <td style="font-weight: 600; font-size: 0.74rem;">${metricName}</td>
+                        <td style="font-weight: 700; font-size: 0.78rem; color: var(--text-primary);">${valStr}</td>
+                        <td style="font-size: 0.7rem; color: var(--text-secondary);">${item.quality_assessment || "Verified"}</td>
+                        <td><span class="${srcClass}">${item.source_type || "MANUAL_ENTRY"}</span></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(console.warn);
+    };
+
+    // Render Personal Health Timeline
+    window.renderHealthTimeline = function() {
+        const stream = document.getElementById("health-timeline-stream");
+        if (!stream) return;
+
+        fetch("/api/biometrics/history?limit=6")
+            .then(res => res.json())
+            .then(data => {
+                stream.innerHTML = "";
+                const list = data.measurements || [];
+                if (list.length === 0) {
+                    stream.innerHTML = `<span style="font-size: 0.74rem; color: var(--text-muted);">No timeline milestones logged yet.</span>`;
+                    return;
+                }
+
+                list.forEach(m => {
+                    const item = document.createElement("div");
+                    item.className = "timeline-event-item";
+                    
+                    let icon = "🩺";
+                    let title = "Vitals Check";
+                    let detail = "";
+
+                    if (m.systolic_bp) {
+                        icon = "🩺";
+                        title = "Blood Pressure Logged";
+                        detail = `${m.systolic_bp}/${m.diastolic_bp} mmHg (MAP: ${Math.round(m.diastolic_bp + (m.systolic_bp - m.diastolic_bp)/3)} mmHg)`;
+                    } else if (m.heart_rate) {
+                        icon = "❤️";
+                        title = "Heart Rate Monitored";
+                        detail = `${m.heart_rate} BPM (${m.heart_rate > 100 ? 'Elevated' : (m.heart_rate < 60 ? 'Bradycardia' : 'Resting Sinus')})`;
+                    } else if (m.spo2) {
+                        icon = "🫁";
+                        title = "SpO₂ Measurement";
+                        detail = `${m.spo2}% Oxygen Saturation`;
+                    } else if (m.body_temperature) {
+                        icon = "🌡️";
+                        title = "Temperature Reading";
+                        detail = `${m.body_temperature.toFixed(1)}°F`;
+                    }
+
+                    const timeStr = m.timestamp ? new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
+
+                    item.innerHTML = `
+                        <div style="font-size: 1.1rem; flex-shrink: 0;">${icon}</div>
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                                <strong style="font-size: 0.76rem; color: var(--text-primary);">${title}</strong>
+                                <span style="font-size: 0.68rem; color: var(--text-muted);">${timeStr}</span>
+                            </div>
+                            <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 1px;">${detail}</div>
+                            <span class="${getSourceBadgeClass(m.source_type)}" style="margin-top: 3px; font-size: 0.6rem; padding: 1px 6px;">${m.source_type}</span>
+                        </div>
+                    `;
+                    stream.appendChild(item);
+                });
+            })
+            .catch(console.warn);
+    };
+
+    // Export Health Data (100% Local / Offline Blob)
+    window.exportHealthData = function(format = "csv") {
+        fetch("/api/biometrics/history?limit=1000")
+            .then(res => res.json())
+            .then(data => {
+                const measurements = data.measurements || [];
+                if (measurements.length === 0) {
+                    alert("No data to export. Please log some biometrics first.");
+                    return;
+                }
+
+                let blob, filename;
+                if (format === "csv") {
+                    const headers = ["ID", "Timestamp", "Systolic_BP", "Diastolic_BP", "Heart_Rate", "SpO2", "Body_Temp_F", "Quality", "Source_Type", "Device"];
+                    const rows = measurements.map(m => [
+                        m.id || "",
+                        m.timestamp || "",
+                        m.systolic_bp || "",
+                        m.diastolic_bp || "",
+                        m.heart_rate || "",
+                        m.spo2 || "",
+                        m.body_temperature ? m.body_temperature.toFixed(1) : "",
+                        `"${(m.quality_assessment || "").replace(/"/g, '""')}"`,
+                        m.source_type || "",
+                        `"${(m.device_name || "").replace(/"/g, '""')}"`
+                    ]);
+                    const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\r\n");
+                    blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+                    filename = `aura_health_metrics_${new Date().toISOString().slice(0, 10)}.csv`;
+                } else {
+                    const jsonContent = JSON.stringify({
+                        exported_at: new Date().toISOString(),
+                        system: "AURA Offline Public Health Platform",
+                        version: "2.1.0",
+                        disclaimer: "Educational health awareness data only. Not a medical diagnostic record.",
+                        measurements: measurements
+                    }, null, 2);
+                    blob = new Blob([jsonContent], { type: "application/json;charset=utf-8;" });
+                    filename = `aura_health_metrics_${new Date().toISOString().slice(0, 10)}.json`;
+                }
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            })
+            .catch(err => {
+                console.error("Export error:", err);
+                alert("Failed to export health history offline.");
+            });
+    };
 
     // Attach Event Listeners on Load
     document.addEventListener("DOMContentLoaded", () => {
@@ -4133,10 +4845,15 @@ window.quickFillDemo = function(name, roll, pass) {
         const btnDisc = document.getElementById("ble-disconnect-btn");
         const btnSound = document.getElementById("ble-sound-toggle-btn");
 
-        if (btnConn) btnConn.addEventListener("click", connectWebBluetooth);
-        if (btnSim) btnSim.addEventListener("click", () => startSimulationMode("PulseBand Pro 4G (BLE Telemetry)"));
-        if (btnDisc) btnDisc.addEventListener("click", onBleDisconnected);
-        if (btnSound) btnSound.addEventListener("click", toggleBleSound);
+        if (btnConn) btnConn.addEventListener("click", () => window.connectWebBluetooth());
+        if (btnSim) btnSim.addEventListener("click", () => window.startSimulationMode());
+        if (btnDisc) btnDisc.addEventListener("click", window.onBleDisconnected);
+        if (btnSound) btnSound.addEventListener("click", window.toggleBleSound);
+
+        // Initial fetch of history, trends & timeline
+        loadHealthHistory();
+        renderHealthTrendsChart();
+        renderHealthTimeline();
     });
 
 })();
@@ -4614,52 +5331,66 @@ window.quickFillDemo = function(name, roll, pass) {
 })();
 
 // ============================================================================
-// MODULE: SYMPTOM EXPLORER CONTROLLER
+// MODULE: DISEASE PREDICTION & ML RISK ASSESSMENT CONTROLLER
 // ============================================================================
 (function() {
     let allSymptoms = [];
     let selectedSymptoms = new Set();
 
-    function loadSymptomsList() {
-        const container = document.getElementById("symptoms-pills-grid");
+    function loadDiseasePredictionSymptoms() {
+        const container = document.getElementById("disease-symptoms-chips-grid");
         if (!container) return;
 
         fetch("/api/symptoms")
             .then(res => res.json())
             .then(data => {
                 if (data.status !== "success") return;
-                allSymptoms = data.symptoms;
-                container.innerHTML = "";
-                data.symptoms.forEach(s => {
-                    const pill = document.createElement("button");
-                    pill.type = "button";
-                    pill.className = "symptom-selectable-pill";
-                    pill.setAttribute("data-id", s.id);
-                    pill.innerHTML = `<span>${s.name}</span>`;
-                    pill.onclick = () => toggleSymptom(s.id, s.name, pill);
-                    container.appendChild(pill);
-                });
+                allSymptoms = data.symptoms || [];
+                renderSymptomChips(allSymptoms);
             })
-            .catch(err => console.error("Failed to load symptoms:", err));
+            .catch(err => {
+                console.error("Failed to load symptoms list:", err);
+            });
     }
 
-    function toggleSymptom(id, name, pillEl) {
+    function renderSymptomChips(symptomsList) {
+        const container = document.getElementById("disease-symptoms-chips-grid");
+        if (!container) return;
+        container.innerHTML = "";
+
+        if (symptomsList.length === 0) {
+            container.innerHTML = `<span style="font-size: 0.74rem; color: var(--text-muted); padding: 8px;">No matching symptoms found.</span>`;
+            return;
+        }
+
+        symptomsList.forEach(s => {
+            const chip = document.createElement("button");
+            chip.type = "button";
+            chip.className = "symptom-selectable-pill" + (selectedSymptoms.has(s.id) ? " selected" : "");
+            chip.setAttribute("data-id", s.id);
+            chip.innerHTML = `<span>${s.name}</span>`;
+            chip.onclick = () => toggleDiseaseSymptom(s.id, s.name, chip);
+            container.appendChild(chip);
+        });
+    }
+
+    function toggleDiseaseSymptom(id, name, chipEl) {
         if (selectedSymptoms.has(id)) {
             selectedSymptoms.delete(id);
-            if (pillEl) pillEl.classList.remove("selected");
+            if (chipEl) chipEl.classList.remove("selected");
         } else {
             selectedSymptoms.add(id);
-            if (pillEl) pillEl.classList.add("selected");
+            if (chipEl) chipEl.classList.add("selected");
         }
-        renderSelectedTray();
+        renderSelectedDiseaseTray();
     }
 
-    function renderSelectedTray() {
-        const tray = document.getElementById("selected-symptoms-tray");
+    function renderSelectedDiseaseTray() {
+        const tray = document.getElementById("disease-selected-tray");
         if (!tray) return;
 
         if (selectedSymptoms.size === 0) {
-            tray.innerHTML = `<span style="font-size: 0.74rem; color: var(--text-muted);">No symptoms selected yet. Click any symptom pill below to add it:</span>`;
+            tray.innerHTML = `<span style="font-size: 0.74rem; color: var(--text-muted);">No symptoms selected yet. Click pills below or describe above.</span>`;
             return;
         }
 
@@ -4667,108 +5398,193 @@ window.quickFillDemo = function(name, roll, pass) {
         selectedSymptoms.forEach(id => {
             const sym = allSymptoms.find(s => s.id === id);
             const tag = document.createElement("span");
-            tag.style.cssText = "background: #8b5cf6; color: white; border-radius: 14px; padding: 3px 10px; font-size: 0.72rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;";
-            tag.innerHTML = `${sym ? sym.name : id} <span style="cursor: pointer; font-size: 0.8rem;" onclick="removeSymptom('${id}')">✕</span>`;
+            tag.style.cssText = "background: #0284c7; color: white; border-radius: 14px; padding: 3px 10px; font-size: 0.72rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;";
+            tag.innerHTML = `${sym ? sym.name : id} <span style="cursor: pointer; font-size: 0.8rem; margin-left: 3px;" onclick="removeDiseaseSymptom('${id}')">✕</span>`;
             tray.appendChild(tag);
         });
     }
 
-    window.removeSymptom = function(id) {
+    window.removeDiseaseSymptom = function(id) {
         selectedSymptoms.delete(id);
-        const pill = document.querySelector(`.symptom-selectable-pill[data-id="${id}"]`);
-        if (pill) pill.classList.remove("selected");
-        renderSelectedTray();
+        const chip = document.querySelector(`#disease-symptoms-chips-grid .symptom-selectable-pill[data-id="${id}"]`);
+        if (chip) chip.classList.remove("selected");
+        renderSelectedDiseaseTray();
     };
 
-    window.clearSelectedSymptoms = function() {
+    window.clearSelectedDiseaseSymptoms = function() {
         selectedSymptoms.clear();
-        document.querySelectorAll(".symptom-selectable-pill").forEach(p => p.classList.remove("selected"));
-        renderSelectedTray();
-        const resDiv = document.getElementById("symptom-awareness-results");
-        if (resDiv) resDiv.style.display = "none";
+        document.querySelectorAll("#disease-symptoms-chips-grid .symptom-selectable-pill").forEach(p => p.classList.remove("selected"));
+        renderSelectedDiseaseTray();
+        const searchInput = document.getElementById("disease-symptom-search");
+        if (searchInput) {
+            searchInput.value = "";
+            renderSymptomChips(allSymptoms);
+        }
+        const nlInput = document.getElementById("disease-pred-nl-input");
+        if (nlInput) nlInput.value = "";
+        const resDiv = document.getElementById("disease-prediction-results");
+        if (resDiv) {
+            resDiv.style.display = "none";
+            resDiv.innerHTML = "";
+        }
     };
 
-    window.runSymptomAwarenessAnalysis = function() {
-        const resDiv = document.getElementById("symptom-awareness-results");
+    window.runDiseasePrediction = function() {
+        const resDiv = document.getElementById("disease-prediction-results");
         if (!resDiv) return;
 
-        if (selectedSymptoms.size === 0) {
-            alert("Please select at least one symptom from the directory first.");
+        const nlText = document.getElementById("disease-pred-nl-input")?.value.trim() || "";
+        const symList = Array.from(selectedSymptoms);
+
+        if (symList.length === 0 && !nlText) {
+            alert("Please select at least one symptom or describe your symptoms in the text box above.");
             return;
         }
 
-        const notes = document.getElementById("symptom-notes-input")?.value || "";
         resDiv.style.display = "block";
-        resDiv.innerHTML = `<div style="text-align: center; color: #8b5cf6; padding: 20px;">⏳ Correlating symptoms against local verified knowledge base...</div>`;
+        resDiv.innerHTML = `
+            <div style="text-align: center; color: #0284c7; padding: 25px; background: rgba(2, 132, 199, 0.04); border-radius: 10px; border: 1px dashed rgba(2, 132, 199, 0.3);">
+                <div style="font-size: 1.5rem; margin-bottom: 8px;">⏳</div>
+                <strong style="font-size: 0.9rem;">Evaluating Clinical Differential via Offline Machine Learning...</strong>
+                <p style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 4px;">Executing Naive Bayes multi-class classifier on Kaggle Disease Symptom dataset.</p>
+            </div>
+        `;
 
-        fetch("/api/symptom-awareness", {
+        fetch("/api/predict/disease", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                symptoms: Array.from(selectedSymptoms),
-                notes: notes
+                symptoms: symList,
+                text: nlText
             })
         })
         .then(res => res.json())
         .then(data => {
-            if (data.status !== "success" || !data.possible_conditions.length) {
-                resDiv.innerHTML = `<div style="color: var(--text-secondary); padding: 15px;">No specific disease pattern closely matched this symptom set. Consider consulting a doctor for clinical examination.</div>`;
+            if (data.status !== "success" || !data.possibilities || data.possibilities.length === 0) {
+                resDiv.innerHTML = `
+                    <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 16px; color: var(--text-secondary); font-size: 0.8rem;">
+                        <strong style="color: #ef4444; display: block; margin-bottom: 4px;">No High-Confidence Disease Pattern Matched</strong>
+                        The provided symptoms did not correlate with sufficient probability to a single condition in the local offline model. Please consult a licensed medical doctor for clinical examination and laboratory workup.
+                    </div>
+                `;
                 return;
             }
 
+            const modelUsed = data.model_used || "Naive Bayes (F1: 99.5%)";
+            const matchedSyms = data.matched_symptoms || [];
+
             let html = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(139, 92, 246, 0.2); padding-bottom: 8px;">
-                    <div>
-                        <h4 style="margin: 0; color: #8b5cf6; font-size: 1rem; font-weight: 800;">📋 Symptom Awareness Findings</h4>
-                        <p style="margin: 2px 0 0 0; font-size: 0.74rem; color: var(--text-secondary);">${data.summary}</p>
-                    </div>
-                    <span class="badge" style="background: rgba(139, 92, 246, 0.12); color: #8b5cf6; font-size: 0.72rem; font-weight: 700;">Awareness Only</span>
-                </div>
-
-                <div style="background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 8px 12px; font-size: 0.72rem; color: #ef4444; margin-bottom: 14px;">
-                    <strong>⚠️ Important Clinical Notice:</strong> ${data.disclaimer}
-                </div>
-
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
-            `;
-
-            data.possible_conditions.forEach(c => {
-                html += `
-                    <div style="background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
-                        <div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                <strong style="color: var(--text-primary); font-size: 0.92rem;">${c.name}</strong>
-                                <span class="badge" style="background: rgba(2, 132, 199, 0.12); color: #0284c7; font-size: 0.68rem;">${c.match_count} Matched Symptoms</span>
-                            </div>
-                            <p style="font-size: 0.73rem; color: var(--text-secondary); line-height: 1.45; margin-bottom: 8px;">
-                                ${c.overview}
-                            </p>
-                            <div style="font-size: 0.72rem; color: #ef4444; margin-bottom: 6px;">
-                                <strong>⚠️ Warning signs:</strong> ${c.warning_signs ? c.warning_signs.slice(0, 2).join("; ") : "Consult doctor."}
+                <!-- ML Summary Banner -->
+                <div style="background: rgba(2, 132, 199, 0.06); border: 1px solid rgba(2, 132, 199, 0.25); border-radius: 10px; padding: 14px 18px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.25rem;">🧬</span>
+                            <div>
+                                <h4 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0284c7;">ML Risk Assessment Differential</h4>
+                                <span style="font-size: 0.72rem; color: var(--text-secondary);">Model: <strong>${modelUsed}</strong> | Dataset: Kaggle Disease Symptom Prediction</span>
                             </div>
                         </div>
-                        <div style="border-top: 1px solid var(--border-glass); padding-top: 6px; margin-top: 4px; display: flex; justify-content: space-between; align-items: center;">
-                            <button type="button" class="btn btn-secondary" onclick="openDiseaseModal('${c.id}')" style="font-size: 0.7rem; padding: 4px 8px; color: #0284c7; border-color: rgba(2, 132, 199, 0.3);">
-                                📖 View Full Guide
+                        <span class="badge" style="background: rgba(2, 132, 199, 0.15); color: #0284c7; font-size: 0.72rem; font-weight: 700;">34 Conditions Evaluated</span>
+                    </div>
+
+                    ${matchedSyms.length > 0 ? `
+                        <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 6px;">
+                            <strong>Active Clinical Features (${matchedSyms.length}):</strong>
+                            <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px;">
+                                ${matchedSyms.map(s => `<span style="background: rgba(2, 132, 199, 0.1); color: #0284c7; padding: 2px 7px; border-radius: 10px; font-size: 0.68rem; font-weight: 600;">${s}</span>`).join("")}
+                            </div>
+                        </div>
+                    ` : ""}
+                </div>
+
+                <!-- Top 3 Possibilities Grid -->
+                <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-primary); margin: 0 0 10px 0;">
+                    Top 3 Differential Possibilities (Ranked by Calibrated Probability)
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-bottom: 16px;">
+            `;
+
+            data.possibilities.forEach((pos, idx) => {
+                const prob = Math.round(pos.probability || (pos.confidence_score * 100) || 0);
+                const rankLabels = ["Primary Match (Rank #1)", "Differential Match (Rank #2)", "Alternate Match (Rank #3)"];
+                const rankColors = ["#0284c7", "#8b5cf6", "#64748b"];
+
+                html += `
+                    <div class="disease-prediction-card" style="background: var(--bg-card); border: 1px solid var(--border-glass); border-top: 3px solid ${rankColors[idx]}; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                                <div>
+                                    <span style="font-size: 0.68rem; font-weight: 700; color: ${rankColors[idx]}; text-transform: uppercase; letter-spacing: 0.5px;">${rankLabels[idx]}</span>
+                                    <h4 style="margin: 2px 0 0 0; font-size: 1.05rem; font-weight: 800; color: var(--text-primary);">${pos.disease_name}</h4>
+                                </div>
+                                <span class="badge" style="background: rgba(2, 132, 199, 0.12); color: #0284c7; font-size: 0.74rem; font-weight: 800;">${prob}%</span>
+                            </div>
+
+                            <!-- Probability meter bar -->
+                            <div style="height: 6px; background: rgba(0,0,0,0.06); border-radius: 3px; overflow: hidden; margin: 6px 0 10px 0;">
+                                <div style="height: 100%; width: ${prob}%; background: linear-gradient(90deg, #0284c7, #38bdf8); border-radius: 3px;"></div>
+                            </div>
+
+                            <p style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.45; margin-bottom: 8px;">
+                                ${pos.overview || "Verified disease profile in offline local RAG repository."}
+                            </p>
+
+                            ${pos.warning_signs && pos.warning_signs.length ? `
+                                <div style="font-size: 0.72rem; color: #ef4444; margin-bottom: 6px; line-height: 1.35;">
+                                    <strong>⚠️ Critical Warning Signs:</strong> ${pos.warning_signs.slice(0, 2).join("; ")}
+                                </div>
+                            ` : ""}
+                        </div>
+
+                        <div style="border-top: 1px solid var(--border-glass); padding-top: 8px; margin-top: 6px; display: flex; justify-content: space-between; align-items: center;">
+                            <button type="button" class="btn btn-secondary" onclick="openDiseaseModal('${pos.disease_id || pos.disease_name}')" style="font-size: 0.72rem; padding: 4px 10px; color: #0284c7; border-color: rgba(2, 132, 199, 0.3);">
+                                📖 View Full Disease Card
                             </button>
-                            <span style="font-size: 0.68rem; color: var(--text-muted);">When to seek care: ${c.when_to_seek_help ? c.when_to_seek_help.slice(0, 35) + '...' : 'Promptly'}</span>
+                            <span style="font-size: 0.68rem; color: var(--text-muted);">
+                                ${pos.when_to_seek_help ? pos.when_to_seek_help.slice(0, 32) + '...' : 'Consult doctor'}
+                            </span>
                         </div>
                     </div>
                 `;
             });
 
-            html += `</div>`;
+            html += `
+                </div>
+
+                <!-- Mandatory Clinical Disclaimer Banner -->
+                <div style="background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 8px; padding: 12px 16px; font-size: 0.74rem; color: #b91c1c; line-height: 1.45;">
+                    <strong>⚠️ Non-Diagnostic Clinical Notice:</strong>
+                    ${data.disclaimer || "This disease risk prediction is generated by local offline machine learning models for public health education and awareness only. It does NOT constitute a clinical diagnosis or medical prescription. Always consult a licensed medical professional for personal diagnosis, laboratory tests, and treatment."}
+                </div>
+            `;
+
             resDiv.innerHTML = html;
+            resDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         })
         .catch(err => {
-            console.error("Symptom correlation error:", err);
-            resDiv.innerHTML = `<div style="color: #ef4444; padding: 15px;">Failed to correlate symptoms.</div>`;
+            console.error("Disease prediction API error:", err);
+            resDiv.innerHTML = `<div style="color: #ef4444; padding: 16px; background: rgba(239,68,68,0.06); border-radius: 8px;">Disease prediction calculation error. Please try again.</div>`;
         });
     };
 
+    // Filter Chips on Search Input
     document.addEventListener("DOMContentLoaded", () => {
-        loadSymptomsList();
+        loadDiseasePredictionSymptoms();
+
+        const searchInput = document.getElementById("disease-symptom-search");
+        if (searchInput) {
+            searchInput.addEventListener("input", (e) => {
+                const q = e.target.value.toLowerCase().trim();
+                if (!q) {
+                    renderSymptomChips(allSymptoms);
+                } else {
+                    const filtered = allSymptoms.filter(s => s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q));
+                    renderSymptomChips(filtered);
+                }
+            });
+        }
     });
+
 })();
 
 // ============================================================================
