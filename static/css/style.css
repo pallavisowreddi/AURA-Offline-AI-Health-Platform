@@ -3797,31 +3797,7 @@ body.dark-theme .landing-attribution-box {
     gap: 4px;
 }
 
-/* Disease Prediction Results Cards */
-.disease-prediction-card {
-    background: var(--bg-card, #ffffff);
-    border: 1px solid var(--border-glass, rgba(0,0,0,0.1));
-    border-radius: 12px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    transition: all 0.2s ease;
-}
 
-.disease-prediction-card:hover {
-    border-color: #0284c7;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-}
-
-.pred-meter-bar {
-    width: 100%;
-    height: 8px;
-    background: rgba(0,0,0,0.06);
-    border-radius: 4px;
-    overflow: hidden;
-    margin: 6px 0;
-}
 
 .pred-meter-fill {
     height: 100%;

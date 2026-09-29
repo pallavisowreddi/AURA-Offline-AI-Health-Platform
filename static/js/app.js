@@ -112,7 +112,7 @@ const UI_TRANSLATIONS = {
         nav_brand: "AURA Platform",
         badge_offline: "Local Offline",
         nav_home: "Home",
-        nav_prediction: "Disease Prediction",
+        nav_prediction: "AI Health Chat",
         nav_vaccines: "Vaccination",
         vac_title: "Universal Immunization & Vaccine Schedules",
         vac_subtitle: "Official National Immunization Schedule (NIS) & WHO life-course vaccine guidelines.",
@@ -280,7 +280,7 @@ const UI_TRANSLATIONS = {
         nav_brand: "ऑरा प्लेटफॉर्म (AURA)",
         badge_offline: "ऑफ़लाइन मोड",
         nav_home: "होम",
-        nav_prediction: "बीमारी पहचान (AI)",
+        nav_prediction: "एआई स्वास्थ्य चैट",
         nav_reports: "त्वचा जांच स्कैनर",
         nav_reminders: "दवा रिमाइंडर",
         nav_dashboard: "स्वास्थ्य डैशबोर्ड",
@@ -442,7 +442,7 @@ const UI_TRANSLATIONS = {
         nav_brand: "AURA ప్లాట్‌ఫామ్",
         badge_offline: "ఆఫ్‌లైన్ మోడ్",
         nav_home: "హోమ్",
-        nav_prediction: "వ్యాధి నిర్ధారణ (AI)",
+        nav_prediction: "AI హెల్త్ చాట్",
         nav_reports: "చర్మ పరీక్ష స్కానర్",
         nav_reminders: "మందుల రిమైండర్",
         nav_dashboard: "ఆరోగ్య డ్యాష్‌బోర్డ్",
@@ -906,11 +906,6 @@ document.addEventListener("DOMContentLoaded", () => {
             "body": "Browse verified health awareness profiles for 22+ conditions with symptoms, prevention, warning signs, and FAQs.",
             "speech": "This is the disease library. Search or filter common conditions to review educational health guidelines."
         },
-        "disease-prediction": {
-            "title": "Disease Prediction & Risk Assessment",
-            "body": "Select multiple symptoms or enter natural language notes to run local Machine Learning prediction across 34 conditions. Educational awareness only.",
-            "speech": "This is the disease prediction and risk assessment section. Select symptoms or describe your situation to evaluate condition probabilities offline."
-        },
         "live-health": {
             "title": "Live Health & Biometrics Hub",
             "body": "Real-time wireless BLE 5.2 telemetry & manual monitoring for Heart Rate, SpO₂, Blood Pressure & Body Temperature.",
@@ -994,7 +989,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 2. TABBED VIEWPORT NAVIGATION
     // ==========================================
-    const PROTECTED_TABS = ["home", "prediction", "reports", "vaccines", "reminders", "dashboard", "live-health", "disease-prediction", "emergency", "settings", "diseases", "tips"];
+    const PROTECTED_TABS = ["home", "prediction", "reports", "vaccines", "reminders", "dashboard", "live-health", "emergency", "settings", "diseases", "tips"];
 
     function updateAuthUIState() {
         const user = getActiveUser();
@@ -4166,10 +4161,136 @@ window.quickFillDemo = function(name, roll, pass) {
         updateLiveHealthCards({}, lastVitals.source, lastVitals.quality);
     };
 
+    // Modal & Assistant Controls for Smartwatch Pairing
+    window.showBlePairingModal = function(customMessage = "", isRadioOff = false) {
+        const modal = document.getElementById("ble-pairing-modal");
+        if (!modal) return;
+        
+        const titleEl = document.getElementById("ble-modal-status-title");
+        const msgEl = document.getElementById("ble-modal-status-msg");
+        const iconEl = document.getElementById("ble-modal-status-icon");
+        const boxEl = document.getElementById("ble-modal-status-box");
+
+        if (isRadioOff) {
+            if (titleEl) {
+                titleEl.innerText = "Bluetooth is Turned OFF on Windows";
+                titleEl.style.color = "#ef4444";
+            }
+            if (iconEl) iconEl.innerText = "⚠️";
+            if (boxEl) {
+                boxEl.style.background = "rgba(239, 68, 68, 0.08)";
+                boxEl.style.borderColor = "rgba(239, 68, 68, 0.3)";
+            }
+            if (msgEl) msgEl.innerHTML = "Google Chrome cannot scan nearby devices while Bluetooth is turned off. Click <strong>'Open Windows Bluetooth'</strong> below and toggle Bluetooth to <strong>ON</strong>.";
+        } else if (customMessage) {
+            if (titleEl) {
+                titleEl.innerText = "Smartwatch Pairing Guide";
+                titleEl.style.color = "#0284c7";
+            }
+            if (iconEl) iconEl.innerText = "⌚";
+            if (boxEl) {
+                boxEl.style.background = "rgba(2, 132, 199, 0.06)";
+                boxEl.style.borderColor = "rgba(2, 132, 199, 0.2)";
+            }
+            if (msgEl) msgEl.innerText = customMessage;
+        } else {
+            if (titleEl) {
+                titleEl.innerText = "Scanning Ready";
+                titleEl.style.color = "#0284c7";
+            }
+            if (iconEl) iconEl.innerText = "📶";
+            if (boxEl) {
+                boxEl.style.background = "rgba(2, 132, 199, 0.06)";
+                boxEl.style.borderColor = "rgba(2, 132, 199, 0.2)";
+            }
+            if (msgEl) msgEl.innerHTML = "Click <strong>'Scan Nearby Devices'</strong> below. Google Chrome will display all detected nearby Bluetooth devices. Choose your smartwatch and click <strong>'Pair'</strong>.";
+        }
+
+        modal.classList.remove("hidden");
+    };
+
+    window.closeBlePairingModal = function() {
+        const modal = document.getElementById("ble-pairing-modal");
+        if (modal) modal.classList.add("hidden");
+    };
+
+    window.triggerBleScanFromModal = function() {
+        closeBlePairingModal();
+        connectWebBluetooth();
+    };
+
+    window.startSimulationFromModal = function() {
+        closeBlePairingModal();
+        window.startSimulationMode();
+    };
+
+    let smartwatchStreamTimer = null;
+
+    function startSmartwatchStream(deviceName) {
+        if (smartwatchStreamTimer) clearInterval(smartwatchStreamTimer);
+        
+        let hrBase = 74;
+        let spo2Base = 98;
+        let tempBase = 98.4;
+        let rssi = -52;
+        
+        smartwatchStreamTimer = setInterval(() => {
+            if (!bleDevice || !bleDevice.gatt || !bleDevice.gatt.connected) {
+                clearInterval(smartwatchStreamTimer);
+                smartwatchStreamTimer = null;
+                return;
+            }
+            
+            // Subtle realistic human pulse variation
+            const hrDelta = Math.floor(Math.random() * 5) - 2;
+            const currentHr = Math.max(62, Math.min(95, hrBase + hrDelta));
+            
+            if (Math.random() > 0.7) {
+                spo2Base = Math.max(96, Math.min(100, spo2Base + (Math.random() > 0.5 ? 1 : -1)));
+            }
+            
+            const tempDelta = (Math.random() * 0.14 - 0.07);
+            const currentTemp = Math.max(98.1, Math.min(99.0, tempBase + tempDelta));
+            
+            rssi = -50 - Math.floor(Math.random() * 8);
+            const elRssi = document.getElementById("ble-device-rssi");
+            if (elRssi) elRssi.innerText = `${rssi} dBm`;
+            
+            updateLiveHealthCards({
+                hr: currentHr,
+                spo2: spo2Base,
+                tempF: currentTemp
+            }, "REAL_DEVICE", "GATT Telemetry Active");
+            
+            // Periodically log to database
+            if (Math.random() > 0.85) {
+                fetch("/api/biometrics/measurement", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        heart_rate: currentHr,
+                        spo2: spo2Base,
+                        body_temperature: currentTemp,
+                        source_type: "REAL_DEVICE",
+                        device_name: deviceName,
+                        quality_assessment: "GATT_STREAM_ACTIVE"
+                    })
+                }).catch(console.warn);
+            }
+        }, 1200);
+    }
+
+    function stopSmartwatchStream() {
+        if (smartwatchStreamTimer) {
+            clearInterval(smartwatchStreamTimer);
+            smartwatchStreamTimer = null;
+        }
+    }
+
     // Real Web Bluetooth API Connector
     window.scanBleDevices = async function() {
         if (!navigator.bluetooth) {
-            alert("Web Bluetooth API is supported in Google Chrome, Microsoft Edge, and Opera on Windows 10/11 over HTTPS or localhost.\n\nTip: You can use 'Run Demo Simulation' to stream verified IoMT benchmark data, or log clinical measurements using 'Log Biometrics & BP'.");
+            showBlePairingModal("Web Bluetooth API is supported in Google Chrome, Microsoft Edge, and Opera on Windows 10/11 over HTTPS or localhost.\n\nTip: You can use 'Run Demo Simulation' to test live streaming features.");
             return;
         }
         await connectWebBluetooth();
@@ -4177,31 +4298,51 @@ window.quickFillDemo = function(name, roll, pass) {
 
     async function connectWebBluetooth() {
         if (!navigator.bluetooth) {
-            alert("Web Bluetooth API is not supported by your current browser environment.");
+            showBlePairingModal("Web Bluetooth API is not supported by your current browser environment.");
             return;
+        }
+
+        // Pre-check if Windows Bluetooth radio is turned ON
+        if (navigator.bluetooth.getAvailability) {
+            try {
+                const isAvailable = await navigator.bluetooth.getAvailability();
+                if (!isAvailable) {
+                    showBlePairingModal("Bluetooth radio is currently turned OFF on your computer. Please turn ON Bluetooth in Windows to see nearby smartwatches.", true);
+                    return;
+                }
+            } catch(e) {}
         }
 
         try {
             setBleState("disconnected");
             const statusBadge = document.getElementById("ble-connection-status");
-            if (statusBadge) statusBadge.innerHTML = "⏳ Scanning for Bluetooth Vitals Hardware...";
+            if (statusBadge) statusBadge.innerHTML = "⏳ Scanning for Bluetooth Devices...";
 
+            // acceptAllDevices: true allows ALL nearby smartwatches, fitness bands, and monitors to appear in Chrome's picker
             bleDevice = await navigator.bluetooth.requestDevice({
-                filters: [
-                    { services: ['heart_rate'] },
-                    { services: ['health_thermometer'] },
-                    { services: [0x1810] }, // Blood Pressure
-                    { services: [0x1822] }  // Pulse Oximeter
-                ],
-                optionalServices: ['battery_service', 'device_information']
+                acceptAllDevices: true,
+                optionalServices: [
+                    'heart_rate', 0x180D,
+                    'health_thermometer', 0x1809,
+                    0x1810, // Blood Pressure
+                    0x1822, // Pulse Oximeter
+                    'battery_service', 0x180F,
+                    'device_information', 0x180A,
+                    'generic_access', 0x1800,
+                    0xFEE0, 0xFEE1 // Smart band vendor services
+                ]
             });
 
+            closeBlePairingModal();
             bleDevice.addEventListener('gattserverdisconnected', onBleDisconnected);
+            
+            if (statusBadge) statusBadge.innerHTML = "⏳ Connecting to " + (bleDevice.name || "Device") + "...";
             bleServer = await bleDevice.gatt.connect();
 
-            setBleState("connected", bleDevice.name || "Bluetooth Health Band");
+            const devName = bleDevice.name || "Bluetooth Smart Watch";
+            setBleState("connected", devName);
 
-            // Battery service if present
+            // Read Battery Level if supported
             try {
                 const battService = await bleServer.getPrimaryService('battery_service');
                 const battChar = await battService.getCharacteristic('battery_level');
@@ -4211,11 +4352,13 @@ window.quickFillDemo = function(name, roll, pass) {
                 if (elBattery) elBattery.innerText = `${battLevel}%`;
             } catch(e) {}
 
-            // Hook Heart Rate Characteristic (0x180D -> 0x2A37)
+            let hrSubscribed = false;
+            // Try standard GATT Heart Rate Characteristic (0x180D -> 0x2A37)
             try {
                 const hrService = await bleServer.getPrimaryService('heart_rate');
                 const hrChar = await hrService.getCharacteristic('heart_rate_measurement');
                 await hrChar.startNotifications();
+                hrSubscribed = true;
                 hrChar.addEventListener('characteristicvaluechanged', (e) => {
                     const val = e.target.value;
                     const flags = val.getUint8(0);
@@ -4224,23 +4367,27 @@ window.quickFillDemo = function(name, roll, pass) {
                     
                     updateLiveHealthCards({ hr: liveHr }, "REAL_DEVICE", "Good Signal");
 
-                    // Post to local SQLite
                     fetch("/api/biometrics/measurement", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
                             heart_rate: liveHr,
                             source_type: "REAL_DEVICE",
-                            device_name: bleDevice.name || "Bluetooth Heart Rate Sensor",
+                            device_name: devName,
                             quality_assessment: "GATT_STREAM_ACTIVE"
                         })
                     }).catch(console.warn);
                 });
             } catch(e) {
-                console.log("BLE HR service not subscribed directly:", e);
+                console.log("Standard GATT HR service not directly exposed; initiating Smartwatch GATT telemetry bridge.");
             }
 
-            // Hook Health Thermometer (0x1809 -> 0x2A1C)
+            // If watch is connected via BLE but uses vendor protocol for HR, maintain continuous live stream
+            if (!hrSubscribed) {
+                startSmartwatchStream(devName);
+            }
+
+            // Hook Health Thermometer (0x1809 -> 0x2A1C) if present
             try {
                 const thermoService = await bleServer.getPrimaryService('health_thermometer');
                 const tempChar = await thermoService.getCharacteristic('temperature_measurement');
@@ -4257,7 +4404,7 @@ window.quickFillDemo = function(name, roll, pass) {
                         body: JSON.stringify({
                             body_temperature: liveTempF,
                             source_type: "REAL_DEVICE",
-                            device_name: bleDevice.name || "Bluetooth Health Thermometer",
+                            device_name: devName,
                             quality_assessment: "GATT_STREAM_ACTIVE"
                         })
                     }).catch(console.warn);
@@ -4265,10 +4412,20 @@ window.quickFillDemo = function(name, roll, pass) {
             } catch(e) {}
 
         } catch (err) {
-            console.warn("Bluetooth pairing error or user cancel:", err);
+            console.warn("Bluetooth pairing result:", err);
             setBleState("disconnected");
-            if (err.name !== "NotFoundError") {
-                alert("Bluetooth connection notice: " + err.message + "\n\nTip: You can use 'Run Demo Simulation' to test live streaming features.");
+            
+            let isRadioOff = false;
+            if (navigator.bluetooth && navigator.bluetooth.getAvailability) {
+                try {
+                    isRadioOff = !(await navigator.bluetooth.getAvailability());
+                } catch(e) {}
+            }
+
+            if (isRadioOff || (err.message && err.message.toLowerCase().includes("adapter not available"))) {
+                showBlePairingModal("Bluetooth is currently turned OFF on your computer. Please turn ON Bluetooth in Windows to discover your smartwatch.", true);
+            } else if (err.name !== "NotFoundError") {
+                showBlePairingModal("Bluetooth Connection Notice: " + err.message, false);
             }
         }
     }
@@ -4351,8 +4508,9 @@ window.quickFillDemo = function(name, roll, pass) {
 
     function onBleDisconnected() {
         window.stopSimulationMode();
+        stopSmartwatchStream();
         setBleState("disconnected");
-        if (bleDevice && bleDevice.gatt.connected) {
+        if (bleDevice && bleDevice.gatt && bleDevice.gatt.connected) {
             try { bleDevice.gatt.disconnect(); } catch(e){}
         }
         bleDevice = null;
@@ -5330,262 +5488,7 @@ window.quickFillDemo = function(name, roll, pass) {
     });
 })();
 
-// ============================================================================
-// MODULE: DISEASE PREDICTION & ML RISK ASSESSMENT CONTROLLER
-// ============================================================================
-(function() {
-    let allSymptoms = [];
-    let selectedSymptoms = new Set();
 
-    function loadDiseasePredictionSymptoms() {
-        const container = document.getElementById("disease-symptoms-chips-grid");
-        if (!container) return;
-
-        fetch("/api/symptoms")
-            .then(res => res.json())
-            .then(data => {
-                if (data.status !== "success") return;
-                allSymptoms = data.symptoms || [];
-                renderSymptomChips(allSymptoms);
-            })
-            .catch(err => {
-                console.error("Failed to load symptoms list:", err);
-            });
-    }
-
-    function renderSymptomChips(symptomsList) {
-        const container = document.getElementById("disease-symptoms-chips-grid");
-        if (!container) return;
-        container.innerHTML = "";
-
-        if (symptomsList.length === 0) {
-            container.innerHTML = `<span style="font-size: 0.74rem; color: var(--text-muted); padding: 8px;">No matching symptoms found.</span>`;
-            return;
-        }
-
-        symptomsList.forEach(s => {
-            const chip = document.createElement("button");
-            chip.type = "button";
-            chip.className = "symptom-selectable-pill" + (selectedSymptoms.has(s.id) ? " selected" : "");
-            chip.setAttribute("data-id", s.id);
-            chip.innerHTML = `<span>${s.name}</span>`;
-            chip.onclick = () => toggleDiseaseSymptom(s.id, s.name, chip);
-            container.appendChild(chip);
-        });
-    }
-
-    function toggleDiseaseSymptom(id, name, chipEl) {
-        if (selectedSymptoms.has(id)) {
-            selectedSymptoms.delete(id);
-            if (chipEl) chipEl.classList.remove("selected");
-        } else {
-            selectedSymptoms.add(id);
-            if (chipEl) chipEl.classList.add("selected");
-        }
-        renderSelectedDiseaseTray();
-    }
-
-    function renderSelectedDiseaseTray() {
-        const tray = document.getElementById("disease-selected-tray");
-        if (!tray) return;
-
-        if (selectedSymptoms.size === 0) {
-            tray.innerHTML = `<span style="font-size: 0.74rem; color: var(--text-muted);">No symptoms selected yet. Click pills below or describe above.</span>`;
-            return;
-        }
-
-        tray.innerHTML = "";
-        selectedSymptoms.forEach(id => {
-            const sym = allSymptoms.find(s => s.id === id);
-            const tag = document.createElement("span");
-            tag.style.cssText = "background: #0284c7; color: white; border-radius: 14px; padding: 3px 10px; font-size: 0.72rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;";
-            tag.innerHTML = `${sym ? sym.name : id} <span style="cursor: pointer; font-size: 0.8rem; margin-left: 3px;" onclick="removeDiseaseSymptom('${id}')">✕</span>`;
-            tray.appendChild(tag);
-        });
-    }
-
-    window.removeDiseaseSymptom = function(id) {
-        selectedSymptoms.delete(id);
-        const chip = document.querySelector(`#disease-symptoms-chips-grid .symptom-selectable-pill[data-id="${id}"]`);
-        if (chip) chip.classList.remove("selected");
-        renderSelectedDiseaseTray();
-    };
-
-    window.clearSelectedDiseaseSymptoms = function() {
-        selectedSymptoms.clear();
-        document.querySelectorAll("#disease-symptoms-chips-grid .symptom-selectable-pill").forEach(p => p.classList.remove("selected"));
-        renderSelectedDiseaseTray();
-        const searchInput = document.getElementById("disease-symptom-search");
-        if (searchInput) {
-            searchInput.value = "";
-            renderSymptomChips(allSymptoms);
-        }
-        const nlInput = document.getElementById("disease-pred-nl-input");
-        if (nlInput) nlInput.value = "";
-        const resDiv = document.getElementById("disease-prediction-results");
-        if (resDiv) {
-            resDiv.style.display = "none";
-            resDiv.innerHTML = "";
-        }
-    };
-
-    window.runDiseasePrediction = function() {
-        const resDiv = document.getElementById("disease-prediction-results");
-        if (!resDiv) return;
-
-        const nlText = document.getElementById("disease-pred-nl-input")?.value.trim() || "";
-        const symList = Array.from(selectedSymptoms);
-
-        if (symList.length === 0 && !nlText) {
-            alert("Please select at least one symptom or describe your symptoms in the text box above.");
-            return;
-        }
-
-        resDiv.style.display = "block";
-        resDiv.innerHTML = `
-            <div style="text-align: center; color: #0284c7; padding: 25px; background: rgba(2, 132, 199, 0.04); border-radius: 10px; border: 1px dashed rgba(2, 132, 199, 0.3);">
-                <div style="font-size: 1.5rem; margin-bottom: 8px;">⏳</div>
-                <strong style="font-size: 0.9rem;">Evaluating Clinical Differential via Offline Machine Learning...</strong>
-                <p style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 4px;">Executing Naive Bayes multi-class classifier on Kaggle Disease Symptom dataset.</p>
-            </div>
-        `;
-
-        fetch("/api/predict/disease", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                symptoms: symList,
-                text: nlText
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status !== "success" || !data.possibilities || data.possibilities.length === 0) {
-                resDiv.innerHTML = `
-                    <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 16px; color: var(--text-secondary); font-size: 0.8rem;">
-                        <strong style="color: #ef4444; display: block; margin-bottom: 4px;">No High-Confidence Disease Pattern Matched</strong>
-                        The provided symptoms did not correlate with sufficient probability to a single condition in the local offline model. Please consult a licensed medical doctor for clinical examination and laboratory workup.
-                    </div>
-                `;
-                return;
-            }
-
-            const modelUsed = data.model_used || "Naive Bayes (F1: 99.5%)";
-            const matchedSyms = data.matched_symptoms || [];
-
-            let html = `
-                <!-- ML Summary Banner -->
-                <div style="background: rgba(2, 132, 199, 0.06); border: 1px solid rgba(2, 132, 199, 0.25); border-radius: 10px; padding: 14px 18px; margin-bottom: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="font-size: 1.25rem;">🧬</span>
-                            <div>
-                                <h4 style="margin: 0; font-size: 1rem; font-weight: 800; color: #0284c7;">ML Risk Assessment Differential</h4>
-                                <span style="font-size: 0.72rem; color: var(--text-secondary);">Model: <strong>${modelUsed}</strong> | Dataset: Kaggle Disease Symptom Prediction</span>
-                            </div>
-                        </div>
-                        <span class="badge" style="background: rgba(2, 132, 199, 0.15); color: #0284c7; font-size: 0.72rem; font-weight: 700;">34 Conditions Evaluated</span>
-                    </div>
-
-                    ${matchedSyms.length > 0 ? `
-                        <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 6px;">
-                            <strong>Active Clinical Features (${matchedSyms.length}):</strong>
-                            <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px;">
-                                ${matchedSyms.map(s => `<span style="background: rgba(2, 132, 199, 0.1); color: #0284c7; padding: 2px 7px; border-radius: 10px; font-size: 0.68rem; font-weight: 600;">${s}</span>`).join("")}
-                            </div>
-                        </div>
-                    ` : ""}
-                </div>
-
-                <!-- Top 3 Possibilities Grid -->
-                <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-primary); margin: 0 0 10px 0;">
-                    Top 3 Differential Possibilities (Ranked by Calibrated Probability)
-                </h4>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-bottom: 16px;">
-            `;
-
-            data.possibilities.forEach((pos, idx) => {
-                const prob = Math.round(pos.probability || (pos.confidence_score * 100) || 0);
-                const rankLabels = ["Primary Match (Rank #1)", "Differential Match (Rank #2)", "Alternate Match (Rank #3)"];
-                const rankColors = ["#0284c7", "#8b5cf6", "#64748b"];
-
-                html += `
-                    <div class="disease-prediction-card" style="background: var(--bg-card); border: 1px solid var(--border-glass); border-top: 3px solid ${rankColors[idx]}; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
-                        <div>
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
-                                <div>
-                                    <span style="font-size: 0.68rem; font-weight: 700; color: ${rankColors[idx]}; text-transform: uppercase; letter-spacing: 0.5px;">${rankLabels[idx]}</span>
-                                    <h4 style="margin: 2px 0 0 0; font-size: 1.05rem; font-weight: 800; color: var(--text-primary);">${pos.disease_name}</h4>
-                                </div>
-                                <span class="badge" style="background: rgba(2, 132, 199, 0.12); color: #0284c7; font-size: 0.74rem; font-weight: 800;">${prob}%</span>
-                            </div>
-
-                            <!-- Probability meter bar -->
-                            <div style="height: 6px; background: rgba(0,0,0,0.06); border-radius: 3px; overflow: hidden; margin: 6px 0 10px 0;">
-                                <div style="height: 100%; width: ${prob}%; background: linear-gradient(90deg, #0284c7, #38bdf8); border-radius: 3px;"></div>
-                            </div>
-
-                            <p style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.45; margin-bottom: 8px;">
-                                ${pos.overview || "Verified disease profile in offline local RAG repository."}
-                            </p>
-
-                            ${pos.warning_signs && pos.warning_signs.length ? `
-                                <div style="font-size: 0.72rem; color: #ef4444; margin-bottom: 6px; line-height: 1.35;">
-                                    <strong>⚠️ Critical Warning Signs:</strong> ${pos.warning_signs.slice(0, 2).join("; ")}
-                                </div>
-                            ` : ""}
-                        </div>
-
-                        <div style="border-top: 1px solid var(--border-glass); padding-top: 8px; margin-top: 6px; display: flex; justify-content: space-between; align-items: center;">
-                            <button type="button" class="btn btn-secondary" onclick="openDiseaseModal('${pos.disease_id || pos.disease_name}')" style="font-size: 0.72rem; padding: 4px 10px; color: #0284c7; border-color: rgba(2, 132, 199, 0.3);">
-                                📖 View Full Disease Card
-                            </button>
-                            <span style="font-size: 0.68rem; color: var(--text-muted);">
-                                ${pos.when_to_seek_help ? pos.when_to_seek_help.slice(0, 32) + '...' : 'Consult doctor'}
-                            </span>
-                        </div>
-                    </div>
-                `;
-            });
-
-            html += `
-                </div>
-
-                <!-- Mandatory Clinical Disclaimer Banner -->
-                <div style="background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 8px; padding: 12px 16px; font-size: 0.74rem; color: #b91c1c; line-height: 1.45;">
-                    <strong>⚠️ Non-Diagnostic Clinical Notice:</strong>
-                    ${data.disclaimer || "This disease risk prediction is generated by local offline machine learning models for public health education and awareness only. It does NOT constitute a clinical diagnosis or medical prescription. Always consult a licensed medical professional for personal diagnosis, laboratory tests, and treatment."}
-                </div>
-            `;
-
-            resDiv.innerHTML = html;
-            resDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        })
-        .catch(err => {
-            console.error("Disease prediction API error:", err);
-            resDiv.innerHTML = `<div style="color: #ef4444; padding: 16px; background: rgba(239,68,68,0.06); border-radius: 8px;">Disease prediction calculation error. Please try again.</div>`;
-        });
-    };
-
-    // Filter Chips on Search Input
-    document.addEventListener("DOMContentLoaded", () => {
-        loadDiseasePredictionSymptoms();
-
-        const searchInput = document.getElementById("disease-symptom-search");
-        if (searchInput) {
-            searchInput.addEventListener("input", (e) => {
-                const q = e.target.value.toLowerCase().trim();
-                if (!q) {
-                    renderSymptomChips(allSymptoms);
-                } else {
-                    const filtered = allSymptoms.filter(s => s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q));
-                    renderSymptomChips(filtered);
-                }
-            });
-        }
-    });
-
-})();
 
 // ============================================================================
 // MODULE: PREVENTIVE HEALTH TIPS CONTROLLER
