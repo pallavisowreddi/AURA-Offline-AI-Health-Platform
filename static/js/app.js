@@ -1011,6 +1011,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     window.navigateToTab = function(tabName) {
+        if (tabName === "dashboard") tabName = "live-health";
         const user = getActiveUser();
         // Route Guard: enforce authentication for clinical modules
         if (!user && PROTECTED_TABS.includes(tabName)) {
@@ -1799,7 +1800,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const resultConfidence = document.getElementById("reports-result-confidence");
         const resultDesc = document.getElementById("reports-result-desc");
         const resultGuidance = document.getElementById("reports-result-guidance");
+        const previewImg = document.getElementById("reports-preview-img");
         
+        if (previewImg && file) {
+            try {
+                previewImg.src = URL.createObjectURL(file);
+            } catch (e) {}
+        }
+
         if (auraWidgetStatus) auraWidgetStatus.innerText = "Thinking";
         const lang = languageSelector ? languageSelector.value : "en";
         
@@ -1824,8 +1832,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (resultsCard) resultsCard.classList.remove("hidden");
                 document.getElementById("doc-scan-results-view")?.classList.add("hidden");
                 document.getElementById("skin-scan-results-view")?.classList.remove("hidden");
-                document.getElementById("doc-scan-results-view")?.classList.add("hidden");
-                document.getElementById("skin-scan-results-view")?.classList.remove("hidden");
+                
                 if (resultName) resultName.innerText = data.prediction;
                 if (resultConfidence) resultConfidence.innerText = `${Math.round(data.confidence * 100)}% Match`;
                 if (resultDesc) resultDesc.innerText = data.description;
@@ -1834,6 +1841,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Render metrics bars
                 renderReportsMetrics(data.metrics);
                 
+                // Smooth scroll into view so the user clearly sees the report output!
+                if (resultsCard) {
+                    resultsCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                }
+
                 speakAura(`Skin visual scan complete. Predicted condition is ${data.prediction} with confidence ${Math.round(data.confidence * 100)} percent.`);
                 
                 // Update global diagnostics telemetry sidebar too
@@ -2681,20 +2693,17 @@ document.addEventListener("DOMContentLoaded", () => {
             if (liveReadingBtn) liveReadingBtn.style.boxShadow = "0 0 15px #10b981";
             if (simulateLiveBtn) simulateLiveBtn.textContent = "⏹️ Stop Live";
             
-            // Immediately navigate to dashboard if on another tab
-            navigateToTab("dashboard");
-
-            liveSimInterval = setInterval(() => {
-                const simHr = Math.floor(68 + Math.random() * 10);
-                const simSys = Math.floor(118 + Math.random() * 8);
-                const simDia = Math.floor(76 + Math.random() * 6);
-                const simSpo2 = Math.floor(97 + Math.random() * 3);
-                calculateBiometrics(simSys, simDia, simHr, simSpo2, 98.6);
-            }, 2500);
+            // Immediately navigate to Live Health Hub
+            navigateToTab("live-health");
+            if (typeof startSimulationMode === "function") {
+                startSimulationMode("PulseBand Pro 4G (IoMT Benchmark Simulator)");
+            }
         } else {
             if (liveReadingBtn) liveReadingBtn.style.boxShadow = "";
             if (simulateLiveBtn) simulateLiveBtn.textContent = "🔴 Simulate Live";
-            if (liveSimInterval) { clearInterval(liveSimInterval); liveSimInterval = null; }
+            if (typeof stopSimulationMode === "function") {
+                stopSimulationMode();
+            }
         }
     }
 
@@ -3654,8 +3663,10 @@ window.applyLabPreset = function(presetKey) {
         URL.revokeObjectURL(url);
     };
 
-    // Default calculations on load
-    calculateBiometrics(120, 80, 72, 98, 98.6);
+    // Default calculations on load if biometrics function exists
+    if (typeof calculateBiometrics === "function") {
+        calculateBiometrics(120, 80, 72, 98, 98.6);
+    }
 
 });
 
@@ -3820,6 +3831,9 @@ window.quickFillDemo = function(name, roll, pass) {
 
         // Audio announcement
         speakAura(`Medical report analyzed. Identified ${data.doc_type} for ${data.patient_name || 'patient'}. Key finding: ${data.vitals && data.vitals.length > 0 ? data.vitals[0].name + ' ' + data.vitals[0].value : 'Vitals recorded'}.`);
+
+        // Scroll results card smoothly into view
+        resultsCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
 
     // =========================================================================
@@ -3885,13 +3899,13 @@ window.quickFillDemo = function(name, roll, pass) {
 
     // Last known vitals cache
     let lastVitals = {
-        hr: 72,
-        spo2: 98,
-        sys: 120,
-        dia: 80,
-        tempF: 98.4,
-        source: 'MANUAL_ENTRY',
-        quality: 'Good Signal'
+        hr: null,
+        spo2: null,
+        sys: null,
+        dia: null,
+        tempF: null,
+        source: 'DISCONNECTED',
+        quality: 'No Signal'
     };
 
     // Web Audio API Cardiac Beep Synthesizer
@@ -3974,7 +3988,7 @@ window.quickFillDemo = function(name, roll, pass) {
             }
             if (sourceBadge) {
                 sourceBadge.className = "badge-source-manual";
-                sourceBadge.innerText = "MANUAL_ENTRY";
+                sourceBadge.innerText = "DISCONNECTED";
             }
             if (nameEl) nameEl.innerText = "No BLE Device Connected";
             if (demoBanner) demoBanner.classList.add("hidden");
@@ -4000,7 +4014,7 @@ window.quickFillDemo = function(name, roll, pass) {
     }
 
     // Update Live 4 Biometrics Display Cards
-    function updateLiveHealthCards(data, sourceType = "MANUAL_ENTRY", quality = "Good Signal") {
+    function updateLiveHealthCards(data = {}, sourceType = "DISCONNECTED", quality = "No Signal") {
         if (data.hr !== undefined && data.hr !== null) lastVitals.hr = data.hr;
         if (data.spo2 !== undefined && data.spo2 !== null) lastVitals.spo2 = data.spo2;
         if (data.sys !== undefined && data.sys !== null) lastVitals.sys = data.sys;
@@ -4009,7 +4023,7 @@ window.quickFillDemo = function(name, roll, pass) {
         lastVitals.source = sourceType;
         lastVitals.quality = quality;
 
-        currentBpm = lastVitals.hr;
+        currentBpm = lastVitals.hr || 72;
         const badgeClass = getSourceBadgeClass(sourceType);
 
         // 1. HEART RATE
@@ -4017,14 +4031,18 @@ window.quickFillDemo = function(name, roll, pass) {
         const elHrStatus = document.getElementById("dash-status-hr");
         const elHrQuality = document.getElementById("dash-quality-hr");
         const elHrSource = document.getElementById("dash-source-hr");
-        if (elHr) elHr.innerText = lastVitals.hr;
-        if (elHrQuality) elHrQuality.innerText = quality;
+        if (elHr) elHr.innerText = lastVitals.hr !== null ? lastVitals.hr : "--";
+        if (elHrQuality) elHrQuality.innerText = lastVitals.hr !== null ? quality : "--";
         if (elHrSource) {
             elHrSource.className = badgeClass;
             elHrSource.innerText = sourceType;
         }
         if (elHrStatus) {
-            if (lastVitals.hr < 60) {
+            if (lastVitals.hr === null) {
+                elHrStatus.innerText = "● Disconnected / No Input";
+                elHrStatus.style.color = "#94a3b8";
+                elHrStatus.style.background = "rgba(148, 163, 184, 0.12)";
+            } else if (lastVitals.hr < 60) {
                 elHrStatus.innerText = "● Bradycardia (<60)";
                 elHrStatus.style.color = "#38bdf8";
                 elHrStatus.style.background = "rgba(56, 189, 248, 0.12)";
@@ -4045,15 +4063,19 @@ window.quickFillDemo = function(name, roll, pass) {
         const elSpo2Status = document.getElementById("dash-status-spo2");
         const elSpo2Quality = document.getElementById("dash-quality-spo2");
         const elSpo2Source = document.getElementById("dash-source-spo2");
-        if (elSpo2) elSpo2.innerText = lastVitals.spo2;
-        if (elSpo2Pulse) elSpo2Pulse.innerText = lastVitals.hr;
-        if (elSpo2Quality) elSpo2Quality.innerText = quality;
+        if (elSpo2) elSpo2.innerText = lastVitals.spo2 !== null ? lastVitals.spo2 : "--";
+        if (elSpo2Pulse) elSpo2Pulse.innerText = lastVitals.hr !== null ? lastVitals.hr : "--";
+        if (elSpo2Quality) elSpo2Quality.innerText = lastVitals.spo2 !== null ? quality : "--";
         if (elSpo2Source) {
             elSpo2Source.className = badgeClass;
             elSpo2Source.innerText = sourceType;
         }
         if (elSpo2Status) {
-            if (lastVitals.spo2 < 90) {
+            if (lastVitals.spo2 === null) {
+                elSpo2Status.innerText = "● Disconnected / No Input";
+                elSpo2Status.style.color = "#94a3b8";
+                elSpo2Status.style.background = "rgba(148, 163, 184, 0.12)";
+            } else if (lastVitals.spo2 < 90) {
                 elSpo2Status.innerText = "● Critical Hypoxemia (<90%)";
                 elSpo2Status.style.color = "#ef4444";
                 elSpo2Status.style.background = "rgba(239, 68, 68, 0.12)";
@@ -4074,14 +4096,24 @@ window.quickFillDemo = function(name, roll, pass) {
         const elBpDia = document.getElementById("dash-bp-dia");
         const elBpMap = document.getElementById("dash-bp-map");
         const elBpStage = document.getElementById("dash-bp-stage");
-        if (elBp) elBp.innerText = `${lastVitals.sys} / ${lastVitals.dia}`;
-        if (elBpSys) elBpSys.innerText = lastVitals.sys;
-        if (elBpDia) elBpDia.innerText = lastVitals.dia;
-        const mapVal = Math.round(lastVitals.dia + (lastVitals.sys - lastVitals.dia) / 3);
-        if (elBpMap) elBpMap.innerText = `${mapVal} mmHg`;
+        if (elBp) elBp.innerText = (lastVitals.sys !== null && lastVitals.dia !== null) ? `${lastVitals.sys} / ${lastVitals.dia}` : "-- / --";
+        if (elBpSys) elBpSys.innerText = lastVitals.sys !== null ? lastVitals.sys : "--";
+        if (elBpDia) elBpDia.innerText = lastVitals.dia !== null ? lastVitals.dia : "--";
+        if (elBpMap) {
+            if (lastVitals.sys !== null && lastVitals.dia !== null) {
+                const mapVal = Math.round(lastVitals.dia + (lastVitals.sys - lastVitals.dia) / 3);
+                elBpMap.innerText = `${mapVal} mmHg`;
+            } else {
+                elBpMap.innerText = "-- mmHg";
+            }
+        }
 
         if (elBpStage) {
-            if (lastVitals.sys >= 180 || lastVitals.dia >= 120) {
+            if (lastVitals.sys === null || lastVitals.dia === null) {
+                elBpStage.innerText = "● Disconnected / No Input";
+                elBpStage.style.color = "#94a3b8";
+                elBpStage.style.background = "rgba(148, 163, 184, 0.12)";
+            } else if (lastVitals.sys >= 180 || lastVitals.dia >= 120) {
                 elBpStage.innerText = "Hypertensive Crisis (Urgent)";
                 elBpStage.style.color = "#ef4444";
                 elBpStage.style.background = "rgba(239, 68, 68, 0.12)";
@@ -4111,23 +4143,33 @@ window.quickFillDemo = function(name, roll, pass) {
         const elTempStatus = document.getElementById("dash-status-temp");
         const elTempSource = document.getElementById("dash-source-temp");
 
-        const canonicalC = ((lastVitals.tempF - 32) * 5 / 9).toFixed(1);
-        if (elTempC) elTempC.innerText = `${canonicalC} °C`;
+        if (lastVitals.tempF !== null) {
+            const canonicalC = ((lastVitals.tempF - 32) * 5 / 9).toFixed(1);
+            if (elTempC) elTempC.innerText = `${canonicalC} °C`;
+            if (isCelsius) {
+                if (elTempNum) elTempNum.innerText = canonicalC;
+                if (elTempUnit) elTempUnit.innerText = "°C";
+            } else {
+                if (elTempNum) elTempNum.innerText = lastVitals.tempF.toFixed(1);
+                if (elTempUnit) elTempUnit.innerText = "°F";
+            }
+        } else {
+            if (elTempC) elTempC.innerText = "-- °C";
+            if (elTempNum) elTempNum.innerText = "--";
+            if (elTempUnit) elTempUnit.innerText = isCelsius ? "°C" : "°F";
+        }
+
         if (elTempSource) {
             elTempSource.className = badgeClass;
             elTempSource.innerText = sourceType;
         }
 
-        if (isCelsius) {
-            if (elTempNum) elTempNum.innerText = canonicalC;
-            if (elTempUnit) elTempUnit.innerText = "°C";
-        } else {
-            if (elTempNum) elTempNum.innerText = lastVitals.tempF.toFixed(1);
-            if (elTempUnit) elTempUnit.innerText = "°F";
-        }
-
         if (elTempStatus) {
-            if (lastVitals.tempF >= 103.0) {
+            if (lastVitals.tempF === null) {
+                elTempStatus.innerText = "● Disconnected / No Input";
+                elTempStatus.style.color = "#94a3b8";
+                elTempStatus.style.background = "rgba(148, 163, 184, 0.12)";
+            } else if (lastVitals.tempF >= 103.0) {
                 elTempStatus.innerText = "High Pyrexia / Urgent (≥103°F)";
                 elTempStatus.style.color = "#ef4444";
                 elTempStatus.style.background = "rgba(239, 68, 68, 0.12)";
@@ -4147,12 +4189,14 @@ window.quickFillDemo = function(name, roll, pass) {
         }
 
         // Synchronize with parent calculateBiometrics if available
-        if (typeof calculateBiometrics === "function") {
-            calculateBiometrics(lastVitals.sys, lastVitals.dia, lastVitals.hr, lastVitals.spo2, lastVitals.tempF);
+        if (typeof calculateBiometrics === "function" && lastVitals.sys !== null && lastVitals.dia !== null) {
+            calculateBiometrics(lastVitals.sys, lastVitals.dia, lastVitals.hr || 72, lastVitals.spo2 || 98, lastVitals.tempF || 98.6);
         }
 
-        // Trigger Audio beep
-        playHeartbeatBeep();
+        // Trigger Audio beep if connected or logging
+        if (lastVitals.hr !== null) {
+            playHeartbeatBeep();
+        }
     }
 
     // Toggle Temperature Unit (°F <-> °C)

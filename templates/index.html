@@ -476,7 +476,7 @@
                         <p data-i18n="hero_desc">Fully offline, multilingual clinical intelligence and predictive diagnostics. Safeguard your family with reliable information.</p>
                         <div style="display: flex; gap: 12px; margin-top: 15px;">
                             <button class="btn btn-primary" onclick="navigateToTab('prediction')" data-i18n="hero_btn_check">Start Symptom Check</button>
-                            <button class="btn btn-secondary" onclick="navigateToTab('dashboard')" data-i18n="hero_btn_dash">View Dashboard</button>
+                            <button class="btn btn-secondary" onclick="navigateToTab('live-health')" data-i18n="hero_btn_dash">View Dashboard</button>
                         </div>
                     </div>
                     <div class="hero-illustration">
@@ -509,7 +509,7 @@
                         <h3 data-i18n="feat_reminders_title">Medicine Reminders</h3>
                         <p data-i18n="feat_reminders_desc">Schedule daily medications, set dosage times, and receive offline browser sound alerts.</p>
                     </div>
-                    <div class="feature-card" onclick="navigateToTab('dashboard')">
+                    <div class="feature-card" onclick="navigateToTab('live-health')">
                         <div class="icon-wrap" style="color: var(--accent-emerald);">📈</div>
                         <h3 data-i18n="feat_dashboard_title">Clinical Telemetry</h3>
                         <p data-i18n="feat_dashboard_desc">Accurate Blood Pressure percentages, live ECG waveforms, Heart Rate, and overall health scores.</p>
@@ -1329,15 +1329,15 @@
                                 <span class="heartbeat-live-icon" id="dash-heart-icon" style="font-size: 1.3rem;">❤️</span>
                                 <strong style="font-size: 1rem; color: #ef4444;">HEART RATE</strong>
                             </div>
-                            <span class="badge" id="dash-status-hr" style="background: rgba(16,185,129,0.12); color: #10b981; font-size: 0.7rem; font-weight: 700;">● Normal Resting</span>
+                            <span class="badge" id="dash-status-hr" style="background: rgba(148, 163, 184, 0.12); color: #94a3b8; font-size: 0.7rem; font-weight: 700;">● Disconnected / No Input</span>
                         </div>
                         <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0 4px 0;">
-                            <div class="vital-value" id="dash-val-hr" style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary);">72</div>
+                            <div class="vital-value" id="dash-val-hr" style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary);">--</div>
                             <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">BPM</span>
                         </div>
                         <div style="font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 8px;">
-                            <strong>Quality:</strong> <span id="dash-quality-hr" style="color: #10b981; font-weight: 600;">Good Signal</span> | 
-                            <strong>Source:</strong> <span id="dash-source-hr" class="badge-source-manual">MANUAL_ENTRY</span>
+                            <strong>Quality:</strong> <span id="dash-quality-hr" style="color: var(--text-muted); font-weight: 600;">--</span> | 
+                            <strong>Source:</strong> <span id="dash-source-hr" class="badge-source-manual">DISCONNECTED</span>
                         </div>
                         <div class="ecg-canvas-container" style="height: 65px; background: rgba(0,0,0,0.03); border-radius: 6px; overflow: hidden;">
                             <canvas id="ecg-canvas" width="300" height="65" style="width: 100%; height: 65px;"></canvas>
@@ -1354,16 +1354,16 @@
                                 <span style="font-size: 1.3rem;">🫁</span>
                                 <strong style="font-size: 1rem; color: #0284c7;">OXYGEN SpO₂</strong>
                             </div>
-                            <span class="badge" id="dash-status-spo2" style="background: rgba(16,185,129,0.12); color: #10b981; font-size: 0.7rem; font-weight: 700;">● Optimal Oxygenation</span>
+                            <span class="badge" id="dash-status-spo2" style="background: rgba(148, 163, 184, 0.12); color: #94a3b8; font-size: 0.7rem; font-weight: 700;">● Disconnected / No Input</span>
                         </div>
                         <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0 4px 0;">
-                            <div class="vital-value" id="dash-val-spo2" style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary);">98</div>
+                            <div class="vital-value" id="dash-val-spo2" style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary);">--</div>
                             <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">%</span>
-                            <span style="font-size: 0.74rem; color: var(--text-muted); margin-left: auto;">Pulse: <strong id="dash-spo2-pulse" style="color: var(--text-primary);">72</strong> BPM</span>
+                            <span style="font-size: 0.74rem; color: var(--text-muted); margin-left: auto;">Pulse: <strong id="dash-spo2-pulse" style="color: var(--text-primary);">--</strong> BPM</span>
                         </div>
                         <div style="font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 8px;">
-                            <strong>Quality:</strong> <span id="dash-quality-spo2" style="color: #10b981; font-weight: 600;">Good Signal</span> | 
-                            <strong>Source:</strong> <span id="dash-source-spo2" class="badge-source-manual">MANUAL_ENTRY</span>
+                            <strong>Quality:</strong> <span id="dash-quality-spo2" style="color: var(--text-muted); font-weight: 600;">--</span> | 
+                            <strong>Source:</strong> <span id="dash-source-spo2" class="badge-source-manual">DISCONNECTED</span>
                         </div>
                         <div style="background: rgba(2, 132, 199, 0.05); border: 1px solid rgba(2, 132, 199, 0.15); border-radius: 6px; padding: 8px; font-size: 0.7rem; line-height: 1.4; color: var(--text-secondary);">
                             <strong>⚠️ Measurement Guidance:</strong> Pulse-oximeter readings can be affected by movement, sensor placement, circulation, temperature and device limitations. Follow device instructions.
@@ -1377,16 +1377,16 @@
                                 <span style="font-size: 1.3rem;">🩺</span>
                                 <strong style="font-size: 1rem; color: #10b981;">BLOOD PRESSURE</strong>
                             </div>
-                            <span class="badge" id="dash-bp-stage" style="background: rgba(16,185,129,0.12); color: #10b981; font-size: 0.7rem; font-weight: 700;">Normal (&lt;120/80)</span>
+                            <span class="badge" id="dash-bp-stage" style="background: rgba(148, 163, 184, 0.12); color: #94a3b8; font-size: 0.7rem; font-weight: 700;">● Disconnected / No Input</span>
                         </div>
                         <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0 4px 0;">
-                            <div class="vital-value" id="dash-val-bp" style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary);">120 / 80</div>
+                            <div class="vital-value" id="dash-val-bp" style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary);">-- / --</div>
                             <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">mmHg</span>
                         </div>
                         <div style="display: flex; gap: 12px; font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 8px;">
-                            <span>Systolic: <strong id="dash-bp-sys" style="color: var(--text-primary);">120</strong></span>
-                            <span>Diastolic: <strong id="dash-bp-dia" style="color: var(--text-primary);">80</strong></span>
-                            <span>MAP: <strong id="dash-bp-map" style="color: var(--text-primary);">93 mmHg</strong></span>
+                            <span>Systolic: <strong id="dash-bp-sys" style="color: var(--text-primary);">--</strong></span>
+                            <span>Diastolic: <strong id="dash-bp-dia" style="color: var(--text-primary);">--</strong></span>
+                            <span>MAP: <strong id="dash-bp-map" style="color: var(--text-primary);">-- mmHg</strong></span>
                         </div>
                         <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 6px; padding: 8px; font-size: 0.7rem; line-height: 1.4; color: var(--text-secondary);">
                             <strong>💡 Medical Architecture Rule:</strong> Bluetooth does NOT calculate BP from HR or SpO₂. A compatible BP monitor transmits measured BP. Alternatively, log BP via the Manual Entry form below.
@@ -1400,18 +1400,18 @@
                                 <span style="font-size: 1.3rem;">🌡️</span>
                                 <strong style="font-size: 1rem; color: #f59e0b;">BODY TEMPERATURE</strong>
                             </div>
-                            <span class="badge" id="dash-status-temp" style="background: rgba(16,185,129,0.12); color: #10b981; font-size: 0.7rem; font-weight: 700;">Normal (98.4°F)</span>
+                            <span class="badge" id="dash-status-temp" style="background: rgba(148, 163, 184, 0.12); color: #94a3b8; font-size: 0.7rem; font-weight: 700;">● Disconnected / No Input</span>
                         </div>
                         <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0 4px 0;">
-                            <div class="vital-value" id="dash-val-temp-num" style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary);">98.4</div>
+                            <div class="vital-value" id="dash-val-temp-num" style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary);">--</div>
                             <span id="dash-temp-unit" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">°F</span>
                             <button type="button" class="btn btn-secondary" onclick="toggleTempUnit()" style="font-size: 0.68rem; padding: 2px 8px; margin-left: auto;">
                                 Toggle °C / °F
                             </button>
                         </div>
                         <div style="font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 8px;">
-                            <strong>Canonical Celsius:</strong> <span id="dash-val-temp-c" style="font-weight: 600;">36.9 °C</span> | 
-                            <strong>Source:</strong> <span id="dash-source-temp" class="badge-source-manual">MANUAL_ENTRY</span>
+                            <strong>Canonical Celsius:</strong> <span id="dash-val-temp-c" style="font-weight: 600;">-- °C</span> | 
+                            <strong>Source:</strong> <span id="dash-source-temp" class="badge-source-manual">DISCONNECTED</span>
                         </div>
                         <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 6px; padding: 8px; font-size: 0.7rem; line-height: 1.4; color: var(--text-secondary);">
                             <strong>Normal Range:</strong> 97.0°F – 99.0°F (36.1°C – 37.2°C). Temperatures ≥100.4°F represent pyrexia (fever).
