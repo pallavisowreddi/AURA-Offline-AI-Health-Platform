@@ -856,13 +856,20 @@
                                     <span class="badge" style="background: rgba(2, 132, 199, 0.1); color: #0284c7; font-weight: 700; font-size: 0.74rem; padding: 4px 10px; border-radius: 6px;" id="doc-confidence-badge">98% OCR Match</span>
                                 </div>
 
-                                <!-- Patient Profile Strip -->
-                                <div class="doc-patient-strip" id="doc-patient-strip" style="display: flex; gap: 12px; flex-wrap: wrap; background: rgba(0,0,0,0.02); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-glass); margin-bottom: 15px; font-size: 0.78rem;">
-                                    <div><strong>Patient:</strong> <span id="doc-patient-name">Identified from Report</span></div>
-                                    <div><strong>Age/DOB:</strong> <span id="doc-patient-age">Extracted dynamically</span></div>
-                                    <div><strong>Gender:</strong> <span id="doc-patient-gender">Clinical Record</span></div>
-                                    <div><strong>Attending Physician:</strong> <span id="doc-doctor-name">Attending Clinician</span></div>
-                                    <div><strong>Date:</strong> <span id="doc-report-date">Current</span></div>
+                                <!-- Uploaded Report Image Preview & Patient Profile Strip -->
+                                <div style="display: flex; gap: 15px; align-items: flex-start; margin-bottom: 15px; flex-wrap: wrap;">
+                                    <div id="doc-report-img-container" style="width: 110px; height: 120px; border-radius: 8px; overflow: hidden; border: 1.5px solid #0284c7; flex-shrink: 0; background: rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                                        <img id="doc-report-preview-img" src="" alt="Uploaded Medical Report Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <div style="flex: 1; min-width: 240px;">
+                                        <div class="doc-patient-strip" id="doc-patient-strip" style="display: flex; gap: 12px; flex-wrap: wrap; background: rgba(0,0,0,0.02); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-glass); font-size: 0.78rem;">
+                                            <div><strong>Patient:</strong> <span id="doc-patient-name">Identified from Report</span></div>
+                                            <div><strong>Age/DOB:</strong> <span id="doc-patient-age">Extracted dynamically</span></div>
+                                            <div><strong>Gender:</strong> <span id="doc-patient-gender">Clinical Record</span></div>
+                                            <div><strong>Attending Physician:</strong> <span id="doc-doctor-name">Attending Clinician</span></div>
+                                            <div><strong>Date:</strong> <span id="doc-report-date">Current</span></div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- Vitals Grid -->

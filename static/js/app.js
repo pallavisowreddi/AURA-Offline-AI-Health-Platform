@@ -2688,22 +2688,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let liveSimInterval = null;
 
     function toggleLiveTelemetry() {
-        liveSimulatorActive = !liveSimulatorActive;
-        if (liveSimulatorActive) {
-            if (liveReadingBtn) liveReadingBtn.style.boxShadow = "0 0 15px #10b981";
-            if (simulateLiveBtn) simulateLiveBtn.textContent = "⏹️ Stop Live";
-            
-            // Immediately navigate to Live Health Hub
+        if (typeof stopSimulationMode === "function") {
+            stopSimulationMode();
+        }
+        if (typeof navigateToTab === "function") {
             navigateToTab("live-health");
-            if (typeof startSimulationMode === "function") {
-                startSimulationMode("PulseBand Pro 4G (IoMT Benchmark Simulator)");
-            }
-        } else {
-            if (liveReadingBtn) liveReadingBtn.style.boxShadow = "";
-            if (simulateLiveBtn) simulateLiveBtn.textContent = "🔴 Simulate Live";
-            if (typeof stopSimulationMode === "function") {
-                stopSimulationMode();
-            }
+        }
+        if (typeof updateLiveHealthCards === "function") {
+            updateLiveHealthCards({}, "DISCONNECTED", "No Signal");
         }
     }
 
@@ -3520,6 +3512,16 @@ window.applyLabPreset = function(presetKey) {
         const data = LAB_PRESETS_DATA[presetKey];
         if (!data) return;
 
+        // Active button highlight
+        document.querySelectorAll(".lab-preset-btn").forEach(btn => {
+            btn.style.borderColor = "var(--border-glass)";
+            btn.style.background = "rgba(0,0,0,0.03)";
+        });
+        if (event && event.currentTarget && event.currentTarget.classList.contains("lab-preset-btn")) {
+            event.currentTarget.style.borderColor = "var(--accent-teal)";
+            event.currentTarget.style.background = "rgba(2, 132, 199, 0.08)";
+        }
+
         const tbody = document.getElementById("lab-table-body");
         const statusBadge = document.getElementById("lab-overall-status");
         const summaryText = document.getElementById("lab-summary-text");
@@ -3550,6 +3552,13 @@ window.applyLabPreset = function(presetKey) {
             });
         }
     };
+
+    // Pre-populate healthy baseline on load if table empty
+    document.addEventListener("DOMContentLoaded", () => {
+        if (typeof window.applyLabPreset === "function") {
+            window.applyLabPreset('normal');
+        }
+    });
 
     window.printLabReport = function() {
         window.print();
@@ -3769,6 +3778,19 @@ window.quickFillDemo = function(name, roll, pass) {
         skinView.classList.add("hidden");
         resultsCard.classList.remove("hidden");
 
+        // Set Uploaded Report Preview Image
+        const docPreviewImg = document.getElementById("doc-report-preview-img");
+        if (docPreviewImg) {
+            if (typeof selectedImageFile !== "undefined" && selectedImageFile) {
+                try { docPreviewImg.src = URL.createObjectURL(selectedImageFile); } catch(e){}
+            } else if (data.image_url) {
+                docPreviewImg.src = data.image_url;
+            } else {
+                // SVG fallback icon representation of report
+                docPreviewImg.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%230284c7' stroke-width='1.5'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/><polyline points='14 2 14 8 20 8'/><line x1='16' y1='13' x2='8' y2='13'/><line x1='16' y1='17' x2='8' y2='17'/></svg>";
+            }
+        }
+
         // Document Details
         const titleEl = document.getElementById("doc-title-text");
         if (titleEl) titleEl.innerText = data.doc_type || "General Clinical Check-up Report";
@@ -3787,7 +3809,7 @@ window.quickFillDemo = function(name, roll, pass) {
         if (document.getElementById("doc-doctor-name")) document.getElementById("doc-doctor-name").innerText = data.doctor || "Attending Clinician";
         if (document.getElementById("doc-report-date")) document.getElementById("doc-report-date").innerText = data.date || new Date().toISOString().split("T")[0];
 
-        // Vitals Grid
+        // Vitals Grid in Sub-view A
         const vitalsGrid = document.getElementById("doc-vitals-grid");
         if (vitalsGrid) {
             vitalsGrid.innerHTML = "";
@@ -3805,6 +3827,35 @@ window.quickFillDemo = function(name, roll, pass) {
                 `;
                 vitalsGrid.appendChild(card);
             });
+        }
+
+        // Synchronize Digital Lab Report Table (Sub-view B) dynamically
+        const labTbody = document.getElementById("lab-table-body");
+        const labSummary = document.getElementById("lab-summary-text");
+        const labStatusBadge = document.getElementById("lab-overall-status");
+        if (labTbody && data.vitals && data.vitals.length > 0) {
+            labTbody.innerHTML = "";
+            data.vitals.forEach(v => {
+                const tr = document.createElement("tr");
+                const labelStr = v.type === 'danger' ? 'CRITICAL HIGH' : (v.type === 'warning' ? 'ELEVATED' : 'NORMAL');
+                const badgeClass = v.type === 'danger' ? 'lab-badge-critical' : (v.type === 'warning' ? 'lab-badge-high' : 'lab-badge-normal');
+                tr.innerHTML = `
+                    <td><strong>${v.name}</strong></td>
+                    <td style="font-weight: 800; font-family: 'IBM Plex Mono', monospace;">${v.value}</td>
+                    <td style="color: var(--text-muted);">Extracted</td>
+                    <td style="color: var(--text-secondary);">Standard Reference</td>
+                    <td><span class="${badgeClass}">${labelStr}</span></td>
+                    <td style="font-size: 0.74rem; color: var(--text-secondary);">${v.status || 'Verified from uploaded document'}</td>
+                `;
+                labTbody.appendChild(tr);
+            });
+            if (labSummary) {
+                labSummary.innerText = `Report Analyzed (${data.doc_type || 'Clinical Document'}): ${data.care_guidance || 'Extracted parameters logged successfully.'}`;
+            }
+            if (labStatusBadge) {
+                labStatusBadge.textContent = `📄 Uploaded: ${data.doc_type || 'Report'}`;
+                labStatusBadge.style.background = "#0284c7";
+            }
         }
 
         // Diagnoses
