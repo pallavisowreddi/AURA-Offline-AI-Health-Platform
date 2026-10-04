@@ -1,3 +1,8 @@
+print("\n========================================================")
+print("  [*] AURA AI - Offline Public Health Platform")
+print("  [*] Initializing local engine & loading models...")
+print("========================================================")
+
 import os
 import re
 from flask import Flask, request, jsonify, render_template
@@ -21,10 +26,6 @@ app = Flask(__name__,
             template_folder="templates")
 
 # Ensure models are loaded
-print("\n========================================================")
-print("  [*] AURA AI - Offline Public Health Platform")
-print("  [*] Loading machine learning models, please wait...")
-print("========================================================")
 model_helper.load_models()
 print("  [+] Models loaded successfully!")
 print("  [+] Starting local server on http://127.0.0.1:5000\n")

@@ -4,20 +4,25 @@ import pickle
 import re
 import warnings
 import numpy as np
-try:
-    import cv2
-except Exception:
-    cv2 = None
 from PIL import Image
 import sklearn
 import sklearn.ensemble
-try:
-    from rapidocr_onnxruntime import RapidOCR
-    _ocr_engine = RapidOCR()
-except Exception as e:
-    _ocr_engine = None
-
 import io
+
+# Lazy loaded OCR engine & OpenCV
+_ocr_engine = None
+_ocr_attempted = False
+
+def get_ocr_engine():
+    global _ocr_engine, _ocr_attempted
+    if not _ocr_attempted:
+        _ocr_attempted = True
+        try:
+            from rapidocr_onnxruntime import RapidOCR
+            _ocr_engine = RapidOCR()
+        except Exception:
+            _ocr_engine = None
+    return _ocr_engine
 
 # Suppress feature names user warnings when passing numpy array to model
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -1839,10 +1844,11 @@ def predict_image(image_bytes, lang="en"):
     # =========================================================================
     # STEP 1: TEST FOR CLINICAL DOCUMENT / MEDICAL REPORT VIA RAPIDOCR
     # =========================================================================
-    if _ocr_engine is not None:
+    ocr_engine = get_ocr_engine()
+    if ocr_engine is not None:
         try:
-            arr_bgr = cv2.cvtColor(arr_rgb, cv2.COLOR_RGB2BGR) if cv2 is not None else arr_rgb[:, :, ::-1]
-            ocr_res, _ = _ocr_engine(arr_bgr)
+            arr_bgr = arr_rgb[:, :, ::-1]
+            ocr_res, _ = ocr_engine(arr_bgr)
             if ocr_res:
                 lines = [line[1] for line in ocr_res]
                 full_text = " ".join(lines)
