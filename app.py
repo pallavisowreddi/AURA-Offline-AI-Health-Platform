@@ -21,16 +21,22 @@ REPORTS_DIR = os.path.join("/tmp", "reports") if os.environ.get("VERCEL") else o
 
 analytics_engine = HealthAnalyticsEngine()
 
-# Initialize Local SQLite Database & Semantic RAG Vector Space
-database.init_db()
-rag_engine.build_index()
-
 app = Flask(__name__, 
             static_folder=os.path.join(BASE_DIR, "static"), 
             template_folder=os.path.join(BASE_DIR, "templates"))
 
-# Ensure models are loaded
-model_helper.load_models()
+_init_done = False
+
+@app.before_request
+def lazy_init():
+    global _init_done
+    if not _init_done:
+        _init_done = True
+        try:
+            database.init_db()
+            rag_engine.build_index()
+        except Exception as e:
+            print(f"[LazyInit Warning] {e}")
 print("  [+] Models loaded successfully!")
 print("  [+] Starting local server on http://127.0.0.1:5000\n")
 
