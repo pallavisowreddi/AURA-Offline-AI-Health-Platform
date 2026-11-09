@@ -9,6 +9,24 @@ if root_dir not in sys.path:
 
 try:
     from app import app
+    
+    class VercelPathFix:
+        """WSGI middleware to strip /api/index prefix added by Vercel serverless rewrites."""
+        def __init__(self, wsgi_app):
+            self.wsgi_app = wsgi_app
+
+        def __call__(self, environ, start_response):
+            path = environ.get('PATH_INFO', '')
+            if path.startswith('/api/index'):
+                path = path[len('/api/index'):]
+                if not path or not path.startswith('/'):
+                    path = '/' + path
+                environ['PATH_INFO'] = path
+            return self.wsgi_app(environ, start_response)
+
+    app.wsgi_app = VercelPathFix(app.wsgi_app)
+    application = app
+
 except Exception as e:
     err_msg = traceback.format_exc()
     sys.stderr.write(f"[AURA STARTUP ERROR]\n{err_msg}\n")
@@ -23,7 +41,4 @@ except Exception as e:
             status=500,
             mimetype="text/html"
         )
-
-# Vercel Serverless WSGI Handler
-application = app
-
+    application = app
