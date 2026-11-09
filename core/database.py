@@ -225,8 +225,9 @@ def seed_knowledge_base(conn):
 
     # Seed Diseases
     cursor.execute("SELECT COUNT(*) FROM diseases")
-    if cursor.fetchone()[0] == 0 and os.path.exists("data/diseases.json"):
-        with open("data/diseases.json", "r", encoding="utf-8") as f:
+    diseases_file = os.path.join(BASE_DIR, "data", "diseases.json")
+    if cursor.fetchone()[0] == 0 and os.path.exists(diseases_file):
+        with open(diseases_file, "r", encoding="utf-8") as f:
             diseases_data = json.load(f)
         for d in diseases_data:
             cursor.execute("""
@@ -259,8 +260,9 @@ def seed_knowledge_base(conn):
 
     # Seed Symptoms
     cursor.execute("SELECT COUNT(*) FROM symptoms")
-    if cursor.fetchone()[0] == 0 and os.path.exists("data/symptoms.json"):
-        with open("data/symptoms.json", "r", encoding="utf-8") as f:
+    symptoms_file = os.path.join(BASE_DIR, "data", "symptoms.json")
+    if cursor.fetchone()[0] == 0 and os.path.exists(symptoms_file):
+        with open(symptoms_file, "r", encoding="utf-8") as f:
             symptoms_data = json.load(f)
         for s in symptoms_data:
             cursor.execute("""
@@ -289,8 +291,9 @@ def seed_knowledge_base(conn):
             ))
 
     # Seed Health Tips
-    if os.path.exists("data/health_tips.json"):
-        with open("data/health_tips.json", "r", encoding="utf-8") as f:
+    health_tips_file = os.path.join(BASE_DIR, "data", "health_tips.json")
+    if os.path.exists(health_tips_file):
+        with open(health_tips_file, "r", encoding="utf-8") as f:
             tips_data = json.load(f)
         for idx, tip in enumerate(tips_data):
             content = f"Health Prevention Topic: {tip.get('title')} ({tip.get('category')})\nKey Guidelines:\n" + "\n".join([f"- {t}" for t in tip.get("tips", [])])
@@ -307,8 +310,9 @@ def seed_knowledge_base(conn):
             ))
 
     # Seed Emergency Guidelines
-    if os.path.exists("data/emergency_guidelines.json"):
-        with open("data/emergency_guidelines.json", "r", encoding="utf-8") as f:
+    emer_file = os.path.join(BASE_DIR, "data", "emergency_guidelines.json")
+    if os.path.exists(emer_file):
+        with open(emer_file, "r", encoding="utf-8") as f:
             emer_data = json.load(f)
         for idx, em in enumerate(emer_data):
             content = f"EMERGENCY DIRECTIVE: {em.get('condition')} [Severity: {em.get('severity')}]\nKeywords: {', '.join(em.get('keywords', []))}\nImmediate Action: {em.get('immediate_action')}\nContraindications:\n" + "\n".join([f"- {c}" for c in em.get("contraindications", [])])
@@ -325,8 +329,9 @@ def seed_knowledge_base(conn):
             ))
 
     # Seed FAQs
-    if os.path.exists("data/faq.json"):
-        with open("data/faq.json", "r", encoding="utf-8") as f:
+    faq_file = os.path.join(BASE_DIR, "data", "faq.json")
+    if os.path.exists(faq_file):
+        with open(faq_file, "r", encoding="utf-8") as f:
             faq_data = json.load(f)
         for idx, faq in enumerate(faq_data):
             content = f"Question: {faq.get('q')}\nVerified Answer: {faq.get('a')}"
@@ -343,7 +348,7 @@ def seed_knowledge_base(conn):
             ))
 
     # Seed MedQuAD
-    medquad_path = "data/medquad/medquad_rag_knowledge.json"
+    medquad_path = os.path.join(BASE_DIR, "data", "medquad", "medquad_rag_knowledge.json")
     if os.path.exists(medquad_path):
         with open(medquad_path, "r", encoding="utf-8") as f:
             mq_data = json.load(f)
