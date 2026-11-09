@@ -9,6 +9,7 @@ from flask import Flask, request, jsonify, render_template
 import model_helper
 import json
 from core import database
+database.init_db()
 from core.rag_engine import rag_engine
 from datetime import datetime
 from core import safety

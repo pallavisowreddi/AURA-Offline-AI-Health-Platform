@@ -19,12 +19,16 @@ class LocalRagEngine:
         self.doc_vectors = None
         self.documents = []
         self.is_indexed = False
-        self.build_index()
+        try:
+            self.build_index()
+        except Exception as e:
+            print(f"[RAG Warning] Deferred index build: {e}")
 
     def build_index(self):
         """Builds offline TF-IDF vector index over all local knowledge documents."""
-        docs = database.get_knowledge_documents()
-        if not docs:
+        try:
+            docs = database.get_knowledge_documents()
+        except Exception:
             database.init_db()
             docs = database.get_knowledge_documents()
 

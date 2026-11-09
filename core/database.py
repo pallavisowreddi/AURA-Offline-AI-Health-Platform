@@ -28,17 +28,34 @@ if os.environ.get("VERCEL"):
 else:
     DB_PATH = ORIGINAL_DB_PATH
 
-def get_db_connection():
-    """Returns a SQLite connection with dict-like row factory."""
+_db_initializing = False
+
+def get_raw_connection():
+    """Returns a direct raw connection without initialization hooks."""
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
 
+def get_db_connection():
+    """Returns a SQLite connection with dict-like row factory, auto-initializing if empty."""
+    global _db_initializing
+    conn = get_raw_connection()
+    if not _db_initializing:
+        cursor = conn.cursor()
+        cursor.execute("SELECT count(name) FROM sqlite_master WHERE type='table' AND name='knowledge_documents'")
+        if cursor.fetchone()[0] == 0:
+            _db_initializing = True
+            try:
+                init_db()
+            finally:
+                _db_initializing = False
+    return conn
+
 def init_db():
     """Initializes schema and seeds local knowledge base tables."""
-    conn = get_db_connection()
+    conn = get_raw_connection()
     cursor = conn.cursor()
 
     # 1. Conversations table
@@ -511,7 +528,13 @@ def get_all_symptoms(category=None):
 def get_knowledge_documents():
     """Returns all knowledge documents for RAG indexing."""
     conn = get_db_connection()
-    rows = conn.execute("SELECT * FROM knowledge_documents").fetchall()
+    try:
+        rows = conn.execute("SELECT * FROM knowledge_documents").fetchall()
+    except sqlite3.OperationalError:
+        conn.close()
+        init_db()
+        conn = get_db_connection()
+        rows = conn.execute("SELECT * FROM knowledge_documents").fetchall()
     docs = [dict(r) for r in rows]
     conn.close()
     return docs
