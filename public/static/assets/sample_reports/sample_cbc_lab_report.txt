@@ -1,0 +1,16 @@
+CLINICAL HAEMATOLOGY LABORATORY REPORT
+Hospital: Community Health Centre (CHC)
+Patient Name: Rajesh Sharma
+Age: 38 Years | Gender: Male
+Doctor: Dr. S. Rao, MD (Internal Medicine)
+Date: 2026-09-08
+
+COMPLETE BLOOD COUNT (CBC):
+Hemoglobin: 14.5 g/dL (Ref: 13.0 - 17.0)
+Total Leucocyte Count (WBC): 3,100 /cumm (Ref: 4,000 - 11,000) [LOW]
+Platelet Count: 62,000 /uL (Ref: 150,000 - 450,000) [CRITICAL LOW]
+Hematocrit: 51.5 % (Ref: 40.0 - 50.0) [ELEVATED]
+
+CLINICAL IMPRESSION:
+Acute Thrombocytopenia with Leukopenia, suspect Dengue fever.
+Recommendations: High fluid intake, ORS, bed rest, repeat platelet test in 24 hours.
