@@ -28,9 +28,10 @@ def get_ocr_engine():
 warnings.filterwarnings("ignore", category=UserWarning)
 
 # Paths to models
-SYMPTOM_MODEL_PATH = "models/symptom_model.pkl"
-SYMPTOMS_LIST_PATH = "models/symptoms_list.pkl"
-IMAGE_MODEL_PATH = "models/image_model.pkl"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+SYMPTOM_MODEL_PATH = os.path.join(BASE_DIR, "models", "symptom_model.pkl")
+SYMPTOMS_LIST_PATH = os.path.join(BASE_DIR, "models", "symptoms_list.pkl")
+IMAGE_MODEL_PATH = os.path.join(BASE_DIR, "models", "image_model.pkl")
 
 # Initialize caches
 _symptom_model = None

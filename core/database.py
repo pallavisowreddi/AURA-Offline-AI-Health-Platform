@@ -9,9 +9,24 @@ import os
 import json
 import sqlite3
 import uuid
+import shutil
 from datetime import datetime, timedelta
 
-DB_PATH = os.path.join("data", "aura_health.db")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ORIGINAL_DB_PATH = os.path.join(BASE_DIR, "data", "aura_health.db")
+
+# On Vercel / Serverless AWS Lambda, filesystem is read-only except /tmp
+if os.environ.get("VERCEL"):
+    TMP_DATA_DIR = os.path.join("/tmp", "data")
+    os.makedirs(TMP_DATA_DIR, exist_ok=True)
+    DB_PATH = os.path.join(TMP_DATA_DIR, "aura_health.db")
+    if os.path.exists(ORIGINAL_DB_PATH) and not os.path.exists(DB_PATH):
+        try:
+            shutil.copy2(ORIGINAL_DB_PATH, DB_PATH)
+        except Exception as e:
+            print(f"[DB Warning] Could not copy DB to /tmp: {e}")
+else:
+    DB_PATH = ORIGINAL_DB_PATH
 
 def get_db_connection():
     """Returns a SQLite connection with dict-like row factory."""
@@ -176,6 +191,25 @@ def init_db():
         description TEXT NOT NULL,
         timestamp TEXT NOT NULL,
         resolved INTEGER DEFAULT 0
+    )
+    """)
+
+    # 13. Medical Reports table (Persistent report library)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS medical_reports (
+        id TEXT PRIMARY KEY,
+        user_id TEXT DEFAULT 'local_user',
+        filename TEXT NOT NULL,
+        file_type TEXT NOT NULL,
+        file_size INTEGER NOT NULL,
+        file_path TEXT NOT NULL,
+        upload_date TEXT NOT NULL,
+        processing_status TEXT NOT NULL,
+        document_type TEXT DEFAULT 'lab_report',
+        summary TEXT,
+        extracted_biomarkers_json TEXT,
+        extraction_warnings_json TEXT,
+        analysis_json TEXT
     )
     """)
 
@@ -687,6 +721,92 @@ def log_emergency_event(trigger_type, description, user_id="local_user"):
     conn.close()
     return event_id
 
+def save_medical_report(filename, file_type, file_size, file_path,
+                        processing_status="complete", document_type="lab_report",
+                        summary="", extracted_biomarkers=None, extraction_warnings=None,
+                        analysis=None, user_id="local_user", report_id=None):
+    """Stores a user-specific medical report into SQLite."""
+    conn = get_db_connection()
+    if not report_id:
+        report_id = str(uuid.uuid4())
+    now = datetime.now().isoformat()
+    
+    conn.execute("""
+    INSERT OR REPLACE INTO medical_reports (
+        id, user_id, filename, file_type, file_size, file_path, upload_date,
+        processing_status, document_type, summary, extracted_biomarkers_json,
+        extraction_warnings_json, analysis_json
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        report_id,
+        user_id,
+        filename,
+        file_type,
+        int(file_size),
+        file_path,
+        now,
+        processing_status,
+        document_type,
+        summary,
+        json.dumps(extracted_biomarkers or [], ensure_ascii=False),
+        json.dumps(extraction_warnings or [], ensure_ascii=False),
+        json.dumps(analysis or {}, ensure_ascii=False)
+    ))
+    conn.commit()
+    conn.close()
+    return report_id
+
+def get_medical_reports(user_id="local_user", limit=50):
+    """Retrieves user-specific medical reports."""
+    conn = get_db_connection()
+    rows = conn.execute("""
+    SELECT * FROM medical_reports WHERE user_id = ? ORDER BY upload_date DESC LIMIT ?
+    """, (user_id, limit)).fetchall()
+    results = []
+    for r in rows:
+        item = dict(r)
+        item["extracted_biomarkers"] = json.loads(item["extracted_biomarkers_json"] or "[]")
+        item["extraction_warnings"] = json.loads(item["extraction_warnings_json"] or "[]")
+        item["analysis"] = json.loads(item["analysis_json"] or "{}")
+        results.append(item)
+    conn.close()
+    return results
+
+def get_medical_report_by_id(report_id, user_id="local_user"):
+    """Retrieves a single medical report with user isolation check."""
+    conn = get_db_connection()
+    row = conn.execute("""
+    SELECT * FROM medical_reports WHERE id = ? AND user_id = ?
+    """, (report_id, user_id)).fetchone()
+    conn.close()
+    if not row:
+        return None
+    item = dict(row)
+    item["extracted_biomarkers"] = json.loads(item["extracted_biomarkers_json"] or "[]")
+    item["extraction_warnings"] = json.loads(item["extraction_warnings_json"] or "[]")
+    item["analysis"] = json.loads(item["analysis_json"] or "{}")
+    return item
+
+def delete_medical_report(report_id, user_id="local_user"):
+    """Deletes a medical report and removes file from disk if present."""
+    conn = get_db_connection()
+    row = conn.execute("SELECT file_path FROM medical_reports WHERE id = ? AND user_id = ?", (report_id, user_id)).fetchone()
+    if not row:
+        conn.close()
+        return False
+    
+    file_path = row[0]
+    conn.execute("DELETE FROM medical_reports WHERE id = ? AND user_id = ?", (report_id, user_id))
+    conn.commit()
+    conn.close()
+
+    if file_path and os.path.exists(file_path):
+        try:
+            os.remove(file_path)
+        except Exception:
+            pass
+    return True
+
 def get_database_stats():
     """Returns statistics for dashboard (diseases, symptoms, knowledge docs, measurements, predictions)."""
     conn = get_db_connection()
@@ -697,6 +817,7 @@ def get_database_stats():
     meas_count = conn.execute("SELECT COUNT(*) FROM measurements").fetchone()[0]
     preds_count = conn.execute("SELECT COUNT(*) FROM disease_predictions").fetchone()[0]
     devices_count = conn.execute("SELECT COUNT(*) FROM devices").fetchone()[0]
+    reports_count = conn.execute("SELECT COUNT(*) FROM medical_reports").fetchone()[0]
     conn.close()
     return {
         "diseases_count": diseases_count,
@@ -706,6 +827,8 @@ def get_database_stats():
         "measurements_count": meas_count,
         "predictions_count": preds_count,
         "devices_count": devices_count,
+        "reports_count": reports_count,
         "mode": "offline",
         "database": "sqlite_local"
     }
+

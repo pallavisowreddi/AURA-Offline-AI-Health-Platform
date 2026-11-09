@@ -1046,6 +1046,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (tabName === "vaccines" && typeof renderVaccinesList === "function") {
             renderVaccinesList();
         }
+        if (tabName === "reports" && typeof loadUserReportLibrary === "function") {
+            loadUserReportLibrary();
+        }
     };
 
     navItems.forEach(item => {
@@ -1337,6 +1340,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 if (data.disease_prediction) {
                     updateTelemetry(data.disease_prediction, false);
+                } else {
+                    if (analyticsEmpty && analyticsContent) {
+                        analyticsEmpty.classList.remove("hidden");
+                        analyticsContent.classList.add("hidden");
+                    }
                 }
             })
             .catch(err => {
@@ -1345,8 +1353,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 const localFallback = getClientOfflineFallback(messageText, lang);
                 appendChatMessage("bot", localFallback.text);
                 speakAura(localFallback.speak);
-                if (localFallback.telemetry) {
-                    updateTelemetry(localFallback.telemetry, false);
+                if (analyticsEmpty && analyticsContent) {
+                    analyticsEmpty.classList.remove("hidden");
+                    analyticsContent.classList.add("hidden");
                 }
             });
         }
@@ -1363,15 +1372,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (textLower.includes("fever") || textLower.includes("temp") || textLower.includes("बुखार") || textLower.includes("జ్వరం")) {
             return {
                 text: `### ℹ️ Initial Symptom Noted: **Fever**\n\nEvaluating an isolated symptom is insufficient to form a clinically responsible assessment.\n\n**To provide an accurate screening, please share 1 or 2 additional symptoms** you are experiencing (e.g., headache, cough, fatigue, nausea, chills, body ache, or duration).\n\n*💡 Tip: Rest in a well-ventilated room, stay hydrated with fluids or ORS, and monitor body temperature using a digital thermometer.*`,
-                speak: "Initial symptom noted: Fever. Please share one or two additional symptoms such as cough, headache, or chills to provide an accurate screening.",
-                telemetry: {
-                    prediction: "Febrile Illness Evaluation",
-                    confidence: 0.60,
-                    urgency: "Medium",
-                    description: "Isolated febrile symptom recorded on local triage rules.",
-                    advice: "Monitor oral temperature, maintain hydration, and observe for associated symptoms like rashes or persistent chills.",
-                    probabilities: { "Viral Fever": 0.50, "Bacterial Infection": 0.30, "Other": 0.20 }
-                }
+                speak: "Initial symptom noted: Fever. Please share one or two additional symptoms such as cough, headache, or chills to provide an accurate screening."
             };
         }
 
@@ -1379,15 +1380,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (textLower.includes("skin") || textLower.includes("rash") || textLower.includes("itch") || textLower.includes("dermat") || textLower.includes("त्वचा") || textLower.includes("चर्म") || textLower.includes("దద్దుర్లు") || textLower.includes("దురద")) {
             return {
                 text: `### 🩺 Skin Conditions & Dermatological Care\n\nCommon skin diseases and conditions analyzed by AURA include:\n- **Eczema (Atopic Dermatitis)**: Dry, inflamed, itchy patches.\n- **Psoriasis**: Silvery-white scaly plaques on red skin.\n- **Acne Vulgaris**: Blocked pores causing pimples and inflammation.\n- **Fungal Infections / Tinea**: Itchy red ring-like lesions.\n\n#### 📷 On-Device Visual Scanner Recommendation:\n• Click the **📷 camera icon** below to upload an image directly into this chat.\n• Or visit the **Medical Reports** tab to use our dedicated **Visual Skin Pathology Scanner** for immediate on-device CNN vision classification!\n\n*If you also have fever, intense pain, or spreading blisters, please describe those symptoms.*`,
-                speak: "Skin condition screening. You can upload an image using the camera icon or visit the Medical Reports tab for visual skin scanning.",
-                telemetry: {
-                    prediction: "Dermatological Screening",
-                    confidence: 0.85,
-                    urgency: "Low",
-                    description: "Screening for common dermatological conditions.",
-                    advice: "Use the on-device Visual Scanner in Medical Reports or consult a dermatologist for lesions with scaling or irritation.",
-                    probabilities: { "Dermatological Condition": 0.85 }
-                }
+                speak: "Skin condition screening. You can upload an image using the camera icon or visit the Medical Reports tab for visual skin scanning."
             };
         }
 
@@ -1395,15 +1388,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (textLower.includes("cough") || textLower.includes("cold") || textLower.includes("flu") || textLower.includes("खांसी") || textLower.includes("దగ్గు") || textLower.includes("జలుబు")) {
             return {
                 text: `### 🫁 Respiratory Symptoms (Cough & Cold)\n\nUpper respiratory symptoms are commonly associated with viral infections or environmental allergens.\n\n**Home Care Advice:**\n- Drink warm water, herbal teas, or honey-ginger concoctions to soothe airway irritation.\n- Try steam inhalation 1-2 times daily for nasal decongestion.\n- If you also have fever, breathing difficulty, or chest tightness, please specify.\n\n*Notice: Operating in offline fallback triage mode.*`,
-                speak: "Respiratory symptoms noted. Drink warm fluids and try steam inhalation. Please share if you have fever or breathing difficulty.",
-                telemetry: {
-                    prediction: "Upper Respiratory Infection",
-                    confidence: 0.70,
-                    urgency: "Low",
-                    description: "Mild upper respiratory tract symptoms.",
-                    advice: "Stay hydrated, rest, and monitor if symptoms persist over 5-7 days.",
-                    probabilities: { "Common Cold": 0.60, "Allergic Rhinitis": 0.25, "Bronchitis": 0.15 }
-                }
+                speak: "Respiratory symptoms noted. Drink warm fluids and try steam inhalation. Please share if you have fever or breathing difficulty."
             };
         }
 
@@ -1411,15 +1396,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (textLower.includes("headache") || textLower.includes("head pain") || textLower.includes("सिरदर्द") || textLower.includes("తలనొప్పి")) {
             return {
                 text: `### 🧠 Headache / Cephalea Evaluation\n\nHeadaches can stem from dehydration, tension, lack of sleep, or underlying migraine.\n\n**Self-Care Steps:**\n- Rest in a quiet, dimly lit room and drink 2 glasses of water.\n- Apply a cool damp cloth over your forehead.\n- Seek immediate emergency care if the headache is sudden, severe ('worst headache of your life'), or accompanied by stiff neck or numbness.`,
-                speak: "Headache evaluation noted. Rest in a dark quiet room and hydrate with water.",
-                telemetry: {
-                    prediction: "Tension / Cephalea Evaluation",
-                    confidence: 0.65,
-                    urgency: "Low",
-                    description: "Cephalea symptom evaluated on local clinical triage rules.",
-                    advice: "Rest, hydrate, and seek medical care if accompanied by high fever or vision changes.",
-                    probabilities: { "Tension Headache": 0.65, "Migraine": 0.25, "Other": 0.10 }
-                }
+                speak: "Headache evaluation noted. Rest in a dark quiet room and hydrate with water."
             };
         }
 
@@ -1427,15 +1404,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (textLower.includes("snake") || textLower.includes("dog bite") || textLower.includes("chest pain") || textLower.includes("heart attack") || textLower.includes("सांप") || textLower.includes("పాము")) {
             return {
                 text: `### 🚨 EMERGENCY PROTOCOL ADVISORY\n\n**Critical Health Condition Detected!**\n- **Snake Bite**: Keep patient calm and completely still. Immobilize limb below heart level. Rush immediately to nearest hospital for Anti-Snake Venom (ASV). DO NOT apply tourniquets.\n- **Animal/Dog Bite**: Wash wound vigorously under running tap water with soap for 15 full minutes. Rush for Anti-Rabies Vaccine (ARV).\n- **Chest Pain**: Sit down, loosen tight clothing, and seek urgent emergency ambulance dispatch (108 / 112).\n\n*Click the **SOS Emergency Alert** button on the left panel immediately.*`,
-                speak: "Critical health alert. Please follow emergency first-aid and seek immediate medical hospitalization.",
-                telemetry: {
-                    prediction: "Acute Emergency Protocol",
-                    confidence: 1.0,
-                    urgency: "Critical",
-                    description: "Immediate emergency hospitalization criteria detected.",
-                    advice: "Call emergency 108 / 112 and proceed to nearest tertiary healthcare center.",
-                    probabilities: { "Acute Emergency": 1.0 }
-                }
+                speak: "Critical health alert. Please follow emergency first-aid and seek immediate medical hospitalization."
             };
         }
 
@@ -1443,15 +1412,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const words = textLower.split(/\s+/).filter(w => w.length > 3);
         const topic = words.length > 0 ? words[0] : (messageText || "health inquiry");
         return {
-            text: `### 💡 AURA Offline Healthcare Assistant\n\nI noted your inquiry regarding **${topic}**.\n\nAs an on-device clinical intelligence assistant, I can screen and guide you on:\n- **Common Symptoms**: Type symptoms like *fever, joint pain, diarrhea, cough, or fatigue*.\n- **Visual Skin Scan**: Click the 📷 camera icon to check skin rashes, eczema, or lesions.\n- **Medical Lab Reports**: Visit the **Medical Reports** tab to analyze clinical blood counts.\n\n*(Note: Running in on-device fallback mode. Verify local server is running on http://127.0.0.1:5000 with 'python app.py' for full ML Random Forest differential diagnosis)*`,
-            telemetry: {
-                prediction: "Clinical Screening Inquiry",
-                confidence: 0.55,
-                urgency: "Low",
-                description: `General health inquiry noted regarding ${topic}. Enter specific symptoms to generate predictive biometrics.`,
-                advice: "Describe symptoms like fever, cough, joint pain, or rash for differential ML diagnosis.",
-                probabilities: { "Clinical Inquiry": 0.60, "Symptom Observation": 0.40 }
-            }
+            text: `### 💡 AURA Offline Healthcare Assistant\n\nI noted your inquiry regarding **${topic}**.\n\nAs an on-device clinical intelligence assistant, I can screen and guide you on:\n- **Common Symptoms**: Type symptoms like *fever, joint pain, diarrhea, cough, or fatigue*.\n- **Visual Skin Scan**: Click the 📷 camera icon to check skin rashes, eczema, or lesions.\n- **Medical Lab Reports**: Visit the **Medical Reports** tab to analyze clinical blood counts.\n\n*(Note: Running in on-device fallback mode. Verify local server is running on http://127.0.0.1:5000 with 'python app.py' for full ML Random Forest differential diagnosis)*`
         };
     }
 
@@ -3396,9 +3357,19 @@ document.addEventListener("DOMContentLoaded", () => {
             btnVisual?.classList.remove("active");
             subLab?.classList.remove("hidden");
             subVisual?.classList.add("hidden");
-            if (!window.labTableInitialized) {
-                applyLabPreset("normal");
-                window.labTableInitialized = true;
+            
+            // Phase 5: Show clean empty state if no user report has been parsed yet
+            const tbody = document.getElementById("lab-table-body");
+            if (tbody && !tbody.hasChildNodes()) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+                            <div style="font-size: 2rem; margin-bottom: 8px;">📄</div>
+                            <strong style="font-size: 0.95rem; color: var(--text-primary); display: block; margin-bottom: 4px;">No Report Document Analyzed Yet</strong>
+                            <span style="font-size: 0.78rem;">Upload a medical report document above to extract and analyze biomarkers, or select a Synthetic Demo Preset below.</span>
+                        </td>
+                    </tr>
+                `;
             }
         }
     };
@@ -3527,7 +3498,7 @@ window.applyLabPreset = function(presetKey) {
         const summaryText = document.getElementById("lab-summary-text");
 
         if (statusBadge) {
-            statusBadge.textContent = data.statusBadge;
+            statusBadge.textContent = `⚡ DEMO PRESET: ${data.statusBadge}`;
             statusBadge.style.background = data.statusColor;
         }
         if (summaryText) summaryText.textContent = data.summary;
@@ -3555,8 +3526,16 @@ window.applyLabPreset = function(presetKey) {
 
     // Pre-populate healthy baseline on load if table empty
     document.addEventListener("DOMContentLoaded", () => {
-        if (typeof window.applyLabPreset === "function") {
-            window.applyLabPreset('normal');
+        const tbody = document.getElementById("lab-table-body");
+        const statusBadge = document.getElementById("lab-overall-status");
+        const summaryText = document.getElementById("lab-summary-text");
+        if (tbody && tbody.children.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 25px; color: var(--text-muted);">📄 No medical report uploaded yet. Upload a report file (.pdf, .txt, .json, .png, .jpg) or click a ⚡ Demo Preset above.</td></tr>`;
+            if (statusBadge) {
+                statusBadge.textContent = "No Report Loaded";
+                statusBadge.style.background = "#64748b";
+            }
+            if (summaryText) summaryText.textContent = "Upload a medical report or select a preset to analyze pathology biomarkers.";
         }
     });
 
@@ -3672,9 +3651,9 @@ window.applyLabPreset = function(presetKey) {
         URL.revokeObjectURL(url);
     };
 
-    // Default calculations on load if biometrics function exists
-    if (typeof calculateBiometrics === "function") {
-        calculateBiometrics(120, 80, 72, 98, 98.6);
+    // Ensure initial vitals cards remain in disconnected empty state -- on load
+    if (typeof updateLiveHealthCards === "function") {
+        updateLiveHealthCards({}, "DISCONNECTED", "No Signal");
     }
 
 });
@@ -3918,6 +3897,7 @@ window.quickFillDemo = function(name, roll, pass) {
                         resDiv.innerHTML = `<span style="color:#10b981;">✅ Analyzed: <strong>${data.doc_type}</strong> (${data.vitals ? data.vitals.length : 0} parameters extracted)</span>`;
                     }
                     renderDocumentAnalysisCard(data);
+                    loadUserReportLibrary();
                     document.getElementById("reports-results-card")?.scrollIntoView({ behavior: "smooth" });
                 }
             })
@@ -3927,6 +3907,87 @@ window.quickFillDemo = function(name, roll, pass) {
             });
         });
     }
+
+    // =========================================================================
+    // PERSISTENT REPORT HISTORY LIBRARY LOADER
+    // =========================================================================
+    window.loadUserReportLibrary = function() {
+        const container = document.getElementById("reports-library-container");
+        if (!container) return;
+        
+        const activeUser = typeof getActiveUser === "function" ? getActiveUser() : null;
+        const userId = activeUser ? activeUser.identifier : "local_user";
+
+        fetch(`/api/reports/list?user_id=${encodeURIComponent(userId)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success" && data.reports) {
+                    if (data.reports.length === 0) {
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 25px; color: var(--text-muted); font-size: 0.82rem;">
+                                📄 No persistent reports stored yet for ${activeUser ? activeUser.name : 'your profile'}. Upload a lab report file to save it to your history.
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    container.innerHTML = "";
+                    data.reports.forEach(r => {
+                        const card = document.createElement("div");
+                        card.className = "widget-card";
+                        card.style.cssText = "padding: 14px; border: 1px solid var(--border-glass); margin-bottom: 10px;";
+                        card.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <h4 style="margin: 0; font-size: 0.95rem; color: #0284c7;">📄 ${r.filename}</h4>
+                                    <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">
+                                        Type: <strong>${r.document_type || 'Lab Report'}</strong> | Uploaded: ${r.upload_date ? r.upload_date.replace('T', ' ').slice(0, 16) : 'Recent'} | Size: ${(r.file_size / 1024).toFixed(1)} KB
+                                    </div>
+                                    <div style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 6px;">
+                                        Extracted ${r.extracted_biomarkers ? r.extracted_biomarkers.length : 0} clinical biomarkers. Status: <span class="badge" style="background:#10b981; color:#fff; font-size:0.68rem; padding: 2px 6px; border-radius: 4px;">${r.processing_status}</span>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 6px;">
+                                    <button type="button" class="btn btn-secondary" style="font-size: 0.72rem; padding: 5px 12px;" onclick="viewReportDetail('${r.id}')">👁️ View Analysis</button>
+                                    <button type="button" class="btn btn-secondary" style="font-size: 0.72rem; padding: 5px 10px; color:#ef4444; border-color:rgba(239,68,68,0.3);" onclick="deleteUserReport('${r.id}')">🗑️ Delete</button>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                }
+            })
+            .catch(console.warn);
+    };
+
+    window.viewReportDetail = function(reportId) {
+        const activeUser = typeof getActiveUser === "function" ? getActiveUser() : null;
+        const userId = activeUser ? activeUser.identifier : "local_user";
+        fetch(`/api/reports/${reportId}?user_id=${encodeURIComponent(userId)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success" && data.report) {
+                    renderDocumentAnalysisCard(data.report.analysis);
+                }
+            })
+            .catch(console.warn);
+    };
+
+    window.deleteUserReport = function(reportId) {
+        if (!confirm("Are you sure you want to delete this persistent medical report from your library?")) return;
+        const activeUser = typeof getActiveUser === "function" ? getActiveUser() : null;
+        const userId = activeUser ? activeUser.identifier : "local_user";
+        fetch(`/api/reports/${reportId}?user_id=${encodeURIComponent(userId)}`, {
+            method: "DELETE"
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                loadUserReportLibrary();
+            }
+        })
+        .catch(console.warn);
+    };
 
 
 

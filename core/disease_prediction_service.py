@@ -12,7 +12,8 @@ import pickle
 import numpy as np
 from core import database
 
-MODEL_DIR = os.path.join("models", "disease_prediction")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_DIR = os.path.join(BASE_DIR, "models", "disease_prediction")
 MODEL_PATH = os.path.join(MODEL_DIR, "model.pkl")
 ENCODER_PATH = os.path.join(MODEL_DIR, "label_encoder.pkl")
 FEATURES_PATH = os.path.join(MODEL_DIR, "feature_names.pkl")

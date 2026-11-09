@@ -6,16 +6,18 @@ Health Analytics Engine - IoMT Vital Signs Analytics, Anomaly Detection & Trend 
 import os
 import json
 import numpy as np
-import pandas as pd
 from datetime import datetime
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DEFAULT_THRESHOLDS_PATH = os.path.join(BASE_DIR, "config", "health_thresholds.json")
 
 class HealthAnalyticsEngine:
     """
     Offline statistical and machine learning analytics engine for vital signs.
     Provides anomaly detection, trend direction, moving averages, and awareness evaluation.
     """
-    def __init__(self, thresholds_path="config/health_thresholds.json"):
-        self.thresholds = self._load_thresholds(thresholds_path)
+    def __init__(self, thresholds_path=None):
+        self.thresholds = self._load_thresholds(thresholds_path or DEFAULT_THRESHOLDS_PATH)
 
     def _load_thresholds(self, path):
         if os.path.exists(path):
